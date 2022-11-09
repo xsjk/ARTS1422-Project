@@ -1,3 +1,6 @@
-/data/taxi/*
-/test/*
-/envs/*
+/data/taxi/
+/test
+/envs
+/node_modules
+/package-lock.json
+/package.json
