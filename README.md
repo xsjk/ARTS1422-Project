@@ -5,5 +5,5 @@ Final project for *ShanghaiTech University* **Fall 2022 ARTS1422**.
 Contributors:
 + Sijie Xu
 + Beiming Zhang
-+ Nijiang Lu
++ Ao Lu
 + Shuyuan Ge
