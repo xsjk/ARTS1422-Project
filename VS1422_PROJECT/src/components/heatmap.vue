@@ -1,12 +1,10 @@
  <script setup>
   import HeatmapOverlay from 'heatmap.js/plugins/leaflet-heatmap'
   import L from 'leaflet'
-
-
-  //import D3Wrapper from '@/components/d3/D3Wrapper.vue';
+  import D3Wrapper from './d3/D3Wrapper.vue';
   import { computed, defineProps } from 'vue';
   import * as d3 from 'd3';
-import { svg } from 'd3';
+  import { svg } from 'd3';
   
   const props = defineProps({
     Data: {
@@ -22,14 +20,6 @@ import { svg } from 'd3';
       default: null,
     },
   });
-	// // 数据
-	// let {
-	//   data,
-	//   textWidth,
-	//   width,
-	//   height,
-	// } = props;
-
 	// if (width === null) {
 	//   width = columns * (rectWidth + 2 * rectMargin + textWidth);
 	// }
