@@ -1,4 +1,4 @@
-/data/taxi/
+/data/taxi/origin/*
 /test
 /envs
 /node_modules
