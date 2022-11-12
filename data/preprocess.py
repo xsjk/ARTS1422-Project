@@ -47,7 +47,9 @@ def run(i:int):
             in_poly = in_polygon(data[['dest_lng','dest_lat']].to_numpy(),polygons)
             data.loc[in_poly,'dest_district'] = f'{county_code}{j:02d}'
             print(f'dwv_order_make_haikou_{i} {county_code}{j:02d} {feature["properties"]["name"]:<5} {time.time() - start_time:.2f}s, {np.sum(in_poly)} records')
-    
+
+    data.dropna(inplace=True)
+    data.reset_index(drop=True, inplace=True)
     data.to_pickle(f'./data_{i}.pkl')
     
 
