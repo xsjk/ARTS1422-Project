@@ -32,7 +32,7 @@ in_polygon = in_polygon_nb
 
 def run(i:int):
 
-    data = pd.read_csv(f'./taxi/origin/dwv_order_make_haikou_{i}.txt', sep='\t')
+    data = pd.read_csv(f'./taxi/dwv_order_make_haikou_{i}.txt', sep='\t')
     data = data.replace('0000-00-00 00:00:00', None)
     data.rename(columns={c:c[24:] for c in data.columns}, inplace=True)
     data['arrive_time'].replace('0000-00-00 00:00:00',None, inplace=True)
@@ -64,9 +64,17 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    print('done')
+    print('merging...')
 
     pd.to_pickle(pd.concat([pd.read_pickle(f'./data_{i}.pkl') for i in range(1,9)]), './data.pkl')
+
+    print('done')
+
+    import os
+    for i in range(1,9):
+        os.remove(f'./data_{i}.pkl')
+    
+    
 
     # points_np = 5*(np.random.rand(1000,2)-.5)
     # polygon_np = np.array([
