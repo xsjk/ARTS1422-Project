@@ -3,10 +3,6 @@ import numpy as np
 import numba as nb
 import json
 import time
-import matplotlib.pyplot as plt
-import warnings
-from multiprocessing import Process, Pool
-from numba.np.extensions import cross2d
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -33,7 +29,6 @@ in_polygon = in_polygon_nb
 def run(i:int):
 
     data = pd.read_csv(f'./taxi/dwv_order_make_haikou_{i}.txt', sep='\t')
-    data = data.replace('0000-00-00 00:00:00', None)
     data.rename(columns={c:c[24:] for c in data.columns}, inplace=True)
     data['arrive_time'].replace('0000-00-00 00:00:00',None, inplace=True)
     data['departure_time'] = pd.to_datetime(data['arrive_time'])
@@ -59,23 +54,24 @@ def run(i:int):
 
 if __name__ == '__main__':
 
+    from multiprocessing import Pool
     pool = Pool(8)
     pool.map(run, range(1,9))
     pool.close()
     pool.join()
 
-    print('merging...')
+    print('merge')
 
     pd.to_pickle(pd.concat([pd.read_pickle(f'./data_{i}.pkl') for i in range(1,9)]), './data.pkl')
 
     print('done')
 
-    import os
+    from os import remove
     for i in range(1,9):
-        os.remove(f'./data_{i}.pkl')
-    
-    
+        remove(f'./data_{i}.pkl')
 
+    
+    # import matplotlib.pyplot as plt
     # points_np = 5*(np.random.rand(1000,2)-.5)
     # polygon_np = np.array([
     #     [0,0],
