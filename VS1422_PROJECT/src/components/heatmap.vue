@@ -54,6 +54,12 @@
 			attribution: 'Haut-Gis-Org © OpenStreetMap'
 		  }
 		)
+		// 图层
+		let baseLayer2 = L.tileLayer(
+		  'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Haut-Gis-Org © OpenStreetMap'
+		  }
+		)
 		
 		const svg = d3.create('map');
 		
@@ -61,18 +67,17 @@
 		  center: [50.75, -1.55],
 		  zoom: 10
 		})
-		baseLayer.addTo(map)
-		heatmapLayer.addTo(map)
+		// baseLayer.addTo(map)
+		// heatmapLayer.addTo(map)
 		heatmapLayer.setData(Data)
 
 		L.control.scale({ maxWidth: 200, metric: true, imperial: false }).addTo(map)
 
-		let baseLayers = {
+		let mixed = {
 		  'heatmapLayer': heatmapLayer,
-		  'OpenStreetMap': baseLayer
+		  'OpenStreetMap': baseLayer,
 		}
-
-		L.control.layers(baseLayers).addTo(map)
+		L.control.layers(null, mixed).addTo(map);
 		console.log(1234);
 		return svg.node();
 	})
