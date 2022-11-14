@@ -48,8 +48,7 @@ def run(i:int):
             data.loc[in_poly,'dest_district'] = f'{county_code}{j:02d}'
             print(f'dwv_order_make_haikou_{i} {county_code}{j:02d} {feature["properties"]["name"]:<5} {time.time() - start_time:.2f}s, {np.sum(in_poly)} records')
 
-
-    
+    data.to_pickle(f'./data_{i}.pkl')
 
 
 if __name__ == '__main__':
