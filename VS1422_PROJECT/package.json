@@ -1,0 +1,20 @@
+{
+  "name": "vue3_cli_default",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "d3": "^7.6.1",
+    "heatmap.js": "https://github.com/ionata/heatmap.js.git",
+    "leaflet": "^1.9.2",
+    "vue": "^3.2.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.10.2",
+    "@vue/compiler-sfc": "^3.2.6",
+    "vite": "^2.5.2"
+  }
+}
