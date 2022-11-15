@@ -1,5 +1,4 @@
-/data/taxi/*.txt
-/test
+/data
 /envs
 /node_modules
 /package-lock.json
