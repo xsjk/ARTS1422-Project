@@ -1,5 +1,6 @@
-/data
+/data/taxi/*
 /envs
 /node_modules
+/test
 __pycache__
 *.pkl
