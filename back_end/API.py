@@ -14,10 +14,10 @@ for i in range(len(months)):
         index+=1
 
 
-total_data = pd.read_pickle(r'../data\data.pkl')
-time_map_departure = np.load(r'../data\时间地图_departure.npy')
-time_map_arrive = np.load(r'../data\时间地图_arrive.npy')
-district_town_id_to_index = json.load(open(r'../data\时间地图_npy_keys_to_index.json','r',encoding='utf-8'))
+total_data = pd.read_pickle(r'./data/data.pkl')
+time_map_departure = np.load(r'./data\时间地图_departure.npy')
+time_map_arrive = np.load(r'./data\时间地图_arrive.npy')
+district_town_id_to_index = json.load(open(r'./data\时间地图_npy_keys_to_index.json','r',encoding='utf-8'))
 
 #已调试
 def update_data(data:np.ndarray[np.ndarray[np.datetime64, np.datetime64]], type:str):
@@ -55,7 +55,7 @@ class date:
     __data:pd.DataFrame = pd.DataFrame()
     __type:str = ''
 
-    def get_data(self, date:list[int, int], hours:list[int], type:str):
+    def get_data(self, date:list[list[int, int]], hours:list[int], type:str):
         date = merge_date(date, hours)
         if (date.shape == self.__date.shape) and (date == self.__date) and (type == self.__type):
             return self.__data
@@ -82,11 +82,11 @@ class isochrone_graph:
     __一个等时线最少点数:int = 10
 
 
-    def k_min_isochrone(self, k:list[int,int,int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[float],list[float],list[float]]:
+    def k_min_isochrone(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[float],list[float],list[float]]:
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
-        if k[1] - k[0] < 10 or k[2] - k[1] < 10:
-            raise('Invalid K is given in function 等时线图::某小时k分钟线!!!')
+        # if k[1] - k[0] < 10 or k[2] - k[1] < 10:
+        #     raise('Invalid K is given in function 等时线图::某小时k分钟线!!!')
         df = d.get_data(date,hour,'departure_time')
         result = []
         #筛选起点符合要求的字段
@@ -95,7 +95,8 @@ class isochrone_graph:
         normal_times = df['normal_time'].values
         bases = np.array([np.array([np.cos(np.radians(i)), np.sin(np.radians(i))]) for i in range(0,360,20)])
         #画k[i]分钟图
-        for i in range(3):
+        print(df)
+        for i in range(len(k)):
             r = self.__默认最小半径
             max_r = k[i] * 0.0075 * 0.2
             while r <= max_r:
@@ -213,3 +214,7 @@ class time_map:
         total_k = 1.0 / total_max - total_min
         data = (data - total_min) * total_k
         return data.tolist()
+
+
+a=isochrone_graph()
+print(a.k_min_isochrone([10],[110.32,20.03],[0,1,2,3],[5,6,7,8]))
