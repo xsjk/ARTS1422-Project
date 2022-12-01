@@ -2,6 +2,7 @@
 import D3Wrapper from './D3Wrapper.vue';
 import { computed, defineProps } from 'vue';
 import * as d3 from 'd3';
+import {Calendar} from "../../composables/d3/calendar/calendar"
 
 const props = defineProps({
   data: {
@@ -117,7 +118,12 @@ const legend = computed(() => {
 		}
 	})
 
-  return svg.node();
+  return Calendar(data, {
+	x: d => d.date,
+	y: d => d.price,
+	weekday: "weekday",
+	width
+  });
 });
 </script>
 <template>
