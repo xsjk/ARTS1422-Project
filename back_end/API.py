@@ -29,7 +29,7 @@ def update_data(data:np.ndarray[np.ndarray[np.datetime64, np.datetime64]], type:
     for i in data:
         bool_index |= (total_data[type]>=i[0]).values & (total_data[type]<= i[1]).values
     return total_data[bool_index]
-    
+
 #已调试
 def merge_hour(hours:list[int])->list[list[int,int]]:#list[开始时间, 持续时长]
     h = [[i-1,1] for i in sorted(hours)]
@@ -50,15 +50,16 @@ def merge_date(date:list[list[int, int]], hours:list[int])->np.ndarray[np.ndarra
 
 
 class date:
-    
+
     __date = np.empty((0,2),dtype=np.datetime64)
     __data:pd.DataFrame = pd.DataFrame()
     __type:str = ''
 
     def get_data(self, date:list[list[int, int]], hours:list[int], type:str):
         date = merge_date(date, hours)
-        if (date.shape == self.__date.shape) and (date == self.__date) and (type == self.__type):
-            return self.__data
+        if (date.shape == self.__date.shape):
+            if (date == self.__date).all() and (type == self.__type):
+                return self.__data
         else:
             self.__date = date
             self.__type = type
@@ -66,7 +67,7 @@ class date:
             return self.__data
 
 
-d = date() 
+d = date()
 
 #约定先lng 后lat
 
@@ -109,7 +110,7 @@ class isochrone_graph:
                     bases_product = np.sum(bases[bases_index]*vectors,axis=1)
                     result_i = np.zeros(18)
                     for j in range(18):
-                        result_i[j] = np.mean(bases_product[np.equal(bases_index,j)]) 
+                        result_i[j] = np.mean(bases_product[np.equal(bases_index,j)])
                     result_i[np.isnan(result_i)] = 0
                     result.append(result_i.tolist())
                     break
@@ -159,7 +160,7 @@ class thermodynamic_diagram:
             thermodynamic_diagram.subdivided([middle_point_coordinate[0] + smaller_l, middle_point_coordinate[1] - smaller_l], smaller_l, k-1, array[grater_lng & ~grater_lat], result)
             thermodynamic_diagram.subdivided([middle_point_coordinate[0] - smaller_l, middle_point_coordinate[1] + smaller_l], smaller_l, k-1, array[~grater_lng & grater_lat], result)
             thermodynamic_diagram.subdivided([middle_point_coordinate[0] - smaller_l, middle_point_coordinate[1] - smaller_l], smaller_l, k-1, array[~grater_lng & ~grater_lat], result)
-            
+
     #boundary : lat : [19.520 , 20.120] : delta = 0.6
     #boundary : lng : [110.100, 110.710] : delta = 0.61
     #当放大倍率为k时total_lng = 0.61 / k, total_lat = 0.6 / k
@@ -204,7 +205,7 @@ class time_map:
         total_k = 1.0 / total_max - total_min
         data = (data - total_min) * total_k
         return data.tolist()
-        
+
     def traffic_flow_out_degree_graph(self, towns:list[int])->list[list[float]]:
         data = np.zeros(184 * 24).reshape(184,24)
         for town in towns:
