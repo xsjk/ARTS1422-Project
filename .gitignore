@@ -1,6 +1,7 @@
-/data/taxi/*.txt
-/test
+/data
 /envs
 /node_modules
+/test
 __pycache__
 *.pkl
+/.vscode

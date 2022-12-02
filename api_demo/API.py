@@ -1,4 +1,3 @@
-import datetime as dt
 import pandas as pd
 import numpy as np
 import json
@@ -215,7 +214,3 @@ class time_map:
         total_k = 1.0 / total_max - total_min
         data = (data - total_min) * total_k
         return data.tolist()
-
-
-a=isochrone_graph()
-print(a.k_min_isochrone([10],[110.32,20.03],[0,1,2,3],[5,6,7,8]))
