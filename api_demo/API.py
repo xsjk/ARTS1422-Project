@@ -161,7 +161,7 @@ class thermodynamic_diagram:
     #boundary : lat : [19.520 , 20.120] : delta = 0.6
     #boundary : lng : [110.100, 110.710] : delta = 0.61
     #当放大倍率为k时total_lng = 0.61 / k, total_lat = 0.6 / k
-    __边细分次数:int = 5 #代表2**6
+    __边细分次数:int = 6 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
         if date == []:
