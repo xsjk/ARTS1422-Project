@@ -17,12 +17,14 @@ def apiDeco(rule):
         @functools.wraps(func)
         def decoratedFunc():
             argsDict = inspect.get_annotations(func)
+            print("\033[1;31;40m>>>>>>>>")
             print(argsDict)
             if "return" in argsDict:
                 del argsDict["return"]
             for argKey, argType in argsDict.items():
                 argsDict[argKey] = list(map(eval, request.args.getlist(f"{argKey}[]"))) if argType.__name__ == "list" else eval(request.args.get(argKey))
             print(argsDict)
+            print("\033[1;31;40m<<<<<<<<\033[0m")
             return func(**argsDict)
         return decoratedFunc
     return deco
