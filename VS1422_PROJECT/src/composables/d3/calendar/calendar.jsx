@@ -2,6 +2,12 @@ import * as d3 from 'd3'
 import { selection } from 'd3';
 import { setBlockTracking } from 'vue';
 
+let value = [];
+
+export function SelectedDate(){
+	return value;
+}
+
 // Copyright 2021 Observable, Inc.
 // Released under the ISC license.
 // https://observablehq.com/@d3/calendar-view
@@ -172,7 +178,6 @@ export function Calendar(data, {
 	});
   
   // brush 相关函数
-  let value = [];
   function OnStart({selection}){
 	  value = [];
 	  d3.selectAll('rect')

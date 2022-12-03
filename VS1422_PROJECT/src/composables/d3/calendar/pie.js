@@ -1,4 +1,11 @@
 import * as d3 from 'd3'
+
+let hours = [];
+
+export function SelectedTime(){
+	return hours;
+}
+
 // Copyright 2021 Observable, Inc.
 // Released under the ISC license.
 // https://observablehq.com/@d3/pie-chart
@@ -70,9 +77,8 @@ export function PieChart(data, {
 	.attr('noclicked',true)
 		.on('click', function(I,i){
 			var noclicked = this.getAttribute('noclicked') == 'true';
-			console.log(1234);
 			if(noclicked == true){
-				console.log(i.data);
+				hours.push(i.data+1);
 				d3.select(this)
 				.attr('opacity', 1)
 				.attr('stroke', 'black')
@@ -80,7 +86,7 @@ export function PieChart(data, {
 				.attr('noclicked', false)
 			}
 			else{
-				//console.log(1234)
+				hours = hours.filter(d => d!=i.data+1)
 				d3.select(this)
 				.attr('opacity', 0.5)
 				.attr('stroke', 'white')
