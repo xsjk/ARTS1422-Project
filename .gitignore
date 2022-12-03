@@ -1,4 +1,7 @@
-/data
+/data/taxi
+/data/geojson
+/data/*.npy
+/data/*.json
 /envs
 /node_modules
 /test
