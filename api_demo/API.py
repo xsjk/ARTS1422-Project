@@ -166,6 +166,10 @@ class thermodynamic_diagram:
     __边细分次数:int = 6 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date is None:
+            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
+        if hour is None:
+            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
@@ -180,6 +184,10 @@ class thermodynamic_diagram:
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date is None:
+            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
+        if hour is None:
+            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
