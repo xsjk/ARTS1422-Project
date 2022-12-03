@@ -187,21 +187,20 @@ export function Calendar(data, {
 		console.log(x,y);
 		let f = cell.filter(i => xScale(i) < x_ && xScale(i) + cellSize > x_ && yScale(i) < y_ && yScale(i) + cellSize > y_);
 		f._groups[0].forEach(rect => {
-			if (rect.getAttribute('noclicked') == 'true'){
-				rect.setAttribute('opacity', 0.5);
-				rect.setAttribute('stroke', 'black');
-				rect.setAttribute('stroke-width', 1);
-				rect.setAttribute('noclicked', false);
-				value.push(rect.__data__);
-				console.log(value);
-			} else {
-				rect.setAttribute('opacity', 1);
-				rect.setAttribute('stroke', 'white');
-				rect.setAttribute('stroke-width', 0.1);
-				rect.setAttribute('noclicked', true);
-				value = value.filter(d => d != rect.__data__);
-				console.log(value);
-			}
+			if (selection[0][0]==selection[1][0] && selection[0][1]==selection[1][1])
+				if (rect.getAttribute('noclicked') == 'true'){
+					rect.setAttribute('opacity', 0.5);
+					rect.setAttribute('stroke', 'black');
+					rect.setAttribute('stroke-width', 1);
+					rect.setAttribute('noclicked', false);
+				} else {
+					rect.setAttribute('opacity', 1);
+					rect.setAttribute('stroke', 'white');
+					rect.setAttribute('stroke-width', 0.1);
+					rect.setAttribute('noclicked', true);
+					value = value.filter(d => d != rect.__data__);
+					console.log(value);
+				}
 		});
 	}
   }
@@ -229,6 +228,7 @@ export function Calendar(data, {
 	svg.property("value", value).dispatch("input");
   };
   async function OnEnd({selection}){
+	console.log("end");
 	if(selection) console.log(value);
 	let test = await k_min_isochrone([10, 15], [110.32,20.03], [0,1,2,3,5,6,7,8], [5,6,7,8,9,10,11,12]);
 	//console.log(test);

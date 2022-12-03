@@ -55,15 +55,14 @@ class date:
     __type:str = ''
 
     def get_data(self, date:list[list[int, int]], hours:list[int], type:str):
-        date = merge_date(date, hours)
+        date = merge_date(date, hours)        
         if (date.shape == self.__date.shape):
             if (date == self.__date).all() and (type == self.__type):
                 return self.__data
-        else:
-            self.__date = date
-            self.__type = type
-            self.__data = update_data(self.__date, self.__type)
-            return self.__data
+        self.__date = date
+        self.__type = type
+        self.__data = update_data(self.__date, self.__type)
+        return self.__data
 
 
 d = date()
@@ -163,13 +162,19 @@ class thermodynamic_diagram:
     #boundary : lat : [19.520 , 20.120] : delta = 0.6
     #boundary : lng : [110.100, 110.710] : delta = 0.61
     #当放大倍率为k时total_lng = 0.61 / k, total_lat = 0.6 / k
-    __边细分次数:int = 6 #代表2**6
+    __边细分次数:int = 5 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date is None:
+            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
+        if hour is None:
+            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
         df = d.get_data(date, hour, 'departure_time')
+        print('get_data')
+        print(df)
         l = 0.31 / enlarge_factor
         array = df[['starting_lng','starting_lat']].values
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
@@ -177,9 +182,14 @@ class thermodynamic_diagram:
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
         # with open(r"D:\Users\geshy\Desktop\tmp.txt",'w',encoding='utf-8') as f:
         #     f.write(str(result))
+        print('result:',len(result))
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date is None:
+            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
+        if hour is None:
+            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
