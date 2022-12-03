@@ -21,7 +21,7 @@ def apiDeco(rule):
             if "return" in argsDict:
                 del argsDict["return"]
             for argKey, argType in argsDict.items():
-                argsDict[argKey] = list(map(eval, request.args.getlist(f"{argKey}[]"))) if argType.__name__ == "list" else request.args.get(argKey)
+                argsDict[argKey] = list(map(eval, request.args.getlist(f"{argKey}[]"))) if argType.__name__ == "list" else eval(request.args.get(argKey))
             print(argsDict)
             return func(**argsDict)
         return decoratedFunc
