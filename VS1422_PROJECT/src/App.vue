@@ -3,14 +3,9 @@
 	import {generate_layer, update_layer} from './composables/maps/heatmap.js'
 	import Districtmap from './components/map/district_division.vue'
 	import Calendar from './components/d3/Calendar.vue'
-<<<<<<< HEAD
 	import TimeMap from './components/d3/Timemap.vue'
-	import {SelectedDate} from './composables/d3/calendar/calendar'
-	import {SelectedTime} from './composables/d3/calendar/pie'
-=======
 	import MapUpdate from './components/map/AllMaps.vue'
 	import {SelectedDate,SelectedTime,SetPosition} from './composables/d3/calendar/calendar.jsx'
->>>>>>> 55475cb3ab689665179daafa3bab9e52c14fac4e
 	import Title from './components/d3/Title.vue'
 	import { ref } from 'vue';
 	import { computed} from 'vue';
@@ -260,19 +255,13 @@
 	  const detailedData = await d3.csv('./static/house_pricing.csv');
 	  const coordinalData = await d3.csv('./static/house_pricing_normalized.csv');
 	  const weatherTest = await d3.csv('weatherData.csv');
+	  timemapData.value = [[0.1,0.2],[0.3,0.4]]
 	  //heatmapTest = await out_degree([], [], [110.355043, 20.004658], 11);
 	  newdata.value = detailedData.map((d, i) => ({
 	    ...d,
 	    ...coordinalData[i],
 	  }));
 	  weatherData.value = weatherTest.map(d => d);
-<<<<<<< HEAD
-	  weatherData.value.forEach(d=>{
-		  d['date'] = d['date'] + "UTC";
-	  });
-	  timemapData.value = [[0.1,0.2],[0.3,0.4]];
-=======
->>>>>>> 55475cb3ab689665179daafa3bab9e52c14fac4e
 	};
 	
 	getData()
