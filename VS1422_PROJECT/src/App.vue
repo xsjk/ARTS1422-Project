@@ -279,7 +279,6 @@
 	  'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: 'Haut-Gis-Org © OpenStreetMap'
 	})
-	baseLayer.addTo(map);
 	
 	// 加入其他层级
 	let heatmapLayer = Heatmap.methods.generate_layer(testData);
@@ -293,13 +292,13 @@
 		//'OpenStreetMap': baseLayer,
 	}
 	L.control.layers(null, mixed).addTo(map);
+	baseLayer.addTo(map);
 	
 	map.on('zoomend mouseup', async(e) => {
 		let scale = e.target.getZoom();
 		let center = e.target.getCenter();
 		let center_arr = [center.lng,center.lat];
-		console.log(e.target.getBounds());
-		Heatmap.methods.update_layer(scale,SelectedDate(),SelectedTime(), center_arr)
+		Heatmap.methods.update_layer(SelectedDate(),SelectedTime(),center_arr,scale,)
 	});
 </script>
 
