@@ -8,9 +8,7 @@
 	import * as d3 from 'd3';
 	import HeatmapOverlay from 'heatmap.js/plugins/leaflet-heatmap';
 	import L from 'leaflet';
-	// import D3Wrapper from './d3/D3Wrapper.vue';
 	import { discreteScheme } from './composables/color/scheme.js';
-	// import { svg } from 'd3';
 	
 	const testData = {
 	  max: 100,
@@ -263,6 +261,9 @@
 	    ...coordinalData[i],
 	  }));
 	  weatherData.value = weatherTest.map(d => d);
+	  weatherData.value.forEach(d=>{
+		  d['date'] = d['date'] + "UTC";
+	  })
 	};
 	
 	getData()
@@ -312,7 +313,7 @@
 
 
 <template>
-	<div class="Time Selection" style="position: absolute;left: 400px;top: 500px;">
+	<div class="Time-Selection">
 	<Calendar
 		:data="
 			weatherData.map((d) => ({
@@ -320,10 +321,10 @@
 				price:1,
 			}))
 		"
-		:calendar_width="600"
+		:calendar_width="650"
 		:cellSize="20"
-		:clock_width="200"
-		:clock_height="150"
+		:clock_width="270"
+		:clock_height="200"
 	/>
 	</div>
 	<div class="Title"> 
@@ -338,13 +339,25 @@
 
 <style>
 	.leaflet-container {
-		height: 500px;
-		width: 1000px;
+		height: 550px;
+		width: 925px;
 		max-width: 100%;
 		max-height: 100%;
 		position: absolute;
 		left: 400px;
 		top: 0px;
+	}
+	.Time-Selection{
+		position: absolute;
+		left: 400px;
+		top: 560px;
+		background-color: chocolate;
+	}
+	.Title{
+		position: absolute;
+		left: 0px;
+		top:0px;
+		background-color: aqua;
 	}
 	
 </style>

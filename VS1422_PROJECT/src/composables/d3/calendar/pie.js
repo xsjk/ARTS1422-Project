@@ -31,7 +31,7 @@ export function PieChart(data, {
   // Chose a default color scheme based on cardinality.
   //if (colors === undefined) colors = d3.schemeSpectral[names.size];
   //if (colors === undefined) colors = interpolateWithSteps(names.size).map(d3.interpolateRainbow);
-  if (colors === undefined) colors = d3.quantize(t => d3.interpolateRainbow(t * 1 + 0.1), names.size);
+  if (colors === undefined) colors = d3.quantize(t => d3.interpolateRainbow(t * 1), names.size);
 
   // Construct scales.
   const color = d3.scaleOrdinal(names, colors);
@@ -72,7 +72,7 @@ export function PieChart(data, {
 			var noclicked = this.getAttribute('noclicked') == 'true';
 			console.log(1234);
 			if(noclicked == true){
-				//console.log(1234)
+				console.log(i.data);
 				d3.select(this)
 				.attr('opacity', 1)
 				.attr('stroke', 'black')
