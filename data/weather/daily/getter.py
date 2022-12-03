@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-outFile = open("weatherData.csv", "w", encoding="utf-8")
+outFile = open("./data/weather/daily/weatherData.csv", "w", encoding="utf-8")
 
 for month in range(5, 11):
 
