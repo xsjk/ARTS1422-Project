@@ -2,8 +2,7 @@
 import D3Wrapper from './D3Wrapper.vue';
 import { computed } from 'vue';
 import * as d3 from 'd3';
-import {Calendar} from "../../composables/d3/calendar/calendar"
-import {PieChart} from "../../composables/d3/calendar/pie"
+import {Calendar,PieChart} from "../../composables/d3/calendar/calendar"
 import {Legend} from "../../composables/d3/calendar/color-legend"
 
 const props = defineProps({
@@ -106,9 +105,9 @@ const clock = computed(() => {
 	<div class = "calendar" style = "display: inline;float:left">
 		<D3Wrapper :node="calendar"/>
 	</div>
-	<div class = "legend" style = "display: inline;float:left">
+<!-- 	<div class = "legend" style = "display: inline;float:left">
 		<D3Wrapper :node="legend"/>
-	</div>
+	</div> -->
 	<div class = "clock" style = "display: inline;float:right">
 		<D3Wrapper :node="clock"/>
 	</div>

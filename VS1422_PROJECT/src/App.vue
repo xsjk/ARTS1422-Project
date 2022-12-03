@@ -1,9 +1,10 @@
 <script setup>
-	import Heatmap from './components/heatmap.vue'
-	import Districtmap from './components/district_division.vue'
+	//import Heatmap from './components/map/heatmap.vue'
+	import {generate_layer, update_layer} from './composables/maps/heatmap.js'
+	import Districtmap from './components/map/district_division.vue'
 	import Calendar from './components/d3/Calendar.vue'
-	import {SelectedDate} from './composables/d3/calendar/calendar'
-	import {SelectedTime} from './composables/d3/calendar/pie'
+	import MapUpdate from './components/map/AllMaps.vue'
+	import {SelectedDate,SelectedTime,SetPosition} from './composables/d3/calendar/calendar.jsx'
 	import Title from './components/d3/Title.vue'
 	import { ref } from 'vue';
 	import { computed} from 'vue';
@@ -266,6 +267,7 @@
 		zoom: 10,
 		renderer: L.svg()
 	})
+	SetPosition([20.004658, 110.355043],10);
 	var testData = {
 	  max: 0,
 	  data: []
@@ -278,7 +280,7 @@
 	})
 	
 	// 加入其他层级
-	let heatmapLayer = Heatmap.methods.generate_layer(testData);
+	let heatmapLayer = generate_layer(testData);
 	heatmapLayer.cfg.radius = 0.001;
 	let districtLayer = Districtmap.methods.generate_layer(data,map);
 	
@@ -295,10 +297,14 @@
 		let scale = e.target.getZoom();
 		let center = e.target.getCenter();
 		let center_arr = [center.lng,center.lat];
-		Heatmap.methods.update_layer(SelectedDate(),SelectedTime(),center_arr,scale,)
+		let date = SelectedDate();
+		let time = SelectedTime();
+		SetPosition(center_arr,scale);
+		console.log(scale.value);console.log(date.value);
+		update_layer(SelectedDate(),SelectedTime(),center_arr,scale);
 	});
 </script>
-
+	
 
 <template>
 	<div class="Time-Selection">
