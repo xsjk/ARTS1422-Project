@@ -192,11 +192,15 @@ export function Calendar(data, {
 				rect.setAttribute('stroke', 'black');
 				rect.setAttribute('stroke-width', 1);
 				rect.setAttribute('noclicked', false);
+				value.push(rect.__data__);
+				console.log(value);
 			} else {
 				rect.setAttribute('opacity', 1);
 				rect.setAttribute('stroke', 'white');
 				rect.setAttribute('stroke-width', 0.1);
 				rect.setAttribute('noclicked', true);
+				value = value.filter(d => d != rect.__data__);
+				console.log(value);
 			}
 		});
 	}
@@ -219,7 +223,7 @@ export function Calendar(data, {
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
 			.attr('noclicked',false)
-			.data();
+			.data(); 
 		//value.push.apply(value,temp);
 	} 
 	svg.property("value", value).dispatch("input");
