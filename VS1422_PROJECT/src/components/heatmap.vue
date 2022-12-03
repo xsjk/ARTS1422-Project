@@ -41,6 +41,7 @@
 				console.log(days);
 				console.log(hours);
 				console.log(radius);
+				console.log(heatmapTest);
 				console.log(500*days*hours*Math.pow(2,10-scale));
 				const Data = {
 				  max: 432*days*hours*Math.pow(2,10-scale),

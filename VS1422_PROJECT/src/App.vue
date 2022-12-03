@@ -251,16 +251,13 @@
 	const getData = async () => {
 	  const detailedData = await d3.csv('./static/house_pricing.csv');
 	  const coordinalData = await d3.csv('./static/house_pricing_normalized.csv');
-	  const weatherTest = await d3.csv('weatherData_temp.csv');
+	  const weatherTest = await d3.csv('weatherData.csv');
 	  //heatmapTest = await out_degree([], [], [110.355043, 20.004658], 11);
 	  newdata.value = detailedData.map((d, i) => ({
 	    ...d,
 	    ...coordinalData[i],
 	  }));
 	  weatherData.value = weatherTest.map(d => d);
-	  weatherData.value.forEach(d=>{
-		  d['date'] = d['date'] + "UTC";
-	  });
 	};
 	
 	getData()
@@ -309,7 +306,7 @@
 		:data="
 			weatherData.map((d) => ({
 				date:new Date(d['date']),
-				price:1,
+				price:d['weather'],
 			}))
 		"
 		:calendar_width="650"
