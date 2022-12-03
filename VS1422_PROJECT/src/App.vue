@@ -2,6 +2,7 @@
 	import Heatmap from './components/heatmap.vue'
 	import Districtmap from './components/district_division.vue'
 	import Calendar from './components/d3/Calendar.vue'
+	import TimeMap from './components/d3/Timemap.vue'
 	import {SelectedDate} from './composables/d3/calendar/calendar'
 	import {SelectedTime} from './composables/d3/calendar/pie'
 	import Title from './components/d3/Title.vue'
@@ -247,6 +248,7 @@
 	const cityScheme = discreteScheme(42, 42).reverse();
 	const newdata = ref([]);
 	const weatherData = ref([]);
+	const timemapData = ref([]);
 	// 用来获取数据的组合
 	const getData = async () => {
 	  const detailedData = await d3.csv('./static/house_pricing.csv');
@@ -261,6 +263,7 @@
 	  weatherData.value.forEach(d=>{
 		  d['date'] = d['date'] + "UTC";
 	  });
+	  timemapData.value = [[0.1,0.2],[0.3,0.4]];
 	};
 	
 	getData()
@@ -326,6 +329,15 @@
 		:y="0"
 		/>
 	</div>
+	<div class="TimeMap">
+		<TimeMap
+		:data="
+			timemapData
+		"
+		:width="400"
+		:height="575"
+		/>
+	</div>
 </template>
 
 <style>
@@ -349,6 +361,12 @@
 		left: 0px;
 		top:0px;
 		background-color: aqua;
+	}
+	.TimeMap{
+		position: absolute;
+		left: 0px;
+		top: 200px;
+		background-color: rgb(15, 20, 19);
 	}
 	
 </style>
