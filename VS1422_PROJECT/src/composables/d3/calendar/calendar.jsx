@@ -179,12 +179,27 @@ export function Calendar(data, {
   
   // brush 相关函数
   function OnStart({selection}){
-	  value = [];
-	  d3.selectAll('rect')
-	    .attr('opacity', 1)
-	    .attr('stroke', 'white')
-	    .attr('stroke-width', 0.1)
-	    .attr('noclicked', true);
+	// hide this
+	// this.setAttribute('style','display: None');
+	if (selection) {
+		const [x, y] = selection[0];
+		let x_ = x-40.5, y_ = y-cellSize * 1.5;
+		console.log(x,y);
+		let f = cell.filter(i => xScale(i) < x_ && xScale(i) + cellSize > x_ && yScale(i) < y_ && yScale(i) + cellSize > y_);
+		f._groups[0].forEach(rect => {
+			if (rect.getAttribute('noclicked') == 'true'){
+				rect.setAttribute('opacity', 0.5);
+				rect.setAttribute('stroke', 'black');
+				rect.setAttribute('stroke-width', 1);
+				rect.setAttribute('noclicked', false);
+			} else {
+				rect.setAttribute('opacity', 1);
+				rect.setAttribute('stroke', 'white');
+				rect.setAttribute('stroke-width', 0.1);
+				rect.setAttribute('noclicked', true);
+			}
+		});
+	}
   }
   function OnBrush({selection}) {
 	let temp = [];
@@ -198,8 +213,8 @@ export function Calendar(data, {
 		  .attr('stroke-width', 0.1)
 		  .attr('noclicked', true);
 		value = cell
-			.filter(i => x_0 <= xScale(i) && xScale(i) < x_1
-			 && y_0 <= yScale(i) && yScale(i) < y_1)
+			.filter(i => x_0 <= xScale(i)+cellSize && xScale(i) < x_1
+			 && y_0 <= yScale(i)+cellSize && yScale(i) < y_1)
 			.attr('opacity', 0.5)
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
