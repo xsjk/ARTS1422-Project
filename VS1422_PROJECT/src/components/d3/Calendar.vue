@@ -35,14 +35,16 @@ const calendar = computed(() => {
 	cellSize
   } = props;
   
-  //console.log(1234);
+  // 从淡蓝到深蓝,第一个是黄色
+  const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
   
   return Calendar(data, {
 	x: d => d.date,
 	y: d => d.price,
 	weekday: "monday",
 	width: calendar_width,
-	cellSize: cellSize
+	cellSize: cellSize,
+	colors: colors
   });
 });
 
@@ -53,14 +55,14 @@ const clock = computed(() => {
 	} = props;
 	
 	var data = [
-		{'hour': 1},{'hour': 2},{'hour': 3},
-		{'hour': 4},{'hour': 5},{'hour': 6},
-		{'hour': 7},{'hour': 8},{'hour': 9},
-		{'hour': 10},{'hour': 11},{'hour': 12},
-		{'hour': 13},{'hour': 14},{'hour': 15},
-		{'hour': 16},{'hour': 17},{'hour': 18},
-		{'hour': 19},{'hour': 20},{'hour': 21},
-		{'hour': 22},{'hour': 23},{'hour': 24},
+		{'hour': 0},{'hour': 1},{'hour': 2},
+		{'hour': 3},{'hour': 4},{'hour': 5},
+		{'hour': 6},{'hour': 7},{'hour': 8},
+		{'hour': 9},{'hour': 10},{'hour': 11},
+		{'hour': 12},{'hour': 13},{'hour': 14},
+		{'hour': 15},{'hour': 16},{'hour': 17},
+		{'hour': 18},{'hour': 19},{'hour': 20},
+		{'hour': 21},{'hour': 22},{'hour': 23},
 	]
 	
 	return PieChart(data,{

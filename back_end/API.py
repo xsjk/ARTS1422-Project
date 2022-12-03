@@ -20,7 +20,7 @@ time_map_arrive = np.load(r'./data\时间地图_arrive.npy')
 district_town_id_to_index = json.load(open(r'./data\时间地图_npy_keys_to_index.json','r',encoding='utf-8'))
 
 #已调试
-def update_data(data:np.ndarray[np.ndarray[np.datetime64, np.datetime64]], type:str):
+def update_data(data, type:str):
     if data.size==0:
         raise('NULL Data are given in function update_data!!!')
     if type != 'departure_time' and type != 'arrive_time':
@@ -43,7 +43,7 @@ def merge_hour(hours:list[int])->list[list[int,int]]:#list[开始时间, 持续�
     return h
 
 #已调试
-def merge_date(date:list[list[int, int]], hours:list[int])->np.ndarray[np.ndarray[np.datetime64, np.datetime64]]:
+def merge_date(date:list[list[int, int]], hours:list[int]):
     h = merge_hour(hours)
     periods = np.array([np.array([np.datetime64(f'2017-{i[0]:02d}-{i[1]:02d} {j[0]:02d}:00:00'), np.datetime64(f'2017-{i[0]:02d}-{i[1]:02d} {j[0]:02d}:00:00') + np.timedelta64(j[1], 'h')]) for i in date for j in h])
     return periods
@@ -147,7 +147,7 @@ class order_scatter_diagram:
 class thermodynamic_diagram:
 
     @staticmethod
-    def subdivided(middle_point_coordinate:list[float, float], l:float, k:int, array:np.ndarray[np.ndarray[float, float]], result:list[dict['lat':float, 'lng':float, 'count':float]])->None:
+    def subdivided(middle_point_coordinate:list[float, float], l:float, k:int, array, result:list[dict['lat':float, 'lng':float, 'count':float]])->None:
         if array.shape[0] == 0:
             return
         elif k == 0:

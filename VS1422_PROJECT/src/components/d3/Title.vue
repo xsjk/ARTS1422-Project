@@ -33,7 +33,6 @@
 		
 		
 		const svg = d3.create("svg")
-					.attr("class", "back")
 					.attr("width", width)
 					.attr("height", height)
 					.attr("transform", `translate(${x},${y})`)
@@ -114,6 +113,7 @@
 		font-family: 'Courier New', Courier, monospace;
 		stroke: antiquewhite;
 		stroke-width: 0.3;
+		font-weight: bold;
 	}
 	.interval{
 		position: relative;
@@ -123,8 +123,5 @@
 		font-family: 'Courier New', Courier, monospace;
 		stroke: antiquewhite;
 		stroke-width: 0.3;
-	}
-	.back{
-		background-color: aqua;
 	}
 </style>
