@@ -100,7 +100,10 @@ export const selected = ref([]);
 	})
 	equaltimeLayer.on("add",function(){
 		console.log("equalTime Loaded");
-		EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
+		if (selected.value == undefined || selected.value.length == 0){
+			selected.value = center.value;
+		}
+		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 	})
 	
 	map.on('click', async(e) => {
@@ -119,8 +122,8 @@ export const selected = ref([]);
 	});
 
 	map.on('mouseup', async(e) => {
-		var center = e.target.getCenter();
-		center.value = [center.lng, center.lat];
+		var c = e.target.getCenter();
+		center.value = [c.lng, c.lat];
 	});
 
 
@@ -156,7 +159,7 @@ export const selected = ref([]);
 			  return;
 			} 
 			console.log("EqualTimeMap需要更新")
-			EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
+			EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 		},
 		{ deep: true }
 	)

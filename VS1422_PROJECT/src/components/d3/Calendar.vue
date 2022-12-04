@@ -410,14 +410,14 @@ export function PieChart(data, {
 		.on('click', function(I,i){
 			var noclicked = this.getAttribute('noclicked') == 'true';
 			if(noclicked == true){
-				hours.value.push(i.data+1);
+				hours.value.push(i.data);
 				d3.select(this)
 				.attr('opacity', 1)
 				.attr('stroke', 'black')
 				.attr('stroke-width', 1)
 				.attr('noclicked', false)
 			} else {
-				hours.value = hours.value.filter(d => d!=i.data+1)
+				hours.value = hours.value.filter(d => d!=i.data)
 				d3.select(this)
 				.attr('opacity', 0.5)
 				.attr('stroke', 'white')
