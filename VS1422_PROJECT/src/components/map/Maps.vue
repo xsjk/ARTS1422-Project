@@ -107,7 +107,10 @@ export const selected = ref([]);
 	})
 	equaltimeLayer.on("add",function(){
 		console.log("equalTime Loaded");
-		EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
+		if (selected.value == undefined || selected.value.length == 0){
+			selected.value = center.value;
+		}
+		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 	})
 	
 	var marker = L.marker(center.value);
@@ -182,7 +185,7 @@ export const selected = ref([]);
 			  return;
 			} 
 			console.log("EqualTimeMap需要更新")
-			EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
+			EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 		},
 		{ deep: true }
 	)

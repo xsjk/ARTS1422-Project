@@ -427,7 +427,7 @@ export function PieChart(data, {
 			if(!mousedown) return;
 			var noclicked = this.getAttribute('noclicked') == 'true';
 			if(noclicked == true){
-				times.push(i.data+1);
+				times.push(i.data);
 				console.log(111);
 				d3.select(this)
 				.attr('opacity', 1)
@@ -435,7 +435,7 @@ export function PieChart(data, {
 				.attr('stroke-width', 1)
 				.attr('noclicked', false)
 			} else {
-				times = times.filter(d => d!=i.data+1)
+				times = times.filter(d => d!=i.data)
 				d3.select(this)
 				.attr('opacity', 0.5)
 				.attr('stroke', 'white')
