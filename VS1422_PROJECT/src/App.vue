@@ -71,7 +71,6 @@
 		position: absolute;
 		left: 400px;
 		top: 560px;
-		background-color: chocolate;
 	}
 	.Title{
 		position: absolute;

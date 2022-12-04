@@ -8,9 +8,16 @@ export function generate_layer(data){
 	// 配置
 	var cfg = {
 		'radius': 0.0015,
-		'maxOpacity': 0.8,
+		'maxOpacity': 0.5,
 		'scaleRadius': true,
-		//'useLocalExtrema': true,
+		'useLocalExtrema': true,
+		'gradient': {
+					  '0.0': 'rgb(0, 0, 0)',
+					  '0.6': 'rgb(24, 53, 103)',
+					  '0.75': 'rgb(46, 100, 158)',
+					  '0.9': 'rgb(23, 173, 203)',
+					  '1.0': 'rgb(0, 250, 250)'
+					},
 		latField: 'lat',
 		lngField: 'lng',
 		valueField: 'count'
@@ -20,7 +27,7 @@ export function generate_layer(data){
 	return heatmapLayer;
 };
 export async function update_layer(date, time, center_arr, scale){
-	console.log("update_layer(" + date + ", " + time + ", " + center_arr + ", " + scale + ")")
+	//console.log("update_layer(" + date + ", " + time + ", " + center_arr + ", " + scale + ")")
 	var heatmapTest = await out_degree(date, time, center_arr, Math.pow(2,scale-11));
 	var radius = 0;
 	var days = (date.length!=0 ? date.length:183); 
