@@ -1,4 +1,5 @@
 import datetime as dt
+import numba as nb
 import pandas as pd
 import numpy as np
 import json
@@ -6,65 +7,85 @@ import json
 months  = [5,6,7,8,9,10]
 days = [31,30,31,31,30,31]
 index = 0
-index_to_month_day = dict()
 
-for i in range(len(months)):
-    for j in range(1,days[i]+1):
-        index_to_month_day[index] = [months[i], j]
-        index+=1
+#loading data
+total_data = pd.read_pickle('../data/data.pkl')
+time_map_departure = np.load('../data/时间地图_departure.npy')
+time_map_arrive = np.load('../data/时间地图_arrive.npy')
+district_town_id_to_index = json.load(open('./data/时间地图_npy_keys_to_index.json','',encoding='utf-8'))
+arrive_days_to_index = [np.load(f'../data/arrive_day_to_index/arrive_{i}day_to_index.npy') for i in range(184)]
+departure_days_to_index = [np.load(f'../data/departure_day_to_index/departure_{i}day_to_index.npy') for i in range(184)]
+arrive_hours_to_index = [np.load(f'../data/arrive_hour_to_index/arrive_{i}hour_to_index.npy') for i in range(24)]
+departure_hours_to_index = [np.load(f'../data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
 
+@nb.njit
+def find_index(index:np.ndarray[int], indices:np.ndarray[bool]):
+    for i in index:
+        indices[i] = True
 
-total_data = pd.read_pickle(r'./data/data.pkl')
-time_map_departure = np.load(r'./data\时间地图_departure.npy')
-time_map_arrive = np.load(r'./data\时间地图_arrive.npy')
-district_town_id_to_index = json.load(open(r'./data\时间地图_npy_keys_to_index.json','r',encoding='utf-8'))
+@nb.jit
+def find_departure_day_index(days:list[int]):
+    result = np.zeros(len(total_data), dtype=bool)
+    for day in days:
+        find_index(departure_days_to_index[day], result)
+    return result
 
-#已调试
-def update_data(data, type:str):
-    if data.size==0:
-        raise('NULL Data are given in function update_data!!!')
-    if type != 'departure_time' and type != 'arrive_time':
-        raise('Invalid type is given in function update_data!!!')
-    bool_index = np.zeros(total_data.shape[0],dtype=bool)
-    for i in data:
-        bool_index |= (total_data[type]>=i[0]).values & (total_data[type]<= i[1]).values
-    return total_data[bool_index]
+@nb.jit
+def find_arrive_day_index(days:list[int]):
+    result = np.zeros(len(total_data), dtype = bool)
+    for day in days:
+        find_index(arrive_days_to_index[day], result)
+    return result
 
-#已调试
-def merge_hour(hours:list[int])->list[list[int,int]]:#list[开始时间, 持续时长]
-    h = [[i-1,1] for i in sorted(hours)]
-    i = 0
-    while i < len(h) - 1:
-        if h[i][0]+h[i][1] == h[i+1][0]:
-            h[i][1] += h[i+1][1]
-            h.pop(i+1)
-        else:
-            i += 1
-    return h
+@nb.jit
+def find_departure_hour_index(hours:list[int]):
+    result = np.zeros(len(total_data), dtype = bool)
+    for hour in hours:
+        find_index(departure_hours_to_index[hour], result)
+    return result
 
-#已调试
-def merge_date(date:list[list[int, int]], hours:list[int]):
-    h = merge_hour(hours)
-    periods = np.array([np.array([np.datetime64(f'2017-{i[0]:02d}-{i[1]:02d} {j[0]:02d}:00:00'), np.datetime64(f'2017-{i[0]:02d}-{i[1]:02d} {j[0]:02d}:00:00') + np.timedelta64(j[1], 'h')]) for i in date for j in h])
-    return periods
+@nb.jit
+def find_arrive_hour_index(hours:list[int]):
+    result = np.zeros(len(total_data), dtype = bool)
+    for hour in hours:
+        find_index(arrive_hours_to_index[hour], result)
+    return result
+
+def get_df(days:list[int], hours:list[int], which:str):
+    if(which == 'departure_time'):
+        return total_data[find_departure_day_index(days) & find_departure_hour_index(hours)]
+    elif(which == 'arrive_time'):
+        return total_data[find_arrive_day_index(days) & find_arrive_hour_index(hours)]
+
 
 
 class date:
 
-    __date = np.empty((0,2),dtype=np.datetime64)
+    __days:list[int] = []
+    __hours:list[int] = []
+    __days_bool_index:np.ndarray = np.array([])
+    __hours_bool_index:np.ndarray = np.array([])
     __data:pd.DataFrame = pd.DataFrame()
     __type:str = ''
 
-    def get_data(self, date:list[list[int, int]], hours:list[int], type:str):
-        date = merge_date(date, hours)
-        if (date.shape == self.__date.shape):
-            if (date == self.__date).all() and (type == self.__type):
-                return self.__data
+    def get_data(self, days:list[int], hours:list[int], type:str):
+        if type == self.__type:
+            if days != self.__days or hours != self.__hours:
+                if days != self.__days:
+                    self.__days = days
+                    self.__days_bool_index = find_departure_day_index(days) if type == 'departure_time' else find_arrive_day_index(days)
+                if hours != self.__hours:
+                    self.__hours = hours
+                    self.__hours_bool_index = find_departure_hour_index(hours) if type == 'departure_time' else find_arrive_hour_index(hours)
+                self.__data = total_data[self.__days_bool_index & self.__hours_bool_index]
         else:
-            self.__date = date
             self.__type = type
-            self.__data = update_data(self.__date, self.__type)
-            return self.__data
+            self.__days = days
+            self.__hours = hours
+            self.__days_bool_index = find_departure_day_index(days) if type == 'departure_time' else find_arrive_day_index(days)
+            self.__hours_bool_index = find_departure_hour_index(hours) if type == 'departure_time' else find_arrive_hour_index(hours)
+            self.__data = total_data[self.__days_bool_index & self.__hours_bool_index]
+        return self.__data
 
 
 d = date()
@@ -84,8 +105,6 @@ class isochrone_graph:
 
 
     def k_min_isochrone(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[float],list[float],list[float]]:
-        for i in range(len(date)):
-            date[i] = index_to_month_day[date[i]][:]
         # if k[1] - k[0] < 10 or k[2] - k[1] < 10:
         #     raise('Invalid K is given in function 等时线图::某小时k分钟线!!!')
         df = d.get_data(date,hour,'departure_time')
@@ -96,7 +115,6 @@ class isochrone_graph:
         normal_times = df['normal_time'].values
         bases = np.array([np.array([np.cos(np.radians(i)), np.sin(np.radians(i))]) for i in range(0,360,20)])
         #画k[i]分钟图
-        print(df)
         for i in range(len(k)):
             r = self.__默认最小半径
             max_r = k[i] * 0.0075 * 0.2
@@ -125,8 +143,6 @@ class order_scatter_diagram:
 
     #已调试
     def origin(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float])->list[list[float, float]]:
-        for i in range(len(date)):
-            date[i] = index_to_month_day[date[i]][:]
         df = d.get_data(date, hour, 'departure_time')
         lngs = df['starting_lng'].values - middle_point_coordinate[0]
         lats = df['starting_lat'].values - middle_point_coordinate[1]
@@ -135,8 +151,6 @@ class order_scatter_diagram:
 
     #已调试
     def dest(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float]):
-        for i in range(len(date)):
-            date[i] = index_to_month_day[date[i]][:]
         df = d.get_data(date, hour, 'arrive_time')
         lngs = df['dest_lng'].values - middle_point_coordinate[0]
         lats = df['dest_lat'].values - middle_point_coordinate[1]
@@ -167,8 +181,6 @@ class thermodynamic_diagram:
     __边细分次数:int = 6 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
-        for i in range(len(date)):
-            date[i] = index_to_month_day[date[i]][:]
         result = []
         df = d.get_data(date, hour, 'departure_time')
         l = 0.31 / enlarge_factor
@@ -176,13 +188,11 @@ class thermodynamic_diagram:
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
         # print(df[array_index])
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
-        # with open(r"D:\Users\geshy\Desktop\tmp.txt",'w',encoding='utf-8') as f:
+        # with open(r"D:/Users/geshy/Desktop/tmp.txt",'w',encoding='utf-8') as f:
         #     f.write(str(result))
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
-        for i in range(len(date)):
-            date[i] = index_to_month_day[date[i]][:]
         result = []
         df = d.get_data(date, hour, 'arrive_time')
         l = 0.31 / enlarge_factor
@@ -190,7 +200,7 @@ class thermodynamic_diagram:
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
         # print(df[array_index])
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
-        # with open(r"D:\Users\geshy\Desktop\tmp.txt",'w',encoding='utf-8') as f:
+        # with open(r"D:/Users/geshy/Desktop/tmp.txt",'w',encoding='utf-8') as f:
         #     f.write(str(result))
         return result
 
