@@ -1,8 +1,8 @@
-
 import L from 'leaflet'
 import { computed, defineProps, onScopeDispose } from 'vue';
 import * as d3 from 'd3';
 import { svg } from 'd3';
+import { equaltimeData } from '../../Global.vue';
 
 var svgElement = d3.create('svg');
 var g;
@@ -51,11 +51,13 @@ export function generate_layer(data,map){
 	return layer;	
 }
 
-export function update_layer(data, map) {
-	console.log(map);
+export async function update_layer(map, selected, dates, hours) {
+	equaltimeData.value = await k_min_isochrone([10, 15], selected, dates, hours)
+	//data = equaltimeData.value;
+	//console.log(map);
 	// console.log(map.getBounds());
 	// console.log(map.getPixelBounds());
-	console.log(map.getCenter());
+	//console.log(map.getCenter());
 	var lat_to_y = d3.scaleLinear().domain([map.getBounds()._southWest.lat, map.getBounds()._northEast.lat]).range([map.getPixelBounds().max.y, map.getPixelBounds().min.y]);
 	var lng_to_x = d3.scaleLinear().domain([map.getBounds()._southWest.lng, map.getBounds()._northEast.lng]).range([map.getPixelBounds().min.x, map.getPixelBounds().max.x]);
 	console.log(lng_to_x(map.getCenter().lng) - map.getPixelBounds().min.x);
@@ -63,9 +65,9 @@ export function update_layer(data, map) {
 	g.attr('transform',`translate(${(lng_to_x(map.getCenter().lng) - map.getPixelBounds().min.x) * Math.pow(2,(map.getZoom() - 10))}, ${(lat_to_y(map.getCenter().lat) - map.getPixelBounds().min.y)* Math.pow(2,(map.getZoom() - 10))})`);
 	var k = (map.getPixelBounds().max.x -map.getPixelBounds().min.x) / (map.getBounds()._northEast.lng - map.getBounds()._southWest.lng);
 	var start_rad = Math.PI / 2;
-	var delta_rad = 2 * Math.PI / data.length;
+	var delta_rad = 2 * Math.PI / equaltimeData.value.length;
 	g.selectAll('path')
-			.data(data)
+			.data(equaltimeData.value)
 			.join("path")
 			.attr("d", (d,i)=>{
 				return d3.arc()

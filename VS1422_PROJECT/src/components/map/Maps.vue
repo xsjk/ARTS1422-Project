@@ -75,7 +75,9 @@ export const selected = ref([]);
 	
 	let heatmapLayer = HeatMap.generate_layer(testData);
 		heatmapLayer.cfg.radius = 0.001;
-		
+	heatmapLayer.on("add",function(){
+		HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
+	})
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
 		zoom: scale.value,
@@ -85,8 +87,22 @@ export const selected = ref([]);
 
 	let districtLayer = DistrictMap.generate_layer(data, map);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-
-
+	const if_heat = ref(false);
+	const if_district = ref(false);
+	const if_equaltime = ref(false);
+	heatmapLayer.on("add",function(){
+		console.log("heatmapLoaded");
+		HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
+	})
+	districtLayer.on("add",function(){
+		console.log("districLoaded");
+		if_district.value = true;
+	})
+	equaltimeLayer.on("add",function(){
+		console.log("equalTime Loaded");
+		EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
+	})
+	
 	map.on('click', async(e) => {
 		console.log(e);
 		L.popup()
@@ -115,15 +131,16 @@ export const selected = ref([]);
 		'heatmapLayer': heatmapLayer,
 		'equaltimeLayer': equaltimeLayer,
 	}
-	L.control.layers(baseLayers, mixed).addTo(map);
+	const controller = L.control.layers(baseLayers, mixed).addTo(map);
 	
-
-
 	// watch
-
 	watch(
 		[hours, dates, center, scale],
 		async () => {
+			if(!map.hasLayer(heatmapLayer)){
+			  console.log("HeatMap不需要更新")
+			  return;
+			} 
 			console.log("HeatMap需要更新")
 			HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
 
@@ -134,9 +151,12 @@ export const selected = ref([]);
 	watch(
 		[hours, dates, selected],
 		async () => {
+			if(!map.hasLayer(equaltimeLayer)){
+			  console.log("EqualTimeMap不需要更新")
+			  return;
+			} 
 			console.log("EqualTimeMap需要更新")
-			equaltimeData.value = await k_min_isochrone([10, 15], selected.value, dates.value, hours.value)
-			EqualTimeMap.update_layer(equaltimeData.value, map);
+			EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
 		},
 		{ deep: true }
 	)

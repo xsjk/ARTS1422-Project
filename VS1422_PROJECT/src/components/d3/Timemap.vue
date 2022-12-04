@@ -1,6 +1,6 @@
 <script setup>
 
-import { defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import * as d3 from 'd3';
 
 const bilinearInterpolator = func => (x, y) => {
