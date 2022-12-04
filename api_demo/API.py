@@ -55,15 +55,14 @@ class date:
     __type:str = ''
 
     def get_data(self, date:list[list[int, int]], hours:list[int], type:str):
-        date = merge_date(date, hours)
+        date = merge_date(date, hours)        
         if (date.shape == self.__date.shape):
             if (date == self.__date).all() and (type == self.__type):
                 return self.__data
-        else:
-            self.__date = date
-            self.__type = type
-            self.__data = update_data(self.__date, self.__type)
-            return self.__data
+        self.__date = date
+        self.__type = type
+        self.__data = update_data(self.__date, self.__type)
+        return self.__data
 
 
 d = date()
@@ -95,7 +94,6 @@ class isochrone_graph:
         normal_times = df['normal_time'].values
         bases = np.array([np.array([np.cos(np.radians(i)), np.sin(np.radians(i))]) for i in range(0,360,20)])
         #画k[i]分钟图
-        print(df)
         for i in range(len(k)):
             r = self.__默认最小半径
             max_r = k[i] * 0.0075 * 0.2
@@ -166,6 +164,10 @@ class thermodynamic_diagram:
     __边细分次数:int = 6 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date == []:
+            date = list(range(184))
+        if hour == []:
+            hour = list(range(1,25))
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
@@ -180,6 +182,10 @@ class thermodynamic_diagram:
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
+        if date == []:
+            date = list(range(184))
+        if hour == []:
+            hour = list(range(1,25))
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
