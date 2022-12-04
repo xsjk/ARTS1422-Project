@@ -94,7 +94,6 @@ class isochrone_graph:
         normal_times = df['normal_time'].values
         bases = np.array([np.array([np.cos(np.radians(i)), np.sin(np.radians(i))]) for i in range(0,360,20)])
         #画k[i]分钟图
-        print(df)
         for i in range(len(k)):
             r = self.__默认最小半径
             max_r = k[i] * 0.0075 * 0.2
@@ -165,16 +164,14 @@ class thermodynamic_diagram:
     __边细分次数:int = 6 #代表2**6
 
     def out_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
-        if date is None:
-            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
-        if hour is None:
-            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
+        if date == []:
+            date = list(range(184))
+        if hour == []:
+            hour = list(range(1,25))
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
         df = d.get_data(date, hour, 'departure_time')
-        print('get_data')
-        print(df)
         l = 0.31 / enlarge_factor
         array = df[['starting_lng','starting_lat']].values
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
@@ -182,14 +179,13 @@ class thermodynamic_diagram:
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
         # with open(r"D:\Users\geshy\Desktop\tmp.txt",'w',encoding='utf-8') as f:
         #     f.write(str(result))
-        print('result:',len(result))
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
-        if date is None:
-            return self.out_degree(list(range(184)), hour, middle_point_coordinate, enlarge_factor)
-        if hour is None:
-            return self.out_degree(date, list(range(24)), middle_point_coordinate, enlarge_factor)
+        if date == []:
+            date = list(range(184))
+        if hour == []:
+            hour = list(range(1,25))
         for i in range(len(date)):
             date[i] = index_to_month_day[date[i]][:]
         result = []
