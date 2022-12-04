@@ -76,13 +76,13 @@
 		position: absolute;
 		left: 0px;
 		top:0px;
-		background-color: aqua;
+/* 		background-color: aqua; */
 	}
 	.TimeMap{
 		position: absolute;
 		left: 0px;
 		top: 200px;
-		background-color: rgb(15, 20, 19);
+/* 		background-color: rgb(15, 20, 19); */
 	}
 	
 </style>

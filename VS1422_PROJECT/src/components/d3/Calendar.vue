@@ -249,10 +249,6 @@ export function Calendar(data, {
 		}
 	})
 	
-
-  if (title) cell.append("title")
-	  .text(title);
-
   const month = year.append("g")
 	.selectAll("g")
 	.data(([, I]) => d3.utcMonths(d3.utcMonth(X[I[0]]), X[I[I.length - 1]]))
@@ -280,6 +276,20 @@ export function Calendar(data, {
   const selectPlace = svg.append("g")
 		.attr('class', 'brush')
 		.call(brush);
+ //  const cell_2 = selectPlace.append("g")
+	// .data(years)
+	// .selectAll("rect")
+	// .data(weekday === "weekday"
+	// 	? ([, I]) => I.filter(i => ![0, 6].includes(X[i].getUTCDay()))
+	// 	: ([, I]) => I)
+	// .join("rect")
+	//   .attr("width", 0.2*cellSize)
+	//   .attr("height", 0.2*cellSize)
+	//   .attr("x", i => xScale(i))
+	//   .attr("y", i => yScale(i)) 
+	//   .attr('opacity', 0)
+ //  if (title) cell_2.append("title")
+	//  .text(title);
 
   
   // brush 相关函数
@@ -331,8 +341,8 @@ export function Calendar(data, {
 	svg.property("days", days).dispatch("input");
   };
   async function OnEnd({selection}){
-	console.log(dates.value)
-	console.log(days);
+	// console.log(dates.value)
+	// console.log(days);
 	dates.value = days;
   };
   
@@ -491,10 +501,10 @@ export function PieChart(data, {
 </template>
 
 <style>
-	.calendar{
+/* 	.calendar{
 		background-color: chocolate;
 	}
 	.clock{
 		background-color: blanchedalmond;
-	}
+	} */
 </style>
