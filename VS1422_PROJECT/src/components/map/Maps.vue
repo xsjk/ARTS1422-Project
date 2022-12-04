@@ -90,9 +90,9 @@ export const selected = ref([]);
 
 	let districtLayer = DistrictMap.generate_layer(data, map);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-	const if_heat = ref(false);
-	const if_district = ref(false);
-	const if_equaltime = ref(false);
+
+	
+	// 给所有图层添加add时的自动更新
 	heatmapinLayer.on("add",function(){
 		console.log("HeatMapInLoaded");
 		HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
@@ -103,19 +103,25 @@ export const selected = ref([]);
 	})
 	districtLayer.on("add",function(){
 		console.log("districLoaded");
-		if_district.value = true;
+		//if_district.value = true;
 	})
 	equaltimeLayer.on("add",function(){
 		console.log("equalTime Loaded");
 		EqualTimeMap.update_layer(map, selected.value, dates.value, hours.value);
 	})
 	
+	var marker = L.marker(center.value);
+	marker.addTo(map);
 	map.on('click', async(e) => {
 		console.log(e);
-		L.popup()
+		var popup = L.popup()
+			.setContent(marker)
 			.setLatLng(e.latlng)
 			.setContent(`${e.latlng.toString()}`)
-			.openOn(map);
+			// .openOn(map);
+		marker.setLatLng(e.latlng);
+		marker.bindPopup(popup).openPopup();
+		//marker.bindPopup(Popup);
 		selected.value = [e.latlng.lng, e.latlng.lat];
 		center.value = [e.latlng.lng, e.latlng.lat];
 	});
