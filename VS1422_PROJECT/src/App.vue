@@ -1,9 +1,9 @@
 <script setup>
 	//import Heatmap from './components/map/heatmap.vue'
-	import {generate_layer, update_layer} from './composables/maps/heatmap.js'
 	import Districtmap from './components/map/district_division.vue'
 	import Calendar from './components/d3/Calendar.vue'
 	import MapUpdate from './components/map/AllMaps.vue'
+	import {generate_layer, update_layer} from './composables/maps/heatmap.js'
 	import {SelectedDate,SelectedTime,SetPosition} from './composables/d3/calendar/calendar.jsx'
 	import Title from './components/d3/Title.vue'
 	import { ref } from 'vue';
@@ -248,6 +248,7 @@
 	const cityScheme = discreteScheme(42, 42).reverse();
 	const newdata = ref([]);
 	const weatherData = ref([]);
+		
 	// 用来获取数据的组合
 	const getData = async () => {
 	  const detailedData = await d3.csv('./static/house_pricing.csv');
@@ -267,6 +268,7 @@
 		zoom: 10,
 		renderer: L.svg()
 	})
+	
 	SetPosition([20.004658, 110.355043],10);
 	var testData = {
 	  max: 0,
@@ -300,8 +302,7 @@
 		let date = SelectedDate();
 		let time = SelectedTime();
 		SetPosition(center_arr,scale);
-		console.log(scale.value);console.log(date.value);
-		update_layer(SelectedDate(),SelectedTime(),center_arr,scale);
+		update_layer(date,time,center_arr,scale);
 	});
 </script>
 	

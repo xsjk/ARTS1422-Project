@@ -79,7 +79,6 @@ const clock = computed(() => {
 		clock_width,
 		clock_height
 	} = props;
-	
 	var data = [
 		{'hour': 0},{'hour': 1},{'hour': 2},
 		{'hour': 3},{'hour': 4},{'hour': 5},

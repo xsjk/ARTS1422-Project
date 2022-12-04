@@ -31,7 +31,8 @@ export async function update_layer(date, time, center_arr, scale){
 	radius = 0.03*Math.pow(2,10-scale);	
 	console.log(days);
 	console.log(hours);
-	console.log(radius);
+	console.log(center_arr);
+	console.log(scale);
 	console.log(heatmapTest);
 	console.log(500*days*hours*Math.pow(2,10-scale));
 	const Data = {
