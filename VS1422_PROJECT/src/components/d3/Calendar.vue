@@ -123,6 +123,7 @@ const clock = computed(() => {
 <script>
 
 var days = [];
+var times = [];
 const dates = ref([]);
 const hours = ref([]);
 export { dates, hours };
@@ -349,7 +350,7 @@ export function PieChart(data, {
   height = 400, // outer height, in pixels
   innerRadius = 0, // inner radius of pie, in pixels (non-zero for donut)
   outerRadius = Math.min(width, height) / 2, // outer radius of pie, in pixels
-  labelRadius = (innerRadius * 0.2 + outerRadius * 0.8), // center.value radius of labels
+  labelRadius = (innerRadius * 0.2 + outerRadius * 0.4), // center.value radius of labels
   format = ",", // a format specifier for values (in the label)
   names, // array of names (the domain of the color scale)
   colors, // array of colors for names
@@ -397,27 +398,34 @@ export function PieChart(data, {
       .attr("viewBox", [-width / 2, -height / 2, width, height])
       .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
 
+  var mousedown = false;
   svg.append("g")
-      .attr("stroke", stroke)
-      .attr("stroke-width", strokeWidth)
+	  .attr('opacity', 1)
+	  .attr('stroke', 'black')
+      .attr('stroke-width', 0.5)
       .attr("stroke-linejoin", strokeLinejoin)
     .selectAll("path")
     .data(arcs)
     .join("path")
       .attr("fill", d => color(N[d.data]))
       .attr("d", arc)
+	  .attr('opacity', 0.5)
+	  .attr('stroke', 'white')
+	  .attr('stroke-width', 0.5)
 	.attr('noclicked',true)
-		.on('click', function(I,i){
+		.on('mouseover', function(I,i){
+			if(!mousedown) return;
 			var noclicked = this.getAttribute('noclicked') == 'true';
 			if(noclicked == true){
-				hours.value.push(i.data);
+				times.push(i.data);
+				console.log(111);
 				d3.select(this)
 				.attr('opacity', 1)
 				.attr('stroke', 'black')
 				.attr('stroke-width', 1)
 				.attr('noclicked', false)
 			} else {
-				hours.value = hours.value.filter(d => d!=i.data)
+				times = times.filter(d => d!=i.data)
 				d3.select(this)
 				.attr('opacity', 0.5)
 				.attr('stroke', 'white')
@@ -427,7 +435,24 @@ export function PieChart(data, {
 		})
 	.append("title")
 	  .text(d => title(d.data));
-
+  ///////////////////
+  //////////////////
+  //////////////////
+  ////////屏幕检测鼠标行为  
+  d3.select("body").on('keydown',function(current){
+	  if(current.key != "Shift") return;
+	  console.log("mousedown");
+	  mousedown = true;
+  })
+  .on('keyup', function(current){
+	    //console.log(current);
+	  	if(current.key != "Shift") return;
+		console.log("mouseup");
+		hours.value = times;
+		console.log(hours.value);
+		mousedown = false;
+	});
+  
   svg.append("g")
       .attr("font-family", "sans-serif")
       .attr("font-size", 10)
@@ -443,9 +468,10 @@ export function PieChart(data, {
     })
     .join("tspan")
       .attr("x", 0)
-      .attr("y", (_, i) => `${i * 1.1}em`)
+      .attr("y", (_, i) => `${i * 0.9}em`)
       .attr("font-weight", (_, i) => i ? null : "bold")
-      .text(d => d);
+      .text(d => d)
+	  .attr("readOnly", "true");
 
   return Object.assign(svg.node(), {scales: {color}});
 }
@@ -465,4 +491,10 @@ export function PieChart(data, {
 </template>
 
 <style>
+	.calendar{
+		background-color: chocolate;
+	}
+	.clock{
+		background-color: blanchedalmond;
+	}
 </style>

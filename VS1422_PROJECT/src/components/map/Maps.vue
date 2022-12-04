@@ -8,7 +8,8 @@ export const selected = ref([]);
 </script>
 
 <script setup>
-	import * as HeatMap from '../../composables/layers/heatmap';
+	import * as HeatMapIn from '../../composables/layers/heatmap_in';
+	import * as HeatMapOut from '../../composables/layers/heatmap_out';
 	import * as DistrictMap from '../../composables/layers/district_division'
 	import * as EqualTimeMap from '../../composables/layers/equal_time'
 	import { watch } from 'vue';
@@ -73,30 +74,36 @@ export const selected = ref([]);
 		'Satellite': satellite
 	};
 	
-	let heatmapLayer = HeatMap.generate_layer(testData);
-		heatmapLayer.cfg.radius = 0.001;
-	heatmapLayer.on("add",function(){
-		HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
+	let heatmapinLayer = HeatMapIn.generate_layer(testData);
+		heatmapinLayer.cfg.radius = 0.001;
+	let heatmapoutLayer = HeatMapOut.generate_layer(testData);
+		heatmapoutLayer.cfg.radius = 0.001;
+	heatmapinLayer.on("add",function(){
+		HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 	})
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
 		zoom: scale.value,
 		renderer: L.svg(),
-		layers: [streets, heatmapLayer]
+		layers: [streets, heatmapinLayer]
 	})
 
 	let districtLayer = DistrictMap.generate_layer(data, map);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-	const if_heat = ref(false);
-	const if_district = ref(false);
-	const if_equaltime = ref(false);
-	heatmapLayer.on("add",function(){
-		console.log("heatmapLoaded");
-		HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
+
+	
+	// 给所有图层添加add时的自动更新
+	heatmapinLayer.on("add",function(){
+		console.log("HeatMapInLoaded");
+		HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
+	})
+	heatmapoutLayer.on("add",function(){
+		console.log("HeatMapOutLoaded");
+		HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
 	})
 	districtLayer.on("add",function(){
 		console.log("districLoaded");
-		if_district.value = true;
+		//if_district.value = true;
 	})
 	equaltimeLayer.on("add",function(){
 		console.log("equalTime Loaded");
@@ -106,24 +113,30 @@ export const selected = ref([]);
 		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 	})
 	
+	var marker = L.marker(center.value);
+	marker.addTo(map);
 	map.on('click', async(e) => {
 		console.log(e);
-		L.popup()
+		var popup = L.popup()
+			.setContent(marker)
 			.setLatLng(e.latlng)
 			.setContent(`${e.latlng.toString()}`)
-			.openOn(map);
+			// .openOn(map);
+		marker.setLatLng(e.latlng);
+		marker.bindPopup(popup).openPopup();
+		//marker.bindPopup(Popup);
 		selected.value = [e.latlng.lng, e.latlng.lat];
+		center.value = [e.latlng.lng, e.latlng.lat];
 	});
 
 
 	map.on('zoomend', async(e) => {
-		console.log(e);
 		scale.value = e.target.getZoom();
 	});
 
 	map.on('mouseup', async(e) => {
-		var c = e.target.getCenter();
-		center.value = [c.lng, c.lat];
+		//var center = e.target.getCenter();
+		//center.value = [e.target.getCenter().lng, e.target.getCenter().lat];
 	});
 
 
@@ -131,7 +144,8 @@ export const selected = ref([]);
 	L.control.scale({ maxWidth: 200, metric: true, imperial: false }).addTo(map)
 	let mixed = {
 		'districtLayer': districtLayer,
-		'heatmapLayer': heatmapLayer,
+		'HeatMapInLayer': heatmapinLayer,
+		'HeatMapOutLayer': heatmapoutLayer,
 		'equaltimeLayer': equaltimeLayer,
 	}
 	const controller = L.control.layers(baseLayers, mixed).addTo(map);
@@ -139,14 +153,26 @@ export const selected = ref([]);
 	// watch
 	watch(
 		[hours, dates, center, scale],
-		async () => {
-			if(!map.hasLayer(heatmapLayer)){
-			  console.log("HeatMap不需要更新")
+		async () => {                                                                                                      
+			if(!map.hasLayer(heatmapoutLayer)){
+			  console.log("HeatMapOut不需要更新")
 			  return;
 			} 
-			console.log("HeatMap需要更新")
-			HeatMap.update_layer(dates.value, hours.value, center.value, scale.value);
-
+			console.log("HeatMapOut需要更新")
+			HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
+		},
+		{ deep: true }
+	);
+	
+	watch(
+		[hours, dates, center, scale],
+		async () => {                                                                                                      
+			if(!map.hasLayer(heatmapinLayer)){
+			  console.log("HeatMapIn不需要更新")
+			  return;
+			} 
+			console.log("HeatMapIn需要更新")
+			HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 		},
 		{ deep: true }
 	);
