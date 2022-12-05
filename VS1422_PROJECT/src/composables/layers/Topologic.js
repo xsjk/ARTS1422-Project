@@ -69,12 +69,12 @@ export function generate_layer(data, map) {
     ));
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
+    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
     for (const {source, target, value} of data) matrix[index.get(source)][index.get(target)] += value;
 
-    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
 
 
     // console.log("map", map);
@@ -159,6 +159,7 @@ export function update_layer(data, map) {
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
+    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
@@ -190,7 +191,9 @@ export function update_layer(data, map) {
 
 
     console.log(g2)
-    g2.selectAll(".chord")
+    // clear g2
+    g2.selectAll("path").remove();
+    g2.selectAll("path")
         .data(chords)
         .join("path")
         .style("mix-blend-mode", "multiply")
