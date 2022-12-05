@@ -223,7 +223,7 @@ class time_map:
             data = np.add(data, time_map_departure[district_town_id_to_index[str(town)]])
         total_max = np.max(np.max(data))
         total_min = np.min(np.min(data))
-        total_k = 1.0 / total_max - total_min
+        total_k = 1.0 / (total_max - total_min)
         data = (data - total_min) * total_k
         return data.tolist()
 
@@ -233,7 +233,7 @@ class time_map:
             data = np.add(data, time_map_arrive[district_town_id_to_index[str(town)]])
         total_max = np.max(np.max(data))
         total_min = np.min(np.min(data))
-        total_k = 1.0 / total_max - total_min
+        total_k = 1.0 / (total_max - total_min)
         data = (data - total_min) * total_k
         return data.tolist()
 
