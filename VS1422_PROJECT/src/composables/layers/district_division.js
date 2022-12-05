@@ -15,7 +15,7 @@ export function generate_layer(data,map) {
 				d > 20   ? '#FEB24C' :
 				d > 10   ? '#FED976' : '#FFEDA0';
 		}
-	
+
 		function style(feature) {
 			return {
 				weight: 2,
@@ -26,29 +26,29 @@ export function generate_layer(data,map) {
 				fillColor: getColor(feature.properties.density)
 			};
 		}
-		
+
 		// control that shows state info on hover
 		const info = L.control.scale({
 			position:'bottomright',
 			maxWidth:'100',
 			imperial:true
 		});
-		
+
 		info.onAdd = function (map) {
 			this._div = L.DomUtil.create('div', 'info');
 			this.update();
 			return this._div;
 		};
-		
+
 		info.update = function (props) {
-			var texts = props ? `<b>${props.name}</b><br />${props.density} 流量` : 'Hover over a state';
+			var texts = props ? `<b>${props.name}</b>` : 'Please hover over a region.';
 			const contents = texts.bold().fontsize(5);
 			//this._div.innerHTML = `<h4>assss</h4>${contents}`;
 			this._div.innerHTML = `${contents}`;
-			
+
 		};
 		info.addTo(map);
-		
+
 		function highlightFeature(e) {
 			console.log(e);
 			// if(e.target == lastSelection) return;
@@ -63,12 +63,12 @@ export function generate_layer(data,map) {
 			layer.bringToFront();
 			info.update(layer.feature.properties);
 		}
-		
+
 		function resetHighlight(e) {
 			if(e.target != lastSelection) geojson.resetStyle(e.target);
 			info.update();
 		}
-						
+
 		function zoomToFeature(e) {
 			if(lastSelection == e.target){
 				console.log(1234);
@@ -89,7 +89,7 @@ export function generate_layer(data,map) {
 				fillOpacity: 0.7
 			});
 		}
-						
+
 		function onEachFeature(feature, layer) {
 			layer.on({
 				mouseover: highlightFeature,
@@ -97,7 +97,7 @@ export function generate_layer(data,map) {
 				click: zoomToFeature
 			});
 		}
-	
+
 		/* global data */
 		const geojson = L.geoJson(data, {
 			style,
@@ -105,6 +105,6 @@ export function generate_layer(data,map) {
 		});
 
 		console.log('geojson',geojson);
-		
+
 		return geojson;
 }
