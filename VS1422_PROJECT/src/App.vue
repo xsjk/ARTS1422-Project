@@ -33,6 +33,7 @@
 		:cellSize="20"
 		:clock_width="270"
 		:clock_height="200"
+		:legend_width="135"
 	/>
 	</div>
 	<div class="Title"> 
