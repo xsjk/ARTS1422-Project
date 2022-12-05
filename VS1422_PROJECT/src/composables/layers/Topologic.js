@@ -49,9 +49,12 @@ const ribbon = d3.ribbonArrow()
 .padAngle(1 / innerRadius)
 
 
+var can_move_ref;
 
 
-export function generate_layer(data, map) {
+export function generate_layer(data, map, can_move) {
+
+    can_move_ref = can_move;
 
     
     console.log("generate_layer");
@@ -145,7 +148,7 @@ export function update_layer(data, map) {
     console.log("update_layer");
     console.log(data);
 
-
+    can_move_ref.value = false;
     last_view.center = map.getCenter();
     last_view.zoom = map.getZoom();
 
@@ -207,6 +210,7 @@ export function update_layer(data, map) {
 
 
 export function remove_layer(map) {
+    can_move_ref.value = true;
     map.dragging.enable();
     map.setView(last_view.center, last_view.zoom);
 }

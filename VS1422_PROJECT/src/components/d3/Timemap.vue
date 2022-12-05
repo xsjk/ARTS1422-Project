@@ -23,9 +23,9 @@ const bilinearInterpolator = func => (x, y) => {
   / ((x2 - x1) * (y2 - y1));
 }
 
-function interpolate_tiles(tile, n) {
+function interpolate_tiles(tile, n, m) {
   return d3.range(0, tile.length-1, 1/n).map(y => (
-      d3.range(0, tile[0].length-1, 1/n).map(x => {
+      d3.range(0, tile[0].length-1, 1/m).map(x => {
       const interpolate = bilinearInterpolator((i, j) => tile[j][i])
       return interpolate(x, y);
       })
@@ -53,13 +53,14 @@ const props = defineProps({
 
 const container = ref(null);
 
-function grid() {
+function grid(h,w) {
 	var canvas = container.value;
+	
 		var context = canvas.getContext("2d");
 		 //水平标尺与canvas的距离
-		var HORIZONTAL_AXIS_MARGIN = 5;
+		var HORIZONTAL_AXIS_MARGIN = 50;
 		 //竖直标尺与canvas的距离
-		var VERTICAL_AXIS_MARGIN = 5;
+		var VERTICAL_AXIS_MARGIN = 50;
 		 //标尺起点
 		var AXIS_ORIGIN = {
 			x: HORIZONTAL_AXIS_MARGIN,
@@ -70,8 +71,8 @@ function grid() {
 		 //坐标的长度
 		var AXIS_RIGHT = canvas.width - HORIZONTAL_AXIS_MARGIN;
 		 //小标记的间隔
-		var HORIZONTAL_TICK_SPACING = 5;
-		var VERTICAL_TICK_SPACING = 5;
+		var HORIZONTAL_TICK_SPACING = w/24/2;
+		var VERTICAL_TICK_SPACING = 10;
 		 //坐标标记的范围
 		var AXIS_WIDTH = AXIS_RIGHT - AXIS_ORIGIN.x;
 		var AXIS_HEIGHT = AXIS_ORIGIN.y - AXIS_TOP;
@@ -79,18 +80,18 @@ function grid() {
 		var NUM_VERTICAL_TICKS = AXIS_HEIGHT / VERTICAL_TICK_SPACING;
 		 //横向标记数值
 		var NUM_HORIZONTAL_TICKS = AXIS_WIDTH / HORIZONTAL_TICK_SPACING;
-		var TICK_WIDTH = 1;
+		var TICK_WIDTH = 10;
 		 //标牌和坐标轴之间的距离
-		var SPACE_BETWEEN_ABELS_AND_AXIS = 2;
+		var SPACE_BETWEEN_ABELS_AND_AXIS = 20;
  
 		function drawAxes() {
 			context.save();
-			context.lineWidth = 0.1;
-			// context.fillStyle = "rgba(100, 140, 230, 0.8)";
+			context.lineWidth = 1.0;
+			context.fillStyle = "rgba(100, 140, 230, 0.8)";
 			context.strokeStyle = "navy";
 			drawHorizontalAxis();
 			drawVerticalAxis();
-			context.lineWidth = 0.05;
+			context.lineWidth = 0.5;
 			context.strokeStyle = "navy";
 			context.strokeStyle = "darkred";
 			drawVerticalAxisTicks();
@@ -184,7 +185,7 @@ function grid() {
 		}
 
 		function drawGrid(color, stepx, stepy) {
-			context.save()
+			// context.save()
 			context.strokeStyle = color;
 			// context.fillStyle = '#ffffff';
 			context.lineWidth = 0.5;
@@ -203,14 +204,18 @@ function grid() {
 			}
 			context.restore();
 		}
-		context.font = "13px Arial";
-		drawGrid("lightgray", 10, 10);
+
+		
+		context.font = "11px Arial";
+		drawGrid("lightgray", w/24, h/183*7)
 		context.shadowColor = "rgba(100, 140, 230, 0.8)";
-		context.shadowOffsetX = 0.3;
-		context.shadowOffsetY = 0.3;
-		context.shadowBlur = 0.5;
+		context.shadowOffsetX = 1;
+		context.shadowOffsetY = 1;
+		context.shadowBlur = 2;
 		drawAxes();
 		drawAxisLabels();
+
+
 
 }
 
@@ -222,8 +227,8 @@ function update() {
 		color
 	} = props;
 
-	container.value.style.width = `${width}px`;
-	container.value.style.height = `${height}px`;
+	// container.value.style.width = `${width}px`;
+	// container.value.style.height = `${height}px`;
 
 	container.value.addEventListener('mousemove', (e) => {
 		const rect = container.value.getBoundingClientRect();
@@ -234,16 +239,32 @@ function update() {
 		console.log(hour, day);
 	});
 
+	const px = 50;
+	const py = 50;
 
-	const tiles = interpolate_tiles(data, 1);
+	const img_height = height - 2*py;
+	const img_width = width - 2*px;
+
+	if (img_height <= 0 || img_width <= 0) {
+		return;
+	}
+	
+
+	const tiles = interpolate_tiles(data, img_height / 183, img_width / 24);
 	if (tiles.length === 0) {
 		console.log("empty tiles");
 		return;
 	}
+	console.log(tiles);
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
-	container.value.width = shape.x;
-	container.value.height = shape.y;
+
+	console.log(shape);
+	console.log(height, width);
+	console.log(img_height, img_width);
+
+	container.value.width = width
+	container.value.height = height
 	const context = container.value.getContext("2d");
 	const img = context.createImageData(shape.x, shape.y);
 	const flat = [].concat.apply([], tiles);
@@ -259,8 +280,9 @@ function update() {
 		img.data[(i*tiles[0].length+j)*4+3] = 255;
 		});
 	});
-	context.putImageData(img, 0, 0);
-	grid();
+
+	context.putImageData(img, px, py);
+	grid(img_width, img_height)
 
 }
 

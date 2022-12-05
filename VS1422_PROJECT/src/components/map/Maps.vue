@@ -4,8 +4,10 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
+export const selected_districts = ref([]);
 export const distance = ref(10);
-
+export const global_map = ref(null);
+export const can_move = ref(true);
 </script>
 
 <script setup>
@@ -16,6 +18,7 @@ export const distance = ref(10);
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
 	import { hours, dates } from '../d3/Calendar.vue';
+
 
 	import * as d3 from 'd3';
 	import L from 'leaflet';
@@ -91,10 +94,11 @@ export const distance = ref(10);
 		attributionControl:false,
 		layers: [streets]
 	})
+	global_map.value = map;
 
-	let districtLayer = DistrictMap.generate_layer(data, map);
+	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move); 
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map);
+	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
 	
@@ -126,6 +130,7 @@ export const distance = ref(10);
 	var marker = L.marker(center.value);
 	marker.addTo(map);
 	map.on('click', async(e) => {
+		if(!can_move.value) return;
 		//console.log(e);
 		var popup = L.popup()
 			.setContent(marker)
@@ -213,7 +218,19 @@ export const distance = ref(10);
 			}
 		},
 		{ deep: true }
+	);
+
+
+	watch(
+		[selected_districts],
+		async () => {
+			console.log("TimeMap需要更新")
+			console.log(selected_districts.value)
+			timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);
+		},
+		{ deep: true }
 	)
+	
 	
 
 

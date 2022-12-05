@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 // import {Calendar,PieChart} from "../../composables/d3/calendar/calendar"
 import {Legend} from "../../composables/d3/calendar/test"
 import { ref } from 'vue';
-
+import { can_move } from '../map/Maps.vue';
 const props = defineProps({
   data: {
 	type: Array,
@@ -453,9 +453,11 @@ export function PieChart(data, {
 	  mousedown = true;
   })
   .on('mouseup', function(current){
+	if (!can_move.value) return;
 		console.log("mouseup");
 		console.log("old", hours.value)
 		console.log("new", times);
+		
 		hours.value = Object.create(times);
 		mousedown = false;
 	})
