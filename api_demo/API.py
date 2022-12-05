@@ -7,6 +7,7 @@ import json
 months  = [5,6,7,8,9,10]
 days = [31,30,31,31,30,31]
 index = 0
+index_to_districts_names = ['海秀镇','西秀镇','海秀街道','长流镇','东山镇','永兴镇','石山镇','秀英街道','龙桥镇','金宇街道','大同街道','龙泉镇','城西镇','新坡镇','遵谭镇','海垦街道','滨海街道','金贸街道','中山街道','龙塘镇','府城街道','旧州镇','云龙镇','大坡镇','红旗镇','甲子镇','三门坡镇','滨江街道','凤翔街道','国兴街道','白沙街道','三江镇','白龙街道','博爱街道','新埠街道','海府街道','蓝天街道','人民路街道','和平南街道','灵山镇','演丰镇','大致坡镇','海甸街道']
 
 #loading data
 total_data = pd.read_pickle('./data/data.pkl')
@@ -223,7 +224,7 @@ class time_map:
             data = np.add(data, time_map_departure[district_town_id_to_index[str(town)]])
         total_max = np.max(np.max(data))
         total_min = np.min(np.min(data))
-        total_k = 1.0 / total_max - total_min
+        total_k = 1.0 / (total_max - total_min)
         data = (data - total_min) * total_k
         return data.tolist()
 
@@ -233,14 +234,25 @@ class time_map:
             data = np.add(data, time_map_arrive[district_town_id_to_index[str(town)]])
         total_max = np.max(np.max(data))
         total_min = np.min(np.min(data))
-        total_k = 1.0 / total_max - total_min
+        total_k = 1.0 / (total_max - total_min)
         data = (data - total_min) * total_k
         return data.tolist()
 
 class topological_graph:
-    def draw_topological_graph(days:list[int], hours:list[int])->list[list[int]]:
+    def draw_topological_graph(self, days:list[int], hours:list[int])->list[list[int]]:
+        if days == []:  
+            days = list(range(184))
+        if hours == []:
+            hours = list(range(24))
+        ans = []
         result = np.zeros((43,43))
         for day in days:
             for hour in hours:
                 result += topological_graph_data[day][hour]
-        return result.tolist()
+        total_data = np.sum(result)
+        for start in range(43):
+            for end in range(43):
+                if result[start][end] >= total_data*0.0035:
+                    ans.append({'source':index_to_districts_names[start], 'target':index_to_districts_names[end], 'value':result[start][end]})
+        return ans
+    

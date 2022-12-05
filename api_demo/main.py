@@ -17,7 +17,8 @@ def apiDeco(rule):
         @functools.wraps(func)
         def decoratedFunc():
             argsDict = inspect.get_annotations(func)
-            print("\033[1;31;40m>>>>>>>>")
+            print("\033[1;32;40m>>>>>>>>")
+            print(func.__name__, "\033[1;31;40m")
             print(argsDict)
             if "return" in argsDict:
                 del argsDict["return"]

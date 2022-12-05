@@ -399,17 +399,19 @@ export function PieChart(data, {
 	  .attr('stroke', 'white')
 	  .attr('stroke-width', 0.5)
 	.attr('noclicked',true)
-	.on('click', function(I,i){
+	.on('mousedown', function(I,i){
+		mousedown = true;
 		var noclicked = this.getAttribute('noclicked') == 'true';
 		if(noclicked == true){
+			console.log('push');
 			times.push(i.data);
-			console.log(111);
 			d3.select(this)
 			.attr('opacity', 1)
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
 			.attr('noclicked', false)
 		} else {
+			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
 			.attr('opacity', 0.5)
@@ -418,21 +420,20 @@ export function PieChart(data, {
 			.attr('noclicked', true)
 		}
 	})
-	.on('mousedown', function(d){
-		mousedown = true;
-	})
 	.on('mouseover', function(I,i){
 		if(!mousedown) return;
 		var noclicked = this.getAttribute('noclicked') == 'true';
 		if(noclicked == true){
+			console.log('push');
 			times.push(i.data);
-			console.log(111);
+			console.log(hours.value);
 			d3.select(this)
 			.attr('opacity', 1)
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
 			.attr('noclicked', false)
 		} else {
+			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
 			.attr('opacity', 0.5)
@@ -453,17 +454,18 @@ export function PieChart(data, {
 	  mousedown = true;
   })
   .on('mouseup', function(current){
-	console.log("old"+hours.value);
-	console.log("new"+times);
-	hours.value = times;
-	mousedown = false;
-  })
+		console.log("mouseup");
+		console.log("old", hours.value)
+		console.log("new", times);
+		hours.value = Object.create(times);
+		mousedown = false;
+	})
   .on('keyup', function(current){
 	    //console.log(current);
-	  	if(current.key != "Shift") return;
-		console.log("old"+hours.value);
-		console.log("new"+times);
-		hours.value = times;
+		console.log("keyup");
+		console.log("old", hours.value)
+		console.log("new", times)
+		hours.value = Object.create(times);
 		mousedown = false;
 	});
 
@@ -485,7 +487,8 @@ export function PieChart(data, {
       .attr("y", (_, i) => `${i * 0.9}em`)
       .attr("font-weight", (_, i) => i ? null : "bold")
       .text(d => d)
-	  .attr("readOnly", "true");
+	  .attr("readOnly", "true")
+	  .attr("style", "user-select: none; pointer-events: none")
 
   return Object.assign(svg.node(), {scales: {color}});
 }
