@@ -3,10 +3,22 @@ import { color } from 'd3';
 import L from 'leaflet';
 
 
+const svg = d3.create('svg')
+            .attr('viewBox', '0 0 925 550');
+const bg_rect  = svg.append("rect")
+                    .attr("fill", "white")
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .attr("opacity", 0.8);
+            
+const g1 = svg.append("g")
+            .attr("font-size", 10)
+            .attr("font-family", "sans-serif")
+            .attr("transform", "translate(467, 275)")
+const g2 = svg.append("g").attr("fill-opacity", 0.75).attr("transform", "translate(467, 275)");
 
-var svg = d3.create('svg');
-svg.attr('viewBox', '0 0 925 550');
-var g;
+
+var last_view
 var svgElementBounds = [ [20.1, 110.100], [19.5, 110.700] ];
 var layer = L.svgOverlay(
     svg.node(), svgElementBounds, {
@@ -15,60 +27,53 @@ var layer = L.svgOverlay(
     }
 );
 
-export function generate_layer(data,map) {
-    console.log(map.getPixelBounds());
-    layer.setBounds(map.getBounds());
 
-    console.log(layer);
+var innerRadius = 200;
+var outerRadius = 220;
 
-    // var lat_to_y = d3.scaleLinear().domain([map.getBounds()._southWest.lat, map.getBounds()._northEast.lat]).range([map.getPixelBounds().max.y, map.getPixelBounds().min.y]);
-    // var lng_to_x = d3.scaleLinear().domain([map.getBounds()._southWest.lng, map.getBounds()._northEast.lng]).range([map.getPixelBounds().min.x, map.getPixelBounds().max.x]);
-	
+export function generate_layer(data, map) {
+    last_view = {
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+    }
 
-    // g = svg.append('g')
-	// 				.attr('transform',`translate(${(lng_to_x(map.getCenter().lng) - map.getPixelBounds().min.x) * Math.pow(2,(map.getZoom() - 10))}, ${(lat_to_y(map.getCenter().lat) - map.getPixelBounds().min.y) * Math.pow(2,(map.getZoom() - 10))})`);
-
-
-    
-	// var k = (map.getPixelBounds().max.x -map.getPixelBounds().min.x) / (map.getBounds()._northEast.lng - map.getBounds()._southWest.lng);
-	// var start_rad = Math.PI / 2;
-	// var delta_rad = 2 * Math.PI / data.length;
-	// g.selectAll('path')
-	// 		.data(data)
-	// 		.join("path")
-	// 		.attr("d", (d,i)=>{
-	// 			return d3.arc()
-	// 					.innerRadius(0)
-	// 					.outerRadius(d * k)
-	// 					.startAngle(start_rad - i * delta_rad)
-	// 					.endAngle(start_rad - (i + 1) * delta_rad)()
-	// 		})
-	// 		.attr('fill', "green")
-	// 		.attr('opacity',0.4)
-	// 		.attr('stroke-width',1)
-	// 		.attr('stroke','black')
-	// 		.attr('stroke-opacity',1.0)
-	// return layer;	
+    return layer;
+}
 
 
+export function update_layer(data, map) {
+    console.log("update_layer");
+    map.setView([19.855845697571294, 110.39339405963088], 10);
+    layer.setBounds(L.latLngBounds(
+        L.latLng(19.500253226982274, 109.75753784179689),
+        L.latLng(20.210656234489853, 111.02783203125001)
+    ));
+    console.log("map", map);
+    console.log("layer", layer);
+    console.log("svg", svg);
 
-    innerRadius = 100;
-
+    const districts = new Set();
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
-    for (const {source, target, value} of data) matrix[index.get(source)][index.get(target)] += value;
+    console.log("matrix", matrix);
+    for (const {source, target, value} of data) {
+        districts.add(source, target);
+        matrix[index.get(source)][index.get(target)] += value;
+    }
+
+    console.log("districts", districts);
 
     const chord = d3.chordDirected()
-    .padAngle(10 / innerRadius)
-    .sortSubgroups(d3.descending)
-    .sortChords(d3.descending)
+                    .padAngle(10 / innerRadius)
+                    .sortSubgroups(d3.descending)
+                    .sortChords(d3.descending)
 
-    const arc = d3.arc()
-    .innerRadius(innerRadius)
-    .outerRadius(outerRadius)
+    const arc   = d3.arc()
+                    .innerRadius(innerRadius)
+                    .outerRadius(outerRadius)
 
     const ribbon = d3.ribbonArrow()
     .radius(innerRadius - 1)
@@ -76,18 +81,17 @@ export function generate_layer(data,map) {
 
     const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
 
-    
-    const svg = d3.create("svg")
-        .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
     const chords = chord(matrix);
 
-    const group = svg.append("g")
-        .attr("font-size", 10)
-        .attr("font-family", "sans-serif")
-        .selectAll("g")
-        .data(chords.groups)
-        .join("g");
+    console.log(chords)
+
+    const group = g1.selectAll("g")
+                    .data(chords.groups)
+                    .join("g");
+
+    console.log("group",group);
+
 
     group.append("path")
         .attr("fill", d => color(names[d.index]))
@@ -104,13 +108,13 @@ export function generate_layer(data,map) {
         .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
         .text(d => names[d.index]);
 
+    group.attr("id", d => `${names[d.index]}`);
     group.append("title")
         .text(d => `${names[d.index]}
     ${d3.sum(chords, c => (c.source.index === d.index) * c.source.value)} outgoing →
     ${d3.sum(chords, c => (c.target.index === d.index) * c.source.value)} incoming ←`);
 
-    svg.append("g")
-        .attr("fill-opacity", 0.75)
+    g2
         .selectAll("path")
         .data(chords)
         .join("path")
@@ -120,39 +124,5 @@ export function generate_layer(data,map) {
         .append("title")
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
 
-
-    return svg.node();
-}
-
-
-
-export function update_layer(data, map) {
-    // console.log(map);
-	// // console.log(map.getBounds());
-	// // console.log(map.getPixelBounds());
-	// console.log(map.getCenter());
-	// var lat_to_y = d3.scaleLinear().domain([map.getBounds()._southWest.lat, map.getBounds()._northEast.lat]).range([map.getPixelBounds().max.y, map.getPixelBounds().min.y]);
-	// var lng_to_x = d3.scaleLinear().domain([map.getBounds()._southWest.lng, map.getBounds()._northEast.lng]).range([map.getPixelBounds().min.x, map.getPixelBounds().max.x]);
-	// console.log(lng_to_x(map.getCenter().lng) - map.getPixelBounds().min.x);
-	// console.log(lat_to_y(map.getCenter().lat) - map.getPixelBounds().min.y);
-	// g.attr('transform',`translate(${(lng_to_x(map.getCenter().lng) - map.getPixelBounds().min.x) * Math.pow(2,(map.getZoom() - 10))}, ${(lat_to_y(map.getCenter().lat) - map.getPixelBounds().min.y)* Math.pow(2,(map.getZoom() - 10))})`);
-	// var k = (map.getPixelBounds().max.x -map.getPixelBounds().min.x) / (map.getBounds()._northEast.lng - map.getBounds()._southWest.lng);
-	// var start_rad = Math.PI / 2;
-	// var delta_rad = 2 * Math.PI / data.length;
-	// g.selectAll('path')
-	// 		.data(data)
-	// 		.join("path")
-	// 		.attr("d", (d,i)=>{
-	// 			return d3.arc()
-	// 					.innerRadius(0)
-	// 					.outerRadius(d * k)
-	// 					.startAngle(start_rad - i * delta_rad)
-	// 					.endAngle(start_rad - (i + 1) * delta_rad)()
-	// 		})
-	// 		.attr('fill', "green")
-	// 		.attr('opacity',0.4)
-	// 		.attr('stroke-width',1)
-	// 		.attr('stroke','black')
-	// 		.attr('stroke-opacity',1.0)
 
 }

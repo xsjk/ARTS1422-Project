@@ -398,26 +398,48 @@ export function PieChart(data, {
 	  .attr('stroke', 'white')
 	  .attr('stroke-width', 0.5)
 	.attr('noclicked',true)
-		.on('mouseover', function(I,i){
-			if(!mousedown) return;
-			var noclicked = this.getAttribute('noclicked') == 'true';
-			if(noclicked == true){
-				times.push(i.data);
-				console.log(111);
-				d3.select(this)
-				.attr('opacity', 1)
-				.attr('stroke', 'black')
-				.attr('stroke-width', 1)
-				.attr('noclicked', false)
-			} else {
-				times = times.filter(d => d!=i.data)
-				d3.select(this)
-				.attr('opacity', 0.5)
-				.attr('stroke', 'white')
-				.attr('stroke-width', 0.5)
-				.attr('noclicked', true)
-			}
-		})
+	.on('click', function(I,i){
+		var noclicked = this.getAttribute('noclicked') == 'true';
+		if(noclicked == true){
+			times.push(i.data);
+			console.log(111);
+			d3.select(this)
+			.attr('opacity', 1)
+			.attr('stroke', 'black')
+			.attr('stroke-width', 1)
+			.attr('noclicked', false)
+		} else {
+			times = times.filter(d => d!=i.data)
+			d3.select(this)
+			.attr('opacity', 0.5)
+			.attr('stroke', 'white')
+			.attr('stroke-width', 0.5)
+			.attr('noclicked', true)
+		}
+	})
+	.on('mousedown', function(d){
+		mousedown = true;
+	})
+	.on('mouseover', function(I,i){
+		if(!mousedown) return;
+		var noclicked = this.getAttribute('noclicked') == 'true';
+		if(noclicked == true){
+			times.push(i.data);
+			console.log(111);
+			d3.select(this)
+			.attr('opacity', 1)
+			.attr('stroke', 'black')
+			.attr('stroke-width', 1)
+			.attr('noclicked', false)
+		} else {
+			times = times.filter(d => d!=i.data)
+			d3.select(this)
+			.attr('opacity', 0.5)
+			.attr('stroke', 'white')
+			.attr('stroke-width', 0.5)
+			.attr('noclicked', true)
+		}
+	})
 	.append("title")
 	  .text(d => title(d.data));
   ///////////////////
@@ -429,6 +451,9 @@ export function PieChart(data, {
 	  console.log("mousedown");
 	  mousedown = true;
   })
+  .on('mouseup', function(current){
+	mousedown = false;
+	})
   .on('keyup', function(current){
 	    //console.log(current);
 	  	if(current.key != "Shift") return;
