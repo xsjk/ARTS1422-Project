@@ -35,7 +35,8 @@ const props = defineProps({
 const legend = computed(() => {
 	return Legend({
 	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
-	  title: "Precipitation (mm)"
+	  title: "Precipitation (mm)",
+	  width: 165
 	});
 })
 
@@ -456,13 +457,13 @@ export function PieChart(data, {
 </script>
 
 <template>
-	<div class = "calendar" style = "display: inline;float:left">
+	<div class = "calendar" style = "display: inline-flex">
 		<D3Wrapper :node="calendar"/>
 	</div>
-	<div class = "legend" style = "display: inline;">
+	<div class = "legend" style = "display: inline-flex">
 		<D3Wrapper :node="legend"/>
 	</div>
-	<div class = "clock" style = "display: inline;float:right">
+	<div class = "clock" style = "display: inline-flex">
 		<D3Wrapper :node="clock"/>
 	</div>
 </template>
@@ -473,9 +474,10 @@ export function PieChart(data, {
 	}
 	.clock{
 		background-color: cadetblue;
+		transform: translate(-110px);
 	}
 	.legend{
-		background-color: blanchedalmond;
+		transform: rotate(90deg) translate(-65px, 60px);
 	}
 	rect[noclicked=false]{
 		stroke: white;

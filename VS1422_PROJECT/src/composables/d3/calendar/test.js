@@ -3,7 +3,7 @@ export function Legend({
   color,
   title,
   tickSize = 6,
-  width = 320,
+  width = 220,
   height = 44 + tickSize,
   marginTop = 18,
   marginRight = 0,
@@ -14,6 +14,7 @@ export function Legend({
   tickValues
 } = {}) {
   const svg = d3.create("svg")
+    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", [0, 0, width, height])
