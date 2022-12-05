@@ -359,7 +359,7 @@ export function PieChart(data, {
   // Chose a default color scheme based on cardinality.
   //if (colors === undefined) colors = d3.schemeSpectral[names.size];
   //if (colors === undefined) colors = interpolateWithSteps(names.size).map(d3.interpolateRainbow);
-  if (colors === undefined) colors = d3.quantize(t => d3.interpolateRainbow(t * 1), names.size);
+  if (colors === undefined) colors = d3.quantize(t => d3.interpolate("#4819CE", "#4819CE")(t * 1), names.size);
 
   // Construct scales.
   const color = d3.scaleOrdinal(names, colors);
@@ -397,7 +397,7 @@ export function PieChart(data, {
     .join("path")
       .attr("fill", d => color(N[d.data]))
       .attr("d", arc)
-	  .attr('opacity', 0.5)
+	  .attr('opacity', 0.4)
 	  .attr('stroke', 'white')
 	  .attr('stroke-width', 0.5)
 	.attr('noclicked',true)
@@ -416,7 +416,7 @@ export function PieChart(data, {
 			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
-			.attr('opacity', 0.5)
+			.attr('opacity', 0.4)
 			.attr('stroke', 'white')
 			.attr('stroke-width', 0.5)
 			.attr('noclicked', true)
@@ -438,7 +438,7 @@ export function PieChart(data, {
 			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
-			.attr('opacity', 0.5)
+			.attr('opacity', 0.4)
 			.attr('stroke', 'white')
 			.attr('stroke-width', 0.5)
 			.attr('noclicked', true)
