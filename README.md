@@ -30,7 +30,12 @@ npm run dev
 
 ## Usage
 
++ Choose layers of interest through the panel on the top-right of the map component.
+
++ Choose days and hours of interest through the calender and the clock below the map.
+
 ## Contributors:
+
 + Sijie Xu
 + Beiming Zhang
 + Ao Lu
