@@ -3,7 +3,7 @@ import L from 'leaflet'
 import { computed, defineProps } from 'vue';
 import * as d3 from 'd3';
 import { svg } from 'd3';
-var heatmapLayer; 
+var heatmapLayer;
 export function generate_layer(data){
 	// 配置
 	var cfg = {
@@ -13,8 +13,8 @@ export function generate_layer(data){
 		'useLocalExtrema': true,
 		'gradient':	{
 					  '0': 'Black',
-					  '0.33': 'DarkRed',
-					  '0.66': 'Yellow',
+					  '0.33': 'Red',
+					  '0.66': 'Orange',
 					  '1': 'White'
 					},
 		latField: 'lat',
@@ -29,9 +29,9 @@ export async function update_layer(date, time, center_arr, scale){
 	//console.log("update_layer(" + date + ", " + time + ", " + center_arr + ", " + scale + ")")
 	var heatmapTest = await in_degree(date, time, center_arr, Math.pow(2,scale-11));
 	var radius = 0;
-	var days = (date.length!=0 ? date.length:183); 
-	var hours = (time.length!=0 ? time.length:24); 
-	radius = 0.03*Math.pow(2,10-scale);	
+	var days = (date.length!=0 ? date.length:183);
+	var hours = (time.length!=0 ? time.length:24);
+	radius = 0.03*Math.pow(2,10-scale);
 	console.log(days);
 	console.log(hours);
 	console.log(center_arr);
@@ -43,6 +43,6 @@ export async function update_layer(date, time, center_arr, scale){
 	  data: heatmapTest
 	};
 	heatmapLayer.cfg.radius = radius;
-	heatmapLayer.setData(data);	
+	heatmapLayer.setData(data);
 	return ;
 }
