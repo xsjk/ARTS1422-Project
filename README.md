@@ -43,4 +43,4 @@ npm run dev
 
 ## Reference
 
-*D3Wrapper.vue* form [Horras](https://github.com/garyzhang2002/horras/blob/main/src/components/d3/core/D3Wrapper.vue).
+*D3Wrapper.vue* form [Horras](https://github.com/yanglinshu/horras/blob/main/src/components/d3/core/D3Wrapper.vue).
