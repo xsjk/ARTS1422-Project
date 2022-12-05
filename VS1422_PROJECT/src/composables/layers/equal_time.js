@@ -18,6 +18,12 @@ var scale_lat = d3.scaleLinear().domain([max_lat, min_lat]).range([0,ViewBox]);
 var scale_lng = d3.scaleLinear().domain([min_lng, max_lng]).range([0,ViewBox]);
 var k = ViewBox / (max_lat - min_lat);
 
+// control that shows state info on hover
+const selection = L.control.scale({
+	position:'bottomleft',
+	maxWidth:'100',
+	imperial:true
+});
 
 export function generate_layer(data, map){
 	svgElement.attr('viewBox', `0 0 ${ViewBox} ${ViewBox}`)
@@ -53,12 +59,10 @@ export function generate_layer(data, map){
 }
 
 export async function update_layer(map, selected, dates, hours) {
-
 	g.attr('transform', `translate(${scale_lng(selected[0])-2},${scale_lat(selected[1])-23})`);
-	g.selectAll('path').attr('opacity',0);
-
-	
-	var data = await k_min_isochrone([10], [selected[0],selected[1]], dates, hours)
+	g.selectAll('path').attr('opacity',0);	
+	console.log(selected[0],selected[1]);
+	var data = await k_min_isochrone([10], [selected[0],selected[1]], dates, hours);
 
 	var start_rad = Math.PI / 2;
 	var delta_rad = 2 * Math.PI / data[0].length;
@@ -77,4 +81,25 @@ export async function update_layer(map, selected, dates, hours) {
 			.attr('stroke-width',1)
 			.attr('stroke','black')
 			.attr('stroke-opacity',1.0)
+}
+
+export function generate_selection(map){
+	const svg = d3.create("svg")
+				.attr("id", "selection")
+				.attr("width",100)
+				.attr("height",100)
+				.style("background","black")
+	console.log("打算add selection")
+	selection.onAdd = function (map) {
+		this._div = L.DomUtil.get(svg);
+		//this.update();
+		return this._div;
+	};
+	selection.addTo(map);
+}
+
+export function remove_selection(map){
+	console.log(selection);
+	selection.remove();
+	//selection.removeFrom(map);
 }

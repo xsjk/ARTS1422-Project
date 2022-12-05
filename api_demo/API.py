@@ -237,5 +237,3 @@ class time_map:
         return data.tolist()
 
 
-a=isochrone_graph()
-print(a.k_min_isochrone([10],[110.32,20.03],[0,1,2,3],[5,6,7,8]))
