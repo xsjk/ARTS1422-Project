@@ -336,7 +336,7 @@ export function PieChart(data, {
   height = 400, // outer height, in pixels
   innerRadius = 300, // inner radius of pie, in pixels (non-zero for donut)
   outerRadius = Math.min(width, height) / 2, // outer radius of pie, in pixels
-  labelRadius = (innerRadius * 0.2 + outerRadius * 0.5), // center.value radius of labels
+  labelRadius = (innerRadius * 0.65 + outerRadius * 0.5), // center.value radius of labels
   format = ",", // a format specifier for values (in the label)
   names, // array of names (the domain of the color scale)
   colors, // array of colors for names
@@ -524,5 +524,5 @@ export function PieChart(data, {
 	text{
 		fill: gold;
 	}
-	
+
 </style>
