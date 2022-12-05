@@ -2,6 +2,8 @@ import HeatmapOverlay from 'heatmap.js/plugins/leaflet-heatmap'
 import L from 'leaflet'
 //import D3Wrapper from './d3/D3Wrapper.vue';
 
+var selected = false;
+var lastSelection;
 export function generate_layer(data,map) {
 		// get color depending on population density value
 		function getColor(d) {
@@ -17,51 +19,74 @@ export function generate_layer(data,map) {
 		function style(feature) {
 			return {
 				weight: 2,
-				opacity: 1,
+				opacity: 0.1,
 				color: 'white',
 				dashArray: '3',
-				fillOpacity: 0.7,
+				fillOpacity: 0.2,
 				fillColor: getColor(feature.properties.density)
 			};
 		}
 		
-		// // control that shows state info on hover
-		// const info = L.control();
+		// control that shows state info on hover
+		const info = L.control.scale({
+			position:'bottomright',
+			maxWidth:'100',
+			imperial:true
+		});
 		
-		// info.onAdd = function (map) {
-		// 	this._div = L.DomUtil.create('div', 'info');
-		// 	this.update();
-		// 	return this._div;
-		// };
+		info.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info');
+			this.update();
+			return this._div;
+		};
 		
-		// info.update = function (props) {
-		// 	const contents = props ? `<b>${props.name}</b><br />${props.density} people / mi<sup>2</sup>` : 'Hover over a state';
-		// 	this._div.innerHTML = `<h4>US Population Density</h4>${contents}`;
-		// };
-		// info.addTo(map);
+		info.update = function (props) {
+			var texts = props ? `<b>${props.name}</b><br />${props.density} 流量` : 'Hover over a state';
+			const contents = texts.bold().fontsize(5);
+			//this._div.innerHTML = `<h4>assss</h4>${contents}`;
+			this._div.innerHTML = `${contents}`;
+			
+		};
+		info.addTo(map);
 		
 		function highlightFeature(e) {
+			// if(e.target == lastSelection) return;
 			const layer = e.target;
-	
 			layer.setStyle({
 				weight: 5,
-				color: '#666',
+				color: '#663408',
+				opacity:0.7,
 				dashArray: '',
-				fillOpacity: 0.7
+				//fillOpacity: 0.7
 			});
-	
 			layer.bringToFront();
-	
-			//info.update(layer.feature.properties);
+			info.update(layer.feature.properties);
 		}
 		
 		function resetHighlight(e) {
-			geojson.resetStyle(e.target);
-			//info.update();
+			if(e.target != lastSelection) geojson.resetStyle(e.target);
+			info.update();
 		}
 						
 		function zoomToFeature(e) {
-			map.fitBounds(e.target.getBounds());
+			if(lastSelection == e.target){
+				console.log(1234);
+				geojson.resetStyle(lastSelection);
+				lastSelection = null;
+				return;
+			}
+			if(lastSelection != null){
+				geojson.resetStyle(lastSelection);
+			}
+			map.flyTo(e.target.getCenter(),10);
+			//map.fitBounds(e.target.getBounds());
+			lastSelection = e.target;
+			lastSelection.setStyle({
+				weight: 10,
+				dashArray: '',
+				fillColor: '#663408',
+				fillOpacity: 0.7
+			});
 		}
 						
 		function onEachFeature(feature, layer) {

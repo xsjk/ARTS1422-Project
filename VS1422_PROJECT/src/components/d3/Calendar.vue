@@ -3,7 +3,7 @@ import D3Wrapper from './D3Wrapper.vue';
 import { computed } from 'vue';
 import * as d3 from 'd3';
 // import {Calendar,PieChart} from "../../composables/d3/calendar/calendar"
-import {Legend} from "../../composables/d3/calendar/color-legend"
+import {Legend} from "../../composables/d3/calendar/test"
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -17,39 +17,33 @@ const props = defineProps({
   },
   cellSize: {
 	type: [Number, String],
-	default: null, 
+	default: null,
   },
   clock_width:{
 	type: [Number, String],
-	default: null, 
+	default: null,
   },
   clock_height:{
 	  type: [Number, String],
-	  default: null, 
-  }
+	  default: null,
+  },
+  legend_width:{
+	  type: [Number, String],
+	  default: null,
+  },
 });
 
 // 在这里搞legend， legend的template写在了下面，搞完记得在这里的style给3个div调下位置
 // 现在调用的函数时composables里的color-legend.jsx, d3上找的，它自带的映射不是很好用
 // 如果想要看原图，把下面的legend的div注释掉应该就行
 const legend = computed(() => {
-	const colors = d3.interpolate("#eafffa", "#00004f");
-	const weatherMap = {
-	    "多云": 0.0,
-	    "小到中雨": 0.2,
-	    "阵雨": 0.3,
-	    "中雨": 0.4,
-	    "雷阵雨": 0.5,
-	    "中到大雨": 0.6,
-	    "大雨": 0.7,
-	    "大到暴雨": 0.8,
-	    "暴雨": 0.9,
-	    "大暴雨": 1.0,
-	};
-	const test = [0.0,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
-	return Legend(d3.scaleSequential([0, 1], colors),{
-		title: "Unemployment rate (%)",
-		tickSize: 0
+	let {
+		legend_width,
+	} = props;
+	return Legend({
+	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
+	  title: "Precipitation (mm)",
+	  width: legend_width
 	});
 })
 
@@ -60,11 +54,11 @@ const calendar = computed(() => {
 	calendar_width,
 	cellSize
   } = props;
-  
+
   // 从淡蓝到深蓝,第一个是黄色
   //const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
   const colors = d3.interpolate("#eafffa", "#00004f");
-  
+
   return Calendar(data, {
 	x: d => d.date,
 	y: d => d.price,
@@ -90,7 +84,7 @@ const clock = computed(() => {
 		{'hour': 18},{'hour': 19},{'hour': 20},
 		{'hour': 21},{'hour': 22},{'hour': 23},
 	]
-	
+
 	return PieChart(data,{
 	name: d => d.hour,
 	value: d => 1,
@@ -98,25 +92,6 @@ const clock = computed(() => {
 	height: clock_height
 	})
 });
-
-
-
-
-
-
-// watch timemapData
-// watch(
-// 	timemapData,
-// 	(newVal, oldVal) => {
-// 		console.log("watch timemapData")
-// 		console.log(newVal)
-// 		console.log(oldVal)
-// 	},
-// 	{ deep: true }
-// )
-
-
-
 
 </script>
 
@@ -214,7 +189,7 @@ export function Calendar(data, {
 
   let xScale = i => (timeWeek.count(d3.utcYear(X[i]), X[i]) - timeWeek.count(d3.utcYear(X[0]), X[0])) * cellSize + 0.5;
   let yScale = i => countDay(X[i].getUTCDay()) * cellSize + 0.5
-  
+
   const cell = year.append("g")
 	.selectAll("rect")
 	.data(weekday === "weekday"
@@ -224,7 +199,7 @@ export function Calendar(data, {
 	  .attr("width", cellSize - 1)
 	  .attr("height", cellSize - 1)
 	  .attr("x", i => xScale(i))
-	  .attr("y", i => yScale(i)) 
+	  .attr("y", i => yScale(i))
 	  .attr("fill", i => color(Y[i]))
 	  .attr('opacity', 1)
 	  .attr('stroke', 'white')
@@ -248,7 +223,7 @@ export function Calendar(data, {
 			.attr('noclicked', true)
 		}
 	})
-	
+
   const month = year.append("g")
 	.selectAll("g")
 	.data(([, I]) => d3.utcMonths(d3.utcMonth(X[I[0]]), X[I[I.length - 1]]))
@@ -265,7 +240,7 @@ export function Calendar(data, {
 	  //.attr("x", d => timeWeek.count(d3.utcYear(d), d3.utcMonth(X[0[0]])) * cellSize - 5)
 	  .attr("y", -5)
 	  .text(formatMonth);
-  
+
   // brush内容
   const brush = d3.brush()
 	  .extent([[30,10], [width-60,height-10]])
@@ -286,15 +261,15 @@ export function Calendar(data, {
 	//   .attr("width", 0.2*cellSize)
 	//   .attr("height", 0.2*cellSize)
 	//   .attr("x", i => xScale(i))
-	//   .attr("y", i => yScale(i)) 
+	//   .attr("y", i => yScale(i))
 	//   .attr('opacity', 0)
  //  if (title) cell_2.append("title")
 	//  .text(title);
 
-  
+
   // brush 相关函数
   function OnStart({selection}){
-	if (selection) 
+	if (selection)
 	if (selection[0][0]==selection[1][0] && selection[1][1]==selection[0][1])
 	{
 		const [x, y] = selection[0];
@@ -336,8 +311,8 @@ export function Calendar(data, {
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
 			.attr('noclicked',false)
-			.data(); 
-	} 
+			.data();
+	}
 	svg.property("days", days).dispatch("input");
   };
   async function OnEnd({selection}){
@@ -345,7 +320,7 @@ export function Calendar(data, {
 	// console.log(days);
 	dates.value = days;
   };
-  
+
   return Object.assign(svg.node(), {scales: {color}});
 }
 
@@ -401,7 +376,7 @@ export function PieChart(data, {
   const arcs = d3.pie().padAngle(padAngle).sort(null).value(i => V[i])(I);
   const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
   const arcLabel = d3.arc().innerRadius(labelRadius).outerRadius(labelRadius);
-  
+
   const svg = d3.create("svg")
       .attr("width", width)
       .attr("height", height)
@@ -448,7 +423,7 @@ export function PieChart(data, {
   ///////////////////
   //////////////////
   //////////////////
-  ////////屏幕检测鼠标行为  
+  ////////屏幕检测鼠标行为
   d3.select("body").on('keydown',function(current){
 	  if(current.key != "Shift") return;
 	  console.log("mousedown");
@@ -462,7 +437,7 @@ export function PieChart(data, {
 		console.log(hours.value);
 		mousedown = false;
 	});
-  
+
   svg.append("g")
       .attr("font-family", "sans-serif")
       .attr("font-size", 10)
@@ -489,22 +464,32 @@ export function PieChart(data, {
 </script>
 
 <template>
-	<div class = "calendar" style = "display: inline;float:left">
+	<div class = "calendar" style = "display: inline-flex">
 		<D3Wrapper :node="calendar"/>
 	</div>
-<!-- 	<div class = "legend" style = "display: inline;float:left">
+	<div class = "legend" style = "display: inline-flex">
 		<D3Wrapper :node="legend"/>
-	</div> -->
-	<div class = "clock" style = "display: inline;float:right">
+	</div>
+	<div class = "clock" style = "display: inline-flex">
 		<D3Wrapper :node="clock"/>
 	</div>
 </template>
 
 <style>
-/* 	.calendar{
+	.calendar{
 		background-color: chocolate;
 	}
 	.clock{
-		background-color: blanchedalmond;
-	} */
+		background-color: cadetblue;
+		transform: translate(-110px);
+	}
+	.legend{
+		transform: rotate(90deg) translate(-65px, 60px);
+	}
+	rect[noclicked=false]{
+		stroke: white;
+		stroke-width: 3px;
+	}
+	/* rect.selection{ */
+	/* } */
 </style>

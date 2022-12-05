@@ -19,7 +19,7 @@ arrive_hours_to_index = [np.load(f'./data/arrive_hour_to_index/arrive_{i}hour_to
 departure_hours_to_index = [np.load(f'./data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
 
 @nb.njit
-def find_index(index:np.ndarray[int], indices:np.ndarray[bool]):
+def find_index(index, indices):
     for i in index:
         indices[i] = True
 

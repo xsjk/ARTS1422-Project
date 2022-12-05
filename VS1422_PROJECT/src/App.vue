@@ -29,10 +29,11 @@
 				price:d['weather'],
 			}))
 		"
-		:calendar_width="650"
+		:calendar_width="600"
 		:cellSize="20"
 		:clock_width="270"
 		:clock_height="200"
+		:legend_width="135"
 	/>
 	</div>
 	<div class="Title"> 
@@ -71,6 +72,8 @@
 		position: absolute;
 		left: 400px;
 		top: 560px;
+		background-color: azure;
+		width: 1200px;
 	}
 	.Title{
 		position: absolute;
