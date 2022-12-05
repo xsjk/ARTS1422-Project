@@ -17,15 +17,15 @@ const props = defineProps({
   },
   cellSize: {
 	type: [Number, String],
-	default: null, 
+	default: null,
   },
   clock_width:{
 	type: [Number, String],
-	default: null, 
+	default: null,
   },
   clock_height:{
 	  type: [Number, String],
-	  default: null, 
+	  default: null,
   }
 });
 
@@ -60,11 +60,11 @@ const calendar = computed(() => {
 	calendar_width,
 	cellSize
   } = props;
-  
+
   // 从淡蓝到深蓝,第一个是黄色
   //const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
   const colors = d3.interpolate("#eafffa", "#00004f");
-  
+
   return Calendar(data, {
 	x: d => d.date,
 	y: d => d.price,
@@ -90,7 +90,7 @@ const clock = computed(() => {
 		{'hour': 18},{'hour': 19},{'hour': 20},
 		{'hour': 21},{'hour': 22},{'hour': 23},
 	]
-	
+
 	return PieChart(data,{
 	name: d => d.hour,
 	value: d => 1,
@@ -214,7 +214,7 @@ export function Calendar(data, {
 
   let xScale = i => (timeWeek.count(d3.utcYear(X[i]), X[i]) - timeWeek.count(d3.utcYear(X[0]), X[0])) * cellSize + 0.5;
   let yScale = i => countDay(X[i].getUTCDay()) * cellSize + 0.5
-  
+
   const cell = year.append("g")
 	.selectAll("rect")
 	.data(weekday === "weekday"
@@ -224,7 +224,7 @@ export function Calendar(data, {
 	  .attr("width", cellSize - 1)
 	  .attr("height", cellSize - 1)
 	  .attr("x", i => xScale(i))
-	  .attr("y", i => yScale(i)) 
+	  .attr("y", i => yScale(i))
 	  .attr("fill", i => color(Y[i]))
 	  .attr('opacity', 1)
 	  .attr('stroke', 'white')
@@ -248,7 +248,7 @@ export function Calendar(data, {
 			.attr('noclicked', true)
 		}
 	})
-	
+
   const month = year.append("g")
 	.selectAll("g")
 	.data(([, I]) => d3.utcMonths(d3.utcMonth(X[I[0]]), X[I[I.length - 1]]))
@@ -265,7 +265,7 @@ export function Calendar(data, {
 	  //.attr("x", d => timeWeek.count(d3.utcYear(d), d3.utcMonth(X[0[0]])) * cellSize - 5)
 	  .attr("y", -5)
 	  .text(formatMonth);
-  
+
   // brush内容
   const brush = d3.brush()
 	  .extent([[30,10], [width-60,height-10]])
@@ -286,15 +286,15 @@ export function Calendar(data, {
 	//   .attr("width", 0.2*cellSize)
 	//   .attr("height", 0.2*cellSize)
 	//   .attr("x", i => xScale(i))
-	//   .attr("y", i => yScale(i)) 
+	//   .attr("y", i => yScale(i))
 	//   .attr('opacity', 0)
  //  if (title) cell_2.append("title")
 	//  .text(title);
 
-  
+
   // brush 相关函数
   function OnStart({selection}){
-	if (selection) 
+	if (selection)
 	if (selection[0][0]==selection[1][0] && selection[1][1]==selection[0][1])
 	{
 		const [x, y] = selection[0];
@@ -336,8 +336,8 @@ export function Calendar(data, {
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
 			.attr('noclicked',false)
-			.data(); 
-	} 
+			.data();
+	}
 	svg.property("days", days).dispatch("input");
   };
   async function OnEnd({selection}){
@@ -345,7 +345,7 @@ export function Calendar(data, {
 	// console.log(days);
 	dates.value = days;
   };
-  
+
   return Object.assign(svg.node(), {scales: {color}});
 }
 
@@ -401,7 +401,7 @@ export function PieChart(data, {
   const arcs = d3.pie().padAngle(padAngle).sort(null).value(i => V[i])(I);
   const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
   const arcLabel = d3.arc().innerRadius(labelRadius).outerRadius(labelRadius);
-  
+
   const svg = d3.create("svg")
       .attr("width", width)
       .attr("height", height)
@@ -448,7 +448,7 @@ export function PieChart(data, {
   ///////////////////
   //////////////////
   //////////////////
-  ////////屏幕检测鼠标行为  
+  ////////屏幕检测鼠标行为
   d3.select("body").on('keydown',function(current){
 	  if(current.key != "Shift") return;
 	  console.log("mousedown");
@@ -462,7 +462,7 @@ export function PieChart(data, {
 		console.log(hours.value);
 		mousedown = false;
 	});
-  
+
   svg.append("g")
       .attr("font-family", "sans-serif")
       .attr("font-size", 10)
@@ -507,4 +507,10 @@ export function PieChart(data, {
 	.clock{
 		background-color: blanchedalmond;
 	} */
+	rect[noclicked=false]{
+		stroke: white;
+		stroke-width: 3px;
+	}
+	/* rect.selection{ */
+	/* } */
 </style>
