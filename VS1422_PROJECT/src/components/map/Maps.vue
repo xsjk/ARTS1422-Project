@@ -4,6 +4,7 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
+export const distance = ref(10);
 
 </script>
 
@@ -240,8 +241,8 @@ export const selected = ref([]);
 		if (selected.value == undefined || selected.value.length == 0){
 			selected.value = center.value;
 		}
-		//EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
-		EqualTimeMap.generate_selection(map);
+		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+		EqualTimeMap.generate_selection(map,distance);
 	})
 	equaltimeLayer.on("remove",function(){
 		console.log("equalTime Removed");
@@ -319,14 +320,14 @@ export const selected = ref([]);
 	);
 
 	watch(
-		[hours, dates, selected],
+		[hours, dates, selected, distance],
 		async () => {
 			if(!map.hasLayer(equaltimeLayer)){
 			  //console.log("EqualTimeMap不需要更新")
 			  return;
 			} 
-			//console.log("EqualTimeMap需要更新")
-			//EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value);
+			console.log("EqualTimeMap需要更新")
+			EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value,distance.value);
 		},
 		{ deep: true }
 	)

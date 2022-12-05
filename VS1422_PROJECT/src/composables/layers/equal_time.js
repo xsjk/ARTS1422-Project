@@ -10,7 +10,6 @@ const min_lng = 110.100;
 const max_lng = 110.700;
 const ViewBox = 1000;
 
-
 var svgElement = d3.create('svg');
 var g;
 var svgElementBounds = [ [max_lat, min_lng], [min_lat, max_lng] ];
@@ -58,12 +57,12 @@ export function generate_layer(data, map){
 	return layer;	
 }
 
-export async function update_layer(map, selected, dates, hours) {
+export async function update_layer(map, selected, dates, hours, distance) {
 	g.attr('transform', `translate(${scale_lng(selected[0])-2},${scale_lat(selected[1])-23})`);
 	g.selectAll('path').attr('opacity',0);	
 	console.log(selected[0],selected[1]);
-	var data = await k_min_isochrone([10], [selected[0],selected[1]], dates, hours);
-
+	var data = await k_min_isochrone([distance], [selected[0],selected[1]], dates, hours);
+	//var colors = {10:"black",30:"blue",60:"yellow"};
 	var start_rad = Math.PI / 2;
 	var delta_rad = 2 * Math.PI / data[0].length;
 	g.selectAll('path')
@@ -76,23 +75,50 @@ export async function update_layer(map, selected, dates, hours) {
 						.startAngle(start_rad - i * delta_rad)
 						.endAngle(start_rad - (i + 1) * delta_rad)()
 			})
-			.attr('fill', "green")
+			.attr('fill', 'green')
 			.attr('opacity',0.4)
 			.attr('stroke-width',1)
 			.attr('stroke','black')
 			.attr('stroke-opacity',1.0)
 }
 
-export function generate_selection(map){
+const X = [0,1,2]
+const Y = [10,30,60]
+const colors = ["black","blue","yellow"]
+const cell_height = 50;
+const cell_width = 50;
+export function generate_selection(map,distance){
 	const svg = d3.create("svg")
 				.attr("id", "selection")
-				.attr("width",100)
-				.attr("height",100)
-				.style("background","black")
+				.attr("width",cell_width)
+				.attr("height",3*cell_height)
+				.style("background","white")
+	const cells = svg.append("g")
+				.selectAll("rect")
+				.data(X)
+				.join("rect")
+					.attr("x",0)
+					.attr("y",d=> d*cell_height)
+					.attr("height", cell_height)
+					.attr("width", cell_width)
+					.attr("fill", d=> colors[d])
+				.on("click",function(data,d){
+					distance.value = Y[d];
+				})
+	const texts = svg.append("g")
+					.selectAll("text")
+					.data(X)
+					.join("text")
+						.attr("x",cell_width/2)
+						.attr("y",d=> cell_height/2+d*cell_height)
+						.text(d=>Y[d])
+						.attr("text-anchor","middle")
+						.attr("font-size", "20px")
+						.attr("font-weight", "bold")
+						.attr("fill", "red")
 	console.log("打算add selection")
 	selection.onAdd = function (map) {
-		this._div = L.DomUtil.get(svg);
-		//this.update();
+		this._div = L.DomUtil.get(svg.node());
 		return this._div;
 	};
 	selection.addTo(map);
