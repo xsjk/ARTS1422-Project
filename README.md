@@ -34,9 +34,13 @@ npm run dev
 
 + Choose days and hours of interest through the calender and the clock below the map.
 
-## Contributors:
+## Contributors
 
 + Sijie Xu
 + Beiming Zhang
 + Ao Lu
 + Shuyuan Ge
+
+## Reference
+
+*D3Wrapper.vue* form [Horras](https://github.com/yanglinshu/horras/blob/main/src/components/d3/core/D3Wrapper.vue).
