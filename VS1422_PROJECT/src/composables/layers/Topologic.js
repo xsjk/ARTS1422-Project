@@ -22,7 +22,6 @@ const g2 = svg.append("g").attr("fill-opacity", 0.75)
             .attr("transform", `translate(${width / 2},${height / 2})`);
 
 
-var last_view
 var svgElementBounds = [ [20.1, 110.100], [19.5, 110.700] ];
 var layer = L.svgOverlay(
     svg.node(), svgElementBounds, {
@@ -36,12 +35,21 @@ var innerRadius = 200;
 var outerRadius = 220;
 
 export function generate_layer(data, map) {
-    update_layer(data, map);
     return layer;
 }
 
 
+const last_view = {
+    center: null,
+    zoom: null
+}
+
+
 export function update_layer(data, map) {
+
+    last_view.center = map.getCenter();
+    last_view.zoom = map.getZoom();
+
     map.setView([19.85843561200688, 110.07270812988283], 10);
     layer.setBounds(L.latLngBounds(
         L.latLng(19.500253226982274, 109.4399642944),
@@ -130,4 +138,10 @@ export function update_layer(data, map) {
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
 
 
+}
+
+
+export function remove_layer(map) {
+    map.dragging.enable();
+    map.setView(last_view.center, last_view.zoom);
 }
