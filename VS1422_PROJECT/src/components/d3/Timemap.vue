@@ -207,7 +207,7 @@ function grid(h,w) {
 
 		
 		context.font = "11px Arial";
-		drawGrid("lightgray", w/24, h/183*7)
+		// drawGrid("lightgray", w/24, h/183*7)
 		context.shadowColor = "rgba(100, 140, 230, 0.8)";
 		context.shadowOffsetX = 1;
 		context.shadowOffsetY = 1;

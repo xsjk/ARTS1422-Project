@@ -8,7 +8,7 @@ const svg = d3.create('svg')
             .attr('viewBox', `0 0 ${width} ${height}`);
 
 const bg_rect  = svg.append("rect")
-                    .attr("fill", "white")
+                    .attr("fill", "black")
                     .attr("width", "100%")
                     .attr("height", "100%")
                     .attr("opacity", 0.8);
@@ -65,7 +65,6 @@ export function generate_layer(data, map, can_move) {
     last_view.center = map.getCenter();
     last_view.zoom = map.getZoom();
 
-    map.setView([19.85843561200688, 110.07270812988283], 10);
     layer.setBounds(L.latLngBounds(
         L.latLng(19.500253226982274, 109.4399642944),
         L.latLng(20.210656234489853, 110.0751113892)
@@ -162,7 +161,7 @@ export function update_layer(data, map) {
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
-    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
+    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateBlues , names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
