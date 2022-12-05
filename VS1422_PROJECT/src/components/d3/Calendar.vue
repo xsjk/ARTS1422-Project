@@ -41,7 +41,7 @@ const legend = computed(() => {
 		legend_width,
 	} = props;
 	return Legend({
-	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
+	  color: d3.scaleSequential([0, 200], d3.interpolate("#76828f", "#0969f8")),
 	  title: "Precipitation (mm)",
 	  width: legend_width
 	});
@@ -52,12 +52,12 @@ const calendar = computed(() => {
   let {
 	data,
 	calendar_width,
-	cellSize
+	cellSize,
   } = props;
 
   // 从淡蓝到深蓝,第一个是黄色
   //const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
-  const colors = d3.interpolate("#eafffa", "#00004f");
+  const colors = d3.interpolate("#76828f", "#0969f8");
 
   return Calendar(data, {
 	x: d => d.date,
@@ -65,7 +65,7 @@ const calendar = computed(() => {
 	weekday: "monday",
 	width: calendar_width,
 	cellSize: cellSize,
-	colors: colors
+	colors: colors,
   });
 });
 
@@ -89,7 +89,8 @@ const clock = computed(() => {
 	name: d => d.hour,
 	value: d => 1,
 	width: clock_width,
-	height: clock_height
+	height: clock_height,
+	innerRadius: 50,
 	})
 });
 
@@ -333,9 +334,9 @@ export function PieChart(data, {
   title, // given d in data, returns the title text
   width = 640, // outer width, in pixels
   height = 400, // outer height, in pixels
-  innerRadius = 0, // inner radius of pie, in pixels (non-zero for donut)
+  innerRadius = 300, // inner radius of pie, in pixels (non-zero for donut)
   outerRadius = Math.min(width, height) / 2, // outer radius of pie, in pixels
-  labelRadius = (innerRadius * 0.2 + outerRadius * 0.4), // center.value radius of labels
+  labelRadius = (innerRadius * 0.2 + outerRadius * 0.5), // center.value radius of labels
   format = ",", // a format specifier for values (in the label)
   names, // array of names (the domain of the color scale)
   colors, // array of colors for names
@@ -452,14 +453,17 @@ export function PieChart(data, {
 	  mousedown = true;
   })
   .on('mouseup', function(current){
+	console.log("old"+hours.value);
+	console.log("new"+times);
+	hours.value = times;
 	mousedown = false;
-	})
+  })
   .on('keyup', function(current){
 	    //console.log(current);
 	  	if(current.key != "Shift") return;
-		console.log("mouseup");
+		console.log("old"+hours.value);
+		console.log("new"+times);
 		hours.value = times;
-		console.log(hours.value);
 		mousedown = false;
 	});
 
@@ -502,19 +506,20 @@ export function PieChart(data, {
 
 <style>
 	.calendar{
-		background-color: chocolate;
+	 transform: translate(-30px, -10px);
 	}
 	.clock{
-		background-color: cadetblue;
-		transform: translate(-110px);
+		transform: translate(-140px,-5px);
 	}
 	.legend{
-		transform: rotate(90deg) translate(-65px, 60px);
+		transform: rotate(90deg) translate(-90px, 90px);
 	}
 	rect[noclicked=false]{
 		stroke: white;
 		stroke-width: 3px;
 	}
-	/* rect.selection{ */
-	/* } */
+	text{
+		fill: gold;
+	}
+	
 </style>

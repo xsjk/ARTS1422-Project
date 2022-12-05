@@ -108,7 +108,7 @@
 	.title{
 		position: relative;
 		text-anchor: middle;
-		fill: black;
+		fill: cyan;
 		font-size: 0.8cm;
 		font-family: 'Courier New', Courier, monospace;
 		stroke: antiquewhite;
@@ -118,7 +118,7 @@
 	.interval{
 		position: relative;
 		text-anchor: middle;
-		fill: black;
+		fill: aquamarine;
 		font-size: 0.55cm;
 		font-family: 'Courier New', Courier, monospace;
 		stroke: antiquewhite;

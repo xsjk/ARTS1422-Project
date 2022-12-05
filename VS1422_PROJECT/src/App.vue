@@ -29,8 +29,8 @@
 				price:d['weather'],
 			}))
 		"
-		:calendar_width="600"
-		:cellSize="20"
+		:calendar_width="680"
+		:cellSize="23"
 		:clock_width="270"
 		:clock_height="200"
 		:legend_width="135"
@@ -61,31 +61,28 @@
 <style>
 	.leaflet-container {
 		height: 550px;
-		width: 925px;
+		width: 950px;
 		max-width: 100%;
 		max-height: 100%;
 		position: absolute;
-		left: 400px;
-		top: 0px;
+		left: 450px;
+		top: 15px;
 	}
 	.Time-Selection{
 		position: absolute;
-		left: 400px;
-		top: 560px;
-		background-color: azure;
+		left: 475px;
+		top: 575px;
 		width: 1200px;
 	}
 	.Title{
 		position: absolute;
-		left: 0px;
-		top:0px;
-/* 		background-color: aqua; */
+		left: 25px;
+		top: 15px;
 	}
 	.TimeMap{
 		position: absolute;
 		left: 0px;
 		top: 200px;
-/* 		background-color: rgb(15, 20, 19); */
 	}
 	
 </style>
