@@ -236,13 +236,11 @@ class time_map:
         total_k = 1.0 / total_max - total_min
         data = (data - total_min) * total_k
         return data.tolist()
-    
-  class topological_graph:
+
+class topological_graph:
     def draw_topological_graph(days:list[int], hours:list[int])->list[list[int]]:
         result = np.zeros((43,43))
         for day in days:
             for hour in hours:
                 result += topological_graph_data[day][hour]
         return result.tolist()
-
-
