@@ -26,17 +26,24 @@ const props = defineProps({
   clock_height:{
 	  type: [Number, String],
 	  default: null,
-  }
+  },
+  legend_width:{
+	  type: [Number, String],
+	  default: null,
+  },
 });
 
 // 在这里搞legend， legend的template写在了下面，搞完记得在这里的style给3个div调下位置
 // 现在调用的函数时composables里的color-legend.jsx, d3上找的，它自带的映射不是很好用
 // 如果想要看原图，把下面的legend的div注释掉应该就行
 const legend = computed(() => {
+	let {
+		legend_width,
+	} = props;
 	return Legend({
 	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
 	  title: "Precipitation (mm)",
-	  width: 165
+	  width: legend_width
 	});
 })
 
