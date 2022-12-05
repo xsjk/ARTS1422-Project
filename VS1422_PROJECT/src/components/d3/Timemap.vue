@@ -23,7 +23,7 @@ const bilinearInterpolator = func => (x, y) => {
   / ((x2 - x1) * (y2 - y1));
 }
 
-function interpolate_tiles(tile, n=40) {
+function interpolate_tiles(tile, n) {
   return d3.range(0, tile.length-1, 1/n).map(y => (
       d3.range(0, tile[0].length-1, 1/n).map(x => {
       const interpolate = bilinearInterpolator((i, j) => tile[j][i])
@@ -73,7 +73,7 @@ function update() {
 		console.log(hour, day);
 	});
 	
-	const tiles = interpolate_tiles(data, 40);
+	const tiles = interpolate_tiles(data, 1);
 	if (tiles.length === 0) {
 		console.log("empty tiles");
 		return;
