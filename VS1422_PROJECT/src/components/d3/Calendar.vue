@@ -33,6 +33,8 @@ const props = defineProps({
   },
 });
 
+
+const fromColor = "#C8DCFF", toColor = "rgb(0, 74, 203)";
 // 在这里搞legend， legend的template写在了下面，搞完记得在这里的style给3个div调下位置
 // 现在调用的函数时composables里的color-legend.jsx, d3上找的，它自带的映射不是很好用
 // 如果想要看原图，把下面的legend的div注释掉应该就行
@@ -41,7 +43,7 @@ const legend = computed(() => {
 		legend_width,
 	} = props;
 	return Legend({
-	  color: d3.scaleSequential([0, 200], d3.interpolate("#76828f", "#0969f8")),
+	  color: d3.scaleSequential([0, 200], d3.interpolate(fromColor, toColor)),
 	  title: "Precipitation (mm)",
 	  width: legend_width
 	});
@@ -57,7 +59,7 @@ const calendar = computed(() => {
 
   // 从淡蓝到深蓝,第一个是黄色
   //const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
-  const colors = d3.interpolate("#76828f", "#0969f8");
+  const colors = d3.interpolate(fromColor, toColor);
 
   return Calendar(data, {
 	x: d => d.date,
