@@ -459,7 +459,7 @@ export function PieChart(data, {
 		console.log("mouseup");
 		console.log("old", hours.value)
 		console.log("new", times);
-		hours.value = Object.create(times);
+		hours.value = times;
 		mousedown = false;
 	})
   .on('keyup', function(current){
@@ -467,7 +467,7 @@ export function PieChart(data, {
 		console.log("keyup");
 		console.log("old", hours.value)
 		console.log("new", times)
-		hours.value = Object.create(times);
+		hours.value = times;
 		mousedown = false;
 	});
 
