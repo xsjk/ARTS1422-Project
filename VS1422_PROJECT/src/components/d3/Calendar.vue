@@ -481,7 +481,8 @@ export function PieChart(data, {
       .attr("y", (_, i) => `${i * 0.9}em`)
       .attr("font-weight", (_, i) => i ? null : "bold")
       .text(d => d)
-	  .attr("readOnly", "true");
+	  .attr("readOnly", "true")
+	  .attr("style", "user-select: none; pointer-events: none")
 
   return Object.assign(svg.node(), {scales: {color}});
 }
