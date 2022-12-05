@@ -25,7 +25,7 @@ const selection = L.control.scale({
 });
 
 export function generate_layer(data, map){
-	svgElement.attr('viewBox', `0 0 ${ViewBox} ${ViewBox}`)
+	svgElement.attr('viewBox', `0 0 ${ViewBox} ${ViewBox}`);
 
 	var layer = L.svgOverlay(
 		svgElement.node(), svgElementBounds, {
@@ -36,37 +36,11 @@ export function generate_layer(data, map){
 
 	g = svgElement.append('g')
 				  .attr('transform', `translate(${scale_lat(map.getCenter().lng)}, ${scale_lng(map.getCenter().lat)})`)
-	
+
 	var start_rad = Math.PI / 2;
 	var delta_rad = 2 * Math.PI / data.length;
 	g.selectAll('path')
 			.data(data)
-			.join("path")
-			.attr("d", (d,i)=>{
-				return d3.arc()
-						.innerRadius(0)
-						.outerRadius(d * k)
-						.startAngle(start_rad - i * delta_rad)
-						.endAngle(start_rad - (i + 1) * delta_rad)()
-			})
-			.attr('fill', "green")
-			.attr('opacity',0.4)
-			.attr('stroke-width',1)
-			.attr('stroke','black')
-			.attr('stroke-opacity',1.0)
-	return layer;	
-}
-
-export async function update_layer(map, selected, dates, hours, distance) {
-	g.attr('transform', `translate(${scale_lng(selected[0])-2},${scale_lat(selected[1])-23})`);
-	g.selectAll('path').attr('opacity',0);	
-	console.log(selected[0],selected[1]);
-	var data = await k_min_isochrone([distance], [selected[0],selected[1]], dates, hours);
-	//var colors = {10:"black",30:"blue",60:"yellow"};
-	var start_rad = Math.PI / 2;
-	var delta_rad = 2 * Math.PI / data[0].length;
-	g.selectAll('path')
-			.data(data[0])
 			.join("path")
 			.attr("d", (d,i)=>{
 				return d3.arc()
@@ -80,11 +54,39 @@ export async function update_layer(map, selected, dates, hours, distance) {
 			.attr('stroke-width',1)
 			.attr('stroke','black')
 			.attr('stroke-opacity',1.0)
+	return layer;
+}
+
+const tenMinColor = "red", thirtyMinColor = "#F76809", sixtyMinColor = "#32CD32";
+
+export async function update_layer(map, selected, dates, hours, distance) {
+	g.attr('transform', `translate(${scale_lng(selected[0])-2},${scale_lat(selected[1])-23})`);
+	g.selectAll('path').attr('opacity',0);
+	console.log(selected[0],selected[1]);
+	const colors = {10:tenMinColor,30:thirtyMinColor,60:sixtyMinColor}
+	var data = await k_min_isochrone([distance], [selected[0],selected[1]], dates, hours);
+	var start_rad = Math.PI / 2;
+	var delta_rad = 2 * Math.PI / data[0].length;
+	g.selectAll('path')
+			.data(data[0])
+			.join("path")
+			.attr("d", (d,i)=>{
+				return d3.arc()
+						.innerRadius(0)
+						.outerRadius(d * k)
+						.startAngle(start_rad - i * delta_rad)
+						.endAngle(start_rad - (i + 1) * delta_rad)()
+			})
+			.attr('fill', colors[distance])
+			.attr('opacity',0.4)
+			.attr('stroke-width',1)
+			.attr('stroke','black')
+			.attr('stroke-opacity',1.0)
 }
 
 const X = [0,1,2]
 const Y = [10,30,60]
-const colors = ["black","blue","yellow"]
+const colors = [tenMinColor, thirtyMinColor, sixtyMinColor]
 const cell_height = 50;
 const cell_width = 50;
 export function generate_selection(map,distance){
@@ -102,7 +104,7 @@ export function generate_selection(map,distance){
 					.attr("height", cell_height)
 					.attr("width", cell_width)
 					.attr("fill", d=> colors[d])
-				.on("click",function(data,d){
+				.on("mouseover",function(data,d){
 					distance.value = Y[d];
 				})
 	const texts = svg.append("g")

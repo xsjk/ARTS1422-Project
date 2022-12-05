@@ -33,6 +33,8 @@ const props = defineProps({
   },
 });
 
+
+const fromColor = "#C8DCFF", toColor = "rgb(0, 74, 203)";
 // 在这里搞legend， legend的template写在了下面，搞完记得在这里的style给3个div调下位置
 // 现在调用的函数时composables里的color-legend.jsx, d3上找的，它自带的映射不是很好用
 // 如果想要看原图，把下面的legend的div注释掉应该就行
@@ -41,7 +43,7 @@ const legend = computed(() => {
 		legend_width,
 	} = props;
 	return Legend({
-	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
+	  color: d3.scaleSequential([0, 200], d3.interpolate(fromColor, toColor)),
 	  title: "Precipitation (mm)",
 	  width: legend_width
 	});
@@ -52,12 +54,12 @@ const calendar = computed(() => {
   let {
 	data,
 	calendar_width,
-	cellSize
+	cellSize,
   } = props;
 
   // 从淡蓝到深蓝,第一个是黄色
   //const colors = ["#FFFF00","#0000FF", "#0000CD", "#191970", "#00008B"];
-  const colors = d3.interpolate("#eafffa", "#00004f");
+  const colors = d3.interpolate(fromColor, toColor);
 
   return Calendar(data, {
 	x: d => d.date,
@@ -65,7 +67,7 @@ const calendar = computed(() => {
 	weekday: "monday",
 	width: calendar_width,
 	cellSize: cellSize,
-	colors: colors
+	colors: colors,
   });
 });
 
@@ -89,7 +91,8 @@ const clock = computed(() => {
 	name: d => d.hour,
 	value: d => 1,
 	width: clock_width,
-	height: clock_height
+	height: clock_height,
+	innerRadius: 50,
 	})
 });
 
@@ -333,9 +336,9 @@ export function PieChart(data, {
   title, // given d in data, returns the title text
   width = 640, // outer width, in pixels
   height = 400, // outer height, in pixels
-  innerRadius = 0, // inner radius of pie, in pixels (non-zero for donut)
+  innerRadius = 300, // inner radius of pie, in pixels (non-zero for donut)
   outerRadius = Math.min(width, height) / 2, // outer radius of pie, in pixels
-  labelRadius = (innerRadius * 0.2 + outerRadius * 0.4), // center.value radius of labels
+  labelRadius = (innerRadius * 0.65 + outerRadius * 0.5), // center.value radius of labels
   format = ",", // a format specifier for values (in the label)
   names, // array of names (the domain of the color scale)
   colors, // array of colors for names
@@ -356,7 +359,7 @@ export function PieChart(data, {
   // Chose a default color scheme based on cardinality.
   //if (colors === undefined) colors = d3.schemeSpectral[names.size];
   //if (colors === undefined) colors = interpolateWithSteps(names.size).map(d3.interpolateRainbow);
-  if (colors === undefined) colors = d3.quantize(t => d3.interpolateRainbow(t * 1), names.size);
+  if (colors === undefined) colors = d3.quantize(t => d3.interpolate("#4819CE", "#4819CE")(t * 1), names.size);
 
   // Construct scales.
   const color = d3.scaleOrdinal(names, colors);
@@ -394,7 +397,7 @@ export function PieChart(data, {
     .join("path")
       .attr("fill", d => color(N[d.data]))
       .attr("d", arc)
-	  .attr('opacity', 0.5)
+	  .attr('opacity', 0.4)
 	  .attr('stroke', 'white')
 	  .attr('stroke-width', 0.5)
 	.attr('noclicked',true)
@@ -413,7 +416,7 @@ export function PieChart(data, {
 			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
-			.attr('opacity', 0.5)
+			.attr('opacity', 0.4)
 			.attr('stroke', 'white')
 			.attr('stroke-width', 0.5)
 			.attr('noclicked', true)
@@ -435,7 +438,7 @@ export function PieChart(data, {
 			console.log('pop');
 			times = times.filter(d => d!=i.data)
 			d3.select(this)
-			.attr('opacity', 0.5)
+			.attr('opacity', 0.4)
 			.attr('stroke', 'white')
 			.attr('stroke-width', 0.5)
 			.attr('noclicked', true)
@@ -457,8 +460,7 @@ export function PieChart(data, {
 		console.log("mouseup");
 		console.log("old", hours.value)
 		console.log("new", times);
-		
-		hours.value = Object.create(times);
+		hours.value = times;
 		mousedown = false;
 	})
   .on('keyup', function(current){
@@ -466,7 +468,7 @@ export function PieChart(data, {
 		console.log("keyup");
 		console.log("old", hours.value)
 		console.log("new", times)
-		hours.value = Object.create(times);
+		hours.value = times;
 		mousedown = false;
 	});
 
@@ -488,7 +490,8 @@ export function PieChart(data, {
       .attr("y", (_, i) => `${i * 0.9}em`)
       .attr("font-weight", (_, i) => i ? null : "bold")
       .text(d => d)
-	  .attr("readOnly", "true");
+	  .attr("readOnly", "true")
+	  .attr("style", "user-select: none; pointer-events: none")
 
   return Object.assign(svg.node(), {scales: {color}});
 }
@@ -509,19 +512,20 @@ export function PieChart(data, {
 
 <style>
 	.calendar{
-		background-color: chocolate;
+	 transform: translate(-30px, -10px);
 	}
 	.clock{
-		background-color: cadetblue;
-		transform: translate(-110px);
+		transform: translate(-140px,-5px);
 	}
 	.legend{
-		transform: rotate(90deg) translate(-65px, 60px);
+		transform: rotate(90deg) translate(-90px, 90px);
 	}
 	rect[noclicked=false]{
 		stroke: white;
 		stroke-width: 3px;
 	}
-	/* rect.selection{ */
-	/* } */
+	text{
+		fill: gold;
+	}
+
 </style>

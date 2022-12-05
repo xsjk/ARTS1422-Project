@@ -40,7 +40,7 @@ export const can_move = ref(true);
 	  },
 	  scale:{
 		type: [Number, String],
-		default: null, 
+		default: null,
 	  }
 	});
 
@@ -63,7 +63,7 @@ export const can_move = ref(true);
 
 
 	/// layers
-	
+
 
 	const mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
 	const mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -79,7 +79,7 @@ export const can_move = ref(true);
 		'Dark': dark,
 		'Satellite': satellite
 	};
-	
+
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
 		heatmapinLayer.cfg.radius = 0.001;
 	let heatmapoutLayer = HeatMapOut.generate_layer(testData);
@@ -92,7 +92,7 @@ export const can_move = ref(true);
 		zoom: scale.value,
 		renderer: L.svg(),
 		attributionControl:false,
-		layers: [streets]
+		layers: [dark]
 	})
 	global_map.value = map;
 
@@ -101,7 +101,7 @@ export const can_move = ref(true);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
-	
+
 	// 给所有图层添加add时的自动更新
 	heatmapoutLayer.on("add",function(){
 		console.log("HeatMapOut Loaded");
@@ -126,7 +126,7 @@ export const can_move = ref(true);
 		console.log("topologic Removed");
 		TopologicMap.remove_layer(map);
 	})
-	
+
 	var marker = L.marker(center.value);
 	marker.addTo(map);
 	map.on('click', async(e) => {
@@ -168,24 +168,24 @@ export const can_move = ref(true);
 	// watch
 	watch(
 		[hours, dates, center, scale],
-		async () => {                                                                                                      
+		async () => {
 			if(!map.hasLayer(heatmapoutLayer)){
 			  //console.log("HeatMapOut不需要更新")
 			  return;
-			} 
+			}
 			//console.log("HeatMapOut需要更新")
 			HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
 		},
 		{ deep: true }
 	);
-	
+
 	watch(
 		[hours, dates, center, scale],
-		async () => {       
+		async () => {
 			if(!map.hasLayer(heatmapinLayer)){
 			  //console.log("HeatMapIn不需要更新")
 			  return;
-			} 
+			}
 			//console.log("HeatMapIn需要更新")
 			HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 		},
@@ -198,7 +198,7 @@ export const can_move = ref(true);
 			if(!map.hasLayer(equaltimeLayer)){
 			  //console.log("EqualTimeMap不需要更新")
 			  return;
-			} 
+			}
 			console.log("EqualTimeMap需要更新")
 			EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value,distance.value);
 		},
@@ -209,7 +209,7 @@ export const can_move = ref(true);
 		[hours, dates],
 		async () => {
 			console.log("TopologicMap需要更新")
-			
+
 			if (map.hasLayer(topologicLayer)) {
 				console.log("TopologicMap需要更新")
 				console.log(dates.value, hours.value)
