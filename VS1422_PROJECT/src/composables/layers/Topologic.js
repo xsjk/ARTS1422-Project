@@ -35,6 +35,8 @@ var innerRadius = 200;
 var outerRadius = 220;
 
 export function generate_layer(data, map) {
+    last_view.center = map.getCenter();
+    last_view.zoom = map.getZoom();
     return layer;
 }
 
@@ -46,6 +48,8 @@ const last_view = {
 
 
 export function update_layer(data, map) {
+
+    console.log(district_ids);
 
     last_view.center = map.getCenter();
     last_view.zoom = map.getZoom();

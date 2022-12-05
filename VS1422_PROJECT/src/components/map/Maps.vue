@@ -251,8 +251,10 @@ export const selected = ref([]);
 		console.log("toplogic Loaded");
 		console.log(topologicData.value);
 		TopologicMap.update_layer(topologicData.value,map);
+	}).on("remove",function(){
+		console.log("toplogic Removed");
+		TopologicMap.remove_layer(map);
 	})
-
 	
 	var marker = L.marker(center.value);
 	marker.addTo(map);
@@ -307,7 +309,7 @@ export const selected = ref([]);
 	
 	watch(
 		[hours, dates, center, scale],
-		async () => {                                                                                                      
+		async () => {       
 			if(!map.hasLayer(heatmapinLayer)){
 			  //console.log("HeatMapIn不需要更新")
 			  return;
@@ -325,11 +327,25 @@ export const selected = ref([]);
 			  //console.log("EqualTimeMap不需要更新")
 			  return;
 			} 
+		
 			//console.log("EqualTimeMap需要更新")
 			//EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value);
 		},
 		{ deep: true }
+	);
+
+	watch(
+		[hours, dates],
+		async () => {
+			if (map.hasLayer(topologicLayer)) {
+				topologicData.value = await draw_topological_graph(dates.value, hours.value);
+				console.log("TopologicMap需要更新")
+				TopologicMap.update_layer(topologicData.value, map);
+			}
+		},
+		{ deep: true }
 	)
+	
 
 
 
