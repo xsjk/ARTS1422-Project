@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { color } from 'd3'; 
 import L from 'leaflet';
 
 const width = 462;
@@ -22,6 +21,8 @@ const g2 = svg.append("g").attr("fill-opacity", 0.75)
             .attr("transform", `translate(${width / 2},${height / 2})`);
 
 
+
+
 var svgElementBounds = [ [20.1, 110.100], [19.5, 110.700] ];
 var layer = L.svgOverlay(
     svg.node(), svgElementBounds, {
@@ -31,12 +32,104 @@ var layer = L.svgOverlay(
 );
 
 
-var innerRadius = 200;
-var outerRadius = 220;
+const innerRadius = 100;
+const outerRadius = 120;
+
+const chord = d3.chordDirected()
+                .padAngle(10 / innerRadius)
+                .sortSubgroups(d3.descending)
+                .sortChords(d3.descending)
+
+const arc   = d3.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius)
+
+const ribbon = d3.ribbonArrow()
+.radius(innerRadius - 1)
+.padAngle(1 / innerRadius)
+
+
+
 
 export function generate_layer(data, map) {
+
+    
+    console.log("generate_layer");
+    console.log(data);
+
+    // half submatrix
+
     last_view.center = map.getCenter();
     last_view.zoom = map.getZoom();
+
+    map.setView([19.85843561200688, 110.07270812988283], 10);
+    layer.setBounds(L.latLngBounds(
+        L.latLng(19.500253226982274, 109.4399642944),
+        L.latLng(20.210656234489853, 110.0751113892)
+    ));
+
+    const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
+
+    const index = new Map(names.map((name, i) => [name, i]));
+    const matrix = Array.from(index, () => new Array(names.length).fill(0));
+    for (const {source, target, value} of data) matrix[index.get(source)][index.get(target)] += value;
+
+    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
+
+
+    // console.log("map", map);
+    // console.log("layer", layer);
+    // console.log("svg", svg);
+
+    // matrix = [
+    //     [1, 2, 3],
+    //     [4, 5, 6],
+    //     [7, 8, 9]
+    // ];
+    const chords = chord(matrix);
+
+
+    const selection = g1.selectAll("g")
+                    .data(chords.groups)
+                    .join("g");
+
+    console.log("group",selection);
+
+    
+    selection.append("path")
+    // selection.append("path")
+        .attr("fill", d => color(names[d.index]))
+        .attr("d", arc);
+
+    selection.append("text")
+        .each(d => (d.angle = (d.startAngle + d.endAngle) / 2))
+        .attr("dy", "0.35em")
+        .attr("transform", d => `
+            rotate(${(d.angle * 180 / Math.PI - 90)})
+            translate(${outerRadius + 5})
+            ${d.angle > Math.PI ? "rotate(180)" : ""}
+        `)
+        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+        .text(d => names[d.index]);
+
+    selection.attr("id", d => `${names[d.index]}`);
+    selection.append("title")
+        .text(d => `${names[d.index]}
+        ${d3.sum(chords, c => (c.source.index === d.index) * c.source.value)} outgoing →
+        ${d3.sum(chords, c => (c.target.index === d.index) * c.source.value)} incoming ←`);
+
+    console.log("chords", chords);
+    g2
+        .selectAll("path")
+        .data(chords)
+        .join("path")
+        .style("mix-blend-mode", "multiply")
+        .attr("fill", d => color(names[d.target.index]))
+        .attr("d", ribbon)
+        .append("title")
+        .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
+
+
     return layer;
 }
 
@@ -49,7 +142,9 @@ const last_view = {
 
 export function update_layer(data, map) {
 
-    console.log(district_ids);
+    console.log("update_layer");
+    console.log(data);
+
 
     last_view.center = map.getCenter();
     last_view.zoom = map.getZoom();
@@ -60,61 +155,24 @@ export function update_layer(data, map) {
         L.latLng(20.210656234489853, 110.0751113892)
     ));
 
-    // lock the map
     map.dragging.disable();
-    innerRadius = 100;
-    outerRadius = 120;
 
-    console.log("map", map);
-    console.log("layer", layer);
-    console.log("svg", svg);
-
-    const districts = new Set();
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
-    console.log("matrix", matrix);
-    for (const {source, target, value} of data) {
-        districts.add(source, target);
-        matrix[index.get(source)][index.get(target)] += value;
-    }
-
-    console.log("districts", districts);
-
-    const chord = d3.chordDirected()
-                    .padAngle(10 / innerRadius)
-                    .sortSubgroups(d3.descending)
-                    .sortChords(d3.descending)
-
-    const arc   = d3.arc()
-                    .innerRadius(innerRadius)
-                    .outerRadius(outerRadius)
-
-    const ribbon = d3.ribbonArrow()
-    .radius(innerRadius - 1)
-    .padAngle(1 / innerRadius)
-
-    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
+    for (const {source, target, value} of data) matrix[index.get(source)][index.get(target)] += value;
 
 
     const chords = chord(matrix);
 
-    console.log(chords)
 
-    const group = g1.selectAll("g")
-                    .data(chords.groups)
-                    .join("g");
-
-    console.log("group",group);
-
-
-    group.append("path")
+    g1.selectAll("path").data(chords.groups)
         .attr("fill", d => color(names[d.index]))
         .attr("d", arc);
 
-    group.append("text")
+    g1.selectAll("text").data(chords.groups)
         .each(d => (d.angle = (d.startAngle + d.endAngle) / 2))
         .attr("dy", "0.35em")
         .attr("transform", d => `
@@ -125,14 +183,14 @@ export function update_layer(data, map) {
         .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
         .text(d => names[d.index]);
 
-    group.attr("id", d => `${names[d.index]}`);
-    group.append("title")
+    g1.selectAll("title").data(chords.groups)
         .text(d => `${names[d.index]}
-    ${d3.sum(chords, c => (c.source.index === d.index) * c.source.value)} outgoing →
-    ${d3.sum(chords, c => (c.target.index === d.index) * c.source.value)} incoming ←`);
+        ${d3.sum(chords, c => (c.source.index === d.index) * c.source.value)} outgoing →
+        ${d3.sum(chords, c => (c.target.index === d.index) * c.source.value)} incoming ←`);
 
-    g2
-        .selectAll("path")
+
+    console.log(g2)
+    g2.selectAll(".chord")
         .data(chords)
         .join("path")
         .style("mix-blend-mode", "multiply")
