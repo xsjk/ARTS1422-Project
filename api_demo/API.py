@@ -17,6 +17,7 @@ arrive_days_to_index = [np.load(f'./data/arrive_day_to_index/arrive_{i}day_to_in
 departure_days_to_index = [np.load(f'./data/departure_day_to_index/departure_{i}day_to_index.npy') for i in range(184)]
 arrive_hours_to_index = [np.load(f'./data/arrive_hour_to_index/arrive_{i}hour_to_index.npy') for i in range(24)]
 departure_hours_to_index = [np.load(f'./data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
+topological_graph_data = np.load('./data/topological_graph.npy')
 
 @nb.njit
 def find_index(index, indices):
@@ -235,7 +236,13 @@ class time_map:
         total_k = 1.0 / total_max - total_min
         data = (data - total_min) * total_k
         return data.tolist()
+    
+  class topological_graph:
+    def draw_topological_graph(days:list[int], hours:list[int])->list[list[int]]:
+        result = np.zeros((43,43))
+        for day in days:
+            for hour in hours:
+                result += topological_graph_data[day][hour]
+        return result.tolist()
 
 
-a=isochrone_graph()
-print(a.k_min_isochrone([10],[110.32,20.03],[0,1,2,3],[5,6,7,8]))

@@ -221,7 +221,7 @@ export const selected = ref([]);
 		zoom: scale.value,
 		renderer: L.svg(),
 		attributionControl:false,
-		layers: [streets, heatmapinLayer]
+		layers: [streets]
 	})
 
 	let districtLayer = DistrictMap.generate_layer(data, map);
@@ -240,7 +240,12 @@ export const selected = ref([]);
 		if (selected.value == undefined || selected.value.length == 0){
 			selected.value = center.value;
 		}
-		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+		//EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+		EqualTimeMap.generate_selection(map);
+	})
+	equaltimeLayer.on("remove",function(){
+		console.log("equalTime Removed");
+		EqualTimeMap.remove_selection(map);
 	})
 	topologicLayer.on("add",function(){
 		console.log("toplogic Loaded");
@@ -321,7 +326,7 @@ export const selected = ref([]);
 			  return;
 			} 
 			//console.log("EqualTimeMap需要更新")
-			EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+			//EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value);
 		},
 		{ deep: true }
 	)
