@@ -50,6 +50,7 @@ export function generate_layer(data,map) {
 		info.addTo(map);
 		
 		function highlightFeature(e) {
+			console.log(e);
 			// if(e.target == lastSelection) return;
 			const layer = e.target;
 			layer.setStyle({
@@ -102,6 +103,8 @@ export function generate_layer(data,map) {
 			style,
 			onEachFeature
 		});
+
+		console.log('geojson',geojson);
 		
 		return geojson;
 }
