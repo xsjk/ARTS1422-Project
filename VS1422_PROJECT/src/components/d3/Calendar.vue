@@ -3,7 +3,7 @@ import D3Wrapper from './D3Wrapper.vue';
 import { computed } from 'vue';
 import * as d3 from 'd3';
 // import {Calendar,PieChart} from "../../composables/d3/calendar/calendar"
-import {Legend} from "../../composables/d3/calendar/color-legend"
+import {Legend} from "../../composables/d3/calendar/test"
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -33,23 +33,9 @@ const props = defineProps({
 // 现在调用的函数时composables里的color-legend.jsx, d3上找的，它自带的映射不是很好用
 // 如果想要看原图，把下面的legend的div注释掉应该就行
 const legend = computed(() => {
-	const colors = d3.interpolate("#eafffa", "#00004f");
-	const weatherMap = {
-	    "多云": 0.0,
-	    "小到中雨": 0.2,
-	    "阵雨": 0.3,
-	    "中雨": 0.4,
-	    "雷阵雨": 0.5,
-	    "中到大雨": 0.6,
-	    "大雨": 0.7,
-	    "大到暴雨": 0.8,
-	    "暴雨": 0.9,
-	    "大暴雨": 1.0,
-	};
-	const test = [0.0,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
-	return Legend(d3.scaleSequential([0, 1], colors),{
-		title: "Unemployment rate (%)",
-		tickSize: 0
+	return Legend({
+	  color: d3.scaleSequential([0, 200], d3.interpolate("#eafffa", "#00004f")),
+	  title: "Precipitation (mm)"
 	});
 })
 
@@ -98,25 +84,6 @@ const clock = computed(() => {
 	height: clock_height
 	})
 });
-
-
-
-
-
-
-// watch timemapData
-// watch(
-// 	timemapData,
-// 	(newVal, oldVal) => {
-// 		console.log("watch timemapData")
-// 		console.log(newVal)
-// 		console.log(oldVal)
-// 	},
-// 	{ deep: true }
-// )
-
-
-
 
 </script>
 
@@ -492,21 +459,24 @@ export function PieChart(data, {
 	<div class = "calendar" style = "display: inline;float:left">
 		<D3Wrapper :node="calendar"/>
 	</div>
-<!-- 	<div class = "legend" style = "display: inline;float:left">
+	<div class = "legend" style = "display: inline;">
 		<D3Wrapper :node="legend"/>
-	</div> -->
+	</div>
 	<div class = "clock" style = "display: inline;float:right">
 		<D3Wrapper :node="clock"/>
 	</div>
 </template>
 
 <style>
-/* 	.calendar{
+	.calendar{
 		background-color: chocolate;
 	}
 	.clock{
+		background-color: cadetblue;
+	}
+	.legend{
 		background-color: blanchedalmond;
-	} */
+	}
 	rect[noclicked=false]{
 		stroke: white;
 		stroke-width: 3px;
