@@ -39,15 +39,15 @@ const props = defineProps({
 	},
 	width:{
 		type: [Number, String],
-		default: null, 
+		default: null,
 	},
 	height:{
 		type: [Number, String],
-		default: null, 
+		default: null,
 	},
 	color:{
 		type: Function,
-		default: d3.interpolateViridis, 
+		default: d3.interpolate("#4581D8", "#ffffff"),
 	}
 });
 
@@ -72,7 +72,7 @@ function update() {
 		const day = Math.floor(y / (height / 183));
 		console.log(hour, day);
 	});
-	
+
 	const tiles = interpolate_tiles(data, 1);
 	if (tiles.length === 0) {
 		console.log("empty tiles");

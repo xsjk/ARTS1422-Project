@@ -2,9 +2,12 @@ import * as d3 from 'd3';
 import { color } from 'd3'; 
 import L from 'leaflet';
 
+const width = 462;
+const height = 550;
 
 const svg = d3.create('svg')
-            .attr('viewBox', '0 0 925 550');
+            .attr('viewBox', `0 0 ${width} ${height}`);
+
 const bg_rect  = svg.append("rect")
                     .attr("fill", "white")
                     .attr("width", "100%")
@@ -14,11 +17,11 @@ const bg_rect  = svg.append("rect")
 const g1 = svg.append("g")
             .attr("font-size", 10)
             .attr("font-family", "sans-serif")
-            .attr("transform", "translate(467, 275)")
-const g2 = svg.append("g").attr("fill-opacity", 0.75).attr("transform", "translate(467, 275)");
+            .attr("transform", `translate(${width / 2},${height / 2})`);
+const g2 = svg.append("g").attr("fill-opacity", 0.75)
+            .attr("transform", `translate(${width / 2},${height / 2})`);
 
 
-var last_view
 var svgElementBounds = [ [20.1, 110.100], [19.5, 110.700] ];
 var layer = L.svgOverlay(
     svg.node(), svgElementBounds, {
@@ -32,22 +35,36 @@ var innerRadius = 200;
 var outerRadius = 220;
 
 export function generate_layer(data, map) {
-    last_view = {
-        center: map.getCenter(),
-        zoom: map.getZoom(),
-    }
-
+    last_view.center = map.getCenter();
+    last_view.zoom = map.getZoom();
     return layer;
 }
 
 
+const last_view = {
+    center: null,
+    zoom: null
+}
+
+
 export function update_layer(data, map) {
-    console.log("update_layer");
-    map.setView([19.855845697571294, 110.39339405963088], 10);
+
+    console.log(district_ids);
+
+    last_view.center = map.getCenter();
+    last_view.zoom = map.getZoom();
+
+    map.setView([19.85843561200688, 110.07270812988283], 10);
     layer.setBounds(L.latLngBounds(
-        L.latLng(19.500253226982274, 109.75753784179689),
-        L.latLng(20.210656234489853, 111.02783203125001)
+        L.latLng(19.500253226982274, 109.4399642944),
+        L.latLng(20.210656234489853, 110.0751113892)
     ));
+
+    // lock the map
+    map.dragging.disable();
+    innerRadius = 100;
+    outerRadius = 120;
+
     console.log("map", map);
     console.log("layer", layer);
     console.log("svg", svg);
@@ -125,4 +142,10 @@ export function update_layer(data, map) {
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
 
 
+}
+
+
+export function remove_layer(map) {
+    map.dragging.enable();
+    map.setView(last_view.center, last_view.zoom);
 }

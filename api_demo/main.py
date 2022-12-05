@@ -38,6 +38,7 @@ isochrone_graph = API.isochrone_graph()
 order_scatter_diagram = API.order_scatter_diagram()
 thermodynamic_diagram = API.thermodynamic_diagram()
 time_map = API.time_map()
+topological_graph = API.topological_graph()
 
 @apiDeco("/k")
 def k_min_isochrone(k:list[int], m:list[float, float], d:list[int], h:list[int]):
@@ -66,3 +67,7 @@ def traffic_flow_in_degree_graph(t:list[int]):
 @apiDeco("/tfo")
 def traffic_flow_out_degree_graph(t:list[int]):
     return time_map.traffic_flow_out_degree_graph(t)
+
+@apiDeco("/drw")
+def draw_topological_graph(d:list[int], h:list[int]):
+    return topological_graph.draw_topological_graph(d, h)
