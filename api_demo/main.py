@@ -83,6 +83,6 @@ def draw_topological_graph_by_arrival_time(self, d:list[int], h:list[int]):
 
 @app.route("/")
 def test_connection():
-    return "Connected!"
+    return "Connect!"
 
-app.run(host='0.0.0.0', port=5000)
+app.run(host="0.0.0.0", port=5000, debug=True)
