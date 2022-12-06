@@ -2,7 +2,8 @@
 import D3Wrapper from './D3Wrapper.vue';
 import { computed, defineProps } from 'vue';
 import * as d3 from 'd3';
-import {Calendar} from "../../composables/d3/calendar/calendar"
+import { Calendar } from "../../composables/d3/calendar/calendar"
+import { mousehold } from '../../Global.vue';
 
 const props = defineProps({
   data: {
@@ -98,6 +99,7 @@ const legend = computed(() => {
 	.attr('stroke-width', 0.5)
 	.attr('noclicked',true)
 	.on('click', function(I,i){
+    mousehold.value = false;
 		var noclicked = this.getAttribute('noclicked') == 'true';
 		//console.log("1"+noclicked);
 		if(noclicked == true){

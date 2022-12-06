@@ -1,7 +1,19 @@
+<script>
+	import { ref } from 'vue';
+	export const timemap_cur_day = ref(0);
+	export const timemap_cur_hour = ref(0);
+</script>
+
 <script setup>
 
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 import * as d3 from 'd3';
+import { mousehold } from '../../Global.vue';
+import D3Wrapper from './D3Wrapper.vue';
+import { computed } from 'vue';
+
+
+
 
 const bilinearInterpolator = func => (x, y) => {
   // "func" is a function that takes 2 integer arguments and returns some value
@@ -51,7 +63,8 @@ const props = defineProps({
 	}
 });
 
-const container = ref(null);
+const canvas_container = ref(null);
+const svg_container = ref(null);
 
 function update() {
 	let {
@@ -62,8 +75,11 @@ function update() {
 	} = props;
 
 
-	container.value.addEventListener('mousemove', (e) => {
-		const rect = container.value.getBoundingClientRect();
+
+	// update the canvas
+
+	canvas_container.value.addEventListener('mousemove', (e) => {
+		const rect = canvas_container.value.getBoundingClientRect();
 		const x = e.clientX - rect.left;
 		const y = e.clientY - rect.top;
 		const hour = Math.floor(x / (width / 24) + 0.5);
@@ -99,9 +115,9 @@ function update() {
 	console.log(img_height, img_width);
 
 
-	container.value.width = width
-	container.value.height = height
-	const context = container.value.getContext("2d");
+	canvas_container.value.width = width
+	canvas_container.value.height = height
+	const context = canvas_container.value.getContext("2d");
 	const img = context.createImageData(shape.x, shape.y);
 	const flat = [].concat.apply([], tiles);
 	const [min, max] = d3.extent(flat);
@@ -119,7 +135,97 @@ function update() {
 
 	context.putImageData(img, px, py);
 
+
+
+	// update the svg
+	const svg = d3.select(svg_container.value);
+	
+	// draw a grid
+	const grid = svg.append("g")
+		.attr("class", "grid")
+		.attr("transform", `translate(0, ${height})`);
+
+	const y = d3.scaleTime()
+		.domain([new Date(2017, 5, 1), new Date(2017, 10, 31)])
+		.range([0, height]);
+
+	const x = d3.scaleTime()
+		.domain([0, 24])
+		.range([0, width]);
+
+	console.log("x", x);
+	console.log("y", y);
+
+	const xAxis = d3.axisBottom(x)
+		.tickFormat(d3.timeFormat("%b"))
+		.tickSize(-height);
+
+	const yAxis = d3.axisLeft(y)
+		.tickFormat(d3.timeFormat("%d"))
+		.tickSize(-width);
+
+		
+	svg.on("mousemove", e => {
+		if (mousehold.value) {
+			
+			console.log("dragging");
+		} else {
+			const rect = svg_container.value.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+			const hour = Math.floor(x / (width / 24) + 0.5);
+			const day = Math.floor(y / (height / 183) + 0.5);
+			timemap_cur_day.value = day;
+			timemap_cur_hour.value = hour;
+			// console.log(curDatetime.value);
+		}
+	});
+		
+
+
+
 }
+
+// const gridlayer = computed(() => {
+// 	const {
+// 		width,
+// 		height,
+// 	} = props;
+
+// 	const grid = s.append("g")
+// 		.attr("class", "grid")
+// 		.attr("transform", `translate(0, ${height})`);
+
+// 	console.log("gridlayer", grid);
+
+
+// 	const x = d3.scaleTime()
+// 		.domain([new Date(2017, 5, 1), new Date(2017, 10, 31)])
+// 		.range([0, width]);
+
+// 	const y = d3.scaleTime()
+// 		.domain([0, 24])
+// 		.range([0, height]);
+
+// 	const xAxis = d3.axisBottom(x)
+// 		.tickFormat(d3.timeFormat("%b"))
+// 		.tickSizeOuter(0);
+
+// 	const yAxis = d3.axisLeft(y)
+// 		.tickFormat(d3.timeFormat("%H"))
+// 		.tickSizeOuter(0);
+
+// 	grid.append("g")
+// 		.attr("class", "x axis")
+// 		.call(xAxis);
+
+// 	grid.append("g")
+// 		.attr("class", "y axis")
+// 		.call(yAxis);
+
+// 	return grid.node();
+// });
+
 
 watch(
 	() => props.data,
@@ -134,8 +240,32 @@ watch(
 
 <template>
 	<div class="timemap_img">
-		<canvas ref="container" />
+		<canvas ref="canvas_container" />
+	</div>
+	<div class="timemap_axis">
+		<svg class="timemap_svg" ref="svg_container" />
 	</div>
 </template>
+
+
+
+<style>
+	.timemap_img {
+		width: 230px;
+		height: 740px;
+		position: absolute;
+		z-index: 1;
+	}
+	.timemap_axis {
+		width: 230px;
+		height: 740px;
+		position: absolute;
+		z-index: 2;
+	}
+	.timemap_svg {
+		width: 230px;
+		height: 740px;
+	}
+</style>
 
 

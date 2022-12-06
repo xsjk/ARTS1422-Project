@@ -17,6 +17,7 @@ export const can_move = ref(true);
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
 	import { hours, dates } from '../d3/Calendar.vue';
+	import { mousehold } from '../../Global.vue';
 
 
 	import * as d3 from 'd3';
@@ -135,6 +136,7 @@ export const can_move = ref(true);
 	var marker = L.marker(center.value);
 	marker.addTo(map);
 	map.on('click', async(e) => {
+		// mousehold.value = false;
 		if(!can_move.value) return;
 		//console.log(e);
 		var popup = L.popup()
@@ -155,6 +157,8 @@ export const can_move = ref(true);
 	});
 
 	map.on('mouseup', async(e) => {
+		console.log("map mouseup")
+		mousehold.value = false;
 		center.value = [e.target.getCenter().lng, e.target.getCenter().lat];
 	});
 

@@ -18,7 +18,8 @@ arrive_days_to_index = [np.load(f'./data/arrive_day_to_index/arrive_{i}day_to_in
 departure_days_to_index = [np.load(f'./data/departure_day_to_index/departure_{i}day_to_index.npy') for i in range(184)]
 arrive_hours_to_index = [np.load(f'./data/arrive_hour_to_index/arrive_{i}hour_to_index.npy') for i in range(24)]
 departure_hours_to_index = [np.load(f'./data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
-topological_graph_data = np.load('./data/topological_graph.npy')
+topological_graph_data_by_departure_time = np.load('./data/topological_graph_by_departure_time.npy')
+topological_graph_data_by_arrive_time = np.load('./data/topological_graph_by_arrive_time.npy')
 
 @nb.njit
 def find_index(index, indices):
@@ -111,16 +112,13 @@ class isochrone_graph:
     __一个等时线最少点数:int = 10
 
 
-    def k_min_isochrone(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[float],list[float],list[float]]:
+    def k_min_isochrone_by_departure_time(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[list[float],list[float]]]:
         if date==[]:
             date = list(range(184))
         if hour==[]:
             hour = list(range(24))
-        # if k[1] - k[0] < 10 or k[2] - k[1] < 10:
-        #     raise('Invalid K is given in function 等时线图::某小时k分钟线!!!')
         df = d.get_data(date,hour,'departure_time')
         result = []
-        #筛选起点符合要求的字段
         delta_lng = df['starting_lng'].values - middle_point_coordinate[0]
         delta_lat = df['starting_lat'].values - middle_point_coordinate[1]
         normal_times = df['normal_time'].values
@@ -131,17 +129,59 @@ class isochrone_graph:
             max_r = k[i] * 0.0075 * 0.2
             while r <= max_r:
                 #初步筛选起df点位置与时长合乎选择条件的字段
-                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times >= (k[i] - 5)) & (normal_times < (k[i] + 5))
+                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= k[i])
                 if np.sum(df_index) > self.__一个等时线最少点数:
                     data = df[df_index]
                     vectors = (data[['dest_lng','dest_lat']].values - data[['starting_lng','starting_lat']].values) / data['normal_time'].values.reshape(data.shape[0],1) * k[i]
                     bases_index = (np.floor((np.arctan2(vectors[:,1],vectors[:,0]) / np.pi * 180 + 10) % 360) / 20).astype(np.int8)
                     bases_product = np.sum(bases[bases_index]*vectors,axis=1)
-                    result_i = np.zeros(18)
+                    result_range = np.zeros(18)
+                    result_persentage = np.zeros(18)
                     for j in range(18):
-                        result_i[j] = np.mean(bases_product[np.equal(bases_index,j)])
-                    result_i[np.isnan(result_i)] = 0
-                    result.append(result_i.tolist())
+                        result_range[j] = np.max(bases_product[np.equal(bases_index,j)])
+                        result_persentage[j] = np.sum(np.equal(bases_index,j))
+                    result_range[np.isnan(result_range)] = 0
+                    result_persentage /= np.sum(result_persentage)
+                    result.append([result_range.tolist(), result_persentage.tolist()])
+                    break
+                else:
+                    r += self.__最小半径增量
+            if r > max_r:
+                raise(f"Don't have enough points to draw k[{i}] in isochrone_graph::k_min_isochrone")
+        return result
+
+    def k_min_isochrone_by_arrival_time(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[list[float],list[float]]]:
+        if date==[]:
+            date = list(range(184))
+        if hour==[]:
+            hour = list(range(24))
+        df = d.get_data(date,hour,'arrive_time')
+        result = []
+        delta_lng = df['dest_lng'].values - middle_point_coordinate[0]
+        delta_lat = df['dest_lat'].values - middle_point_coordinate[1]
+        normal_times = df['normal_time'].values
+        bases = np.array([np.array([np.cos(np.radians(i)), np.sin(np.radians(i))]) for i in range(0,360,20)])
+        #画k[i]分钟图
+        for i in range(len(k)):
+            r = self.__默认最小半径
+            max_r = k[i] * 0.0075 * 0.2
+            while r <= max_r:
+                #初步筛选起df点位置与时长合乎选择条件的字段
+                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= k[i])
+                if np.sum(df_index) > self.__一个等时线最少点数:
+                    data = df[df_index]
+                    vectors = (data[['starting_lng','starting_lat']].values - data[['dest_lng','dest_lat']].values) / data['normal_time'].values.reshape(data.shape[0],1) * k[i]
+                    bases_index = (np.floor((np.arctan2(vectors[:,1],vectors[:,0]) / np.pi * 180 + 10) % 360) / 20).astype(np.int8)
+                    bases_product = np.sum(bases[bases_index]*vectors,axis=1)
+                    result_range = np.zeros(18)
+                    result_persentage = np.zeros(18)
+                    for j in range(18):
+                        result_range[j] = np.max(bases_product[np.equal(bases_index,j)])
+                        result_persentage[j] = np.sum(np.equal(bases_index,j))
+                    result_range[np.isnan(result_range)] = 0
+                    result_persentage /= np.sum(result_persentage)
+                    print(result_persentage)
+                    result.append([result_range.tolist(), result_persentage.tolist()])
                     break
                 else:
                     r += self.__最小半径增量
@@ -209,10 +249,7 @@ class thermodynamic_diagram:
         l = 0.31 / enlarge_factor
         array = df[['starting_lng','starting_lat']].values
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
-        # print(df[array_index])
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
-        # with open(r"D:/Users/geshy/Desktop/tmp.txt",'w',encoding='utf-8') as f:
-        #     f.write(str(result))
         return result
 
     def in_degree(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float], enlarge_factor:int)->list[dict['lat':float, 'lng':float, 'count':int]]:
@@ -225,10 +262,7 @@ class thermodynamic_diagram:
         l = 0.31 / enlarge_factor
         array = df[['starting_lng','starting_lat']].values
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
-        # print(df[array_index])
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
-        # with open(r"D:/Users/geshy/Desktop/tmp.txt",'w',encoding='utf-8') as f:
-        #     f.write(str(result))
         return result
 
 class time_map:
@@ -254,8 +288,8 @@ class time_map:
         return data.tolist()
 
 class topological_graph:
-    def draw_topological_graph(self, days:list[int], hours:list[int])->list[list[int]]:
-        if days == []:  
+    def draw_topological_graph_by_departure_time(self, days:list[int], hours:list[int])->list[list[int]]:
+        if days == []:
             days = list(range(184))
         if hours == []:
             hours = list(range(24))
@@ -263,11 +297,26 @@ class topological_graph:
         result = np.zeros((43,43))
         for day in days:
             for hour in hours:
-                result += topological_graph_data[day][hour]
+                result += topological_graph_data_by_departure_time[day][hour]
         total_data = np.sum(result)
         for start in range(43):
             for end in range(43):
                 if result[start][end] >= total_data*0.0035:
                     ans.append({'source':index_to_districts_names[start], 'target':index_to_districts_names[end], 'value':result[start][end]})
         return ans
-    
+    def draw_topological_graph_by_arrival_time(self, days:list[int], hours:list[int])->list[list[int]]:
+        if days == []:
+            days = list(range(184))
+        if hours == []:
+            hours = list(range(24))
+        ans = []
+        result = np.zeros((43,43))
+        for day in days:
+            for hour in hours:
+                result += topological_graph_data_by_arrive_time[day][hour]
+        total_data = np.sum(result)
+        for start in range(43):
+            for end in range(43):
+                if result[start][end] >= total_data*0.0035:
+                    ans.append({'source':index_to_districts_names[start], 'target':index_to_districts_names[end], 'value':result[start][end]})
+        return ans

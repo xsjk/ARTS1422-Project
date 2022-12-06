@@ -1,6 +1,22 @@
-async function k_min_isochrone(k, m, d, h) {
+async function k_min_isochrone_by_departure_time(k, m, d, h) {
   try {
-    const response = await axios.get('http://127.0.0.1:5000/k', {
+    const response = await axios.get('http://127.0.0.1:5000/kd', {
+    params: {
+      k: k,
+      m: m,
+      d: d,
+      h: h
+    }
+  })
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function k_min_isochrone_by_arrival_time(k, m, d, h) {
+  try {
+    const response = await axios.get('http://127.0.0.1:5000/ka', {
     params: {
       k: k,
       m: m,
@@ -102,9 +118,23 @@ async function traffic_flow_out_degree_graph(t) {
   }
 }
 
-async function draw_topological_graph(d, h) {
+async function draw_topological_graph_by_departure_time(d, h) {
   try {
-    const response = await axios.get('http://127.0.0.1:5000/drw', {
+    const response = await axios.get('http://127.0.0.1:5000/drwd', {
+    params: {
+      d: d,
+      h: h
+    }
+  })
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function draw_topological_graph_by_arrival_time(d, h) {
+  try {
+    const response = await axios.get('http://127.0.0.1:5000/drwa', {
     params: {
       d: d,
       h: h
