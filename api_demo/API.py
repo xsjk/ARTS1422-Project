@@ -71,7 +71,10 @@ class date:
     __type:str = ''
 
     def get_data(self, days:list[int], hours:list[int], type:str):
-        print()
+        if days == []:
+            days = list(range(184))
+        if hours == []:
+            hours = list(range(24))
         assert 0 <= min(days) <= max(days) <= 183 and 0 <= min(hours) <= max(hours) <= 23
         if type == self.__type:
             if days != self.__days or hours != self.__hours:
@@ -109,6 +112,10 @@ class isochrone_graph:
 
 
     def k_min_isochrone(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[float],list[float],list[float]]:
+        if date==[]:
+            date = list(range(184))
+        if hour==[]:
+            hour = list(range(24))
         # if k[1] - k[0] < 10 or k[2] - k[1] < 10:
         #     raise('Invalid K is given in function 等时线图::某小时k分钟线!!!')
         df = d.get_data(date,hour,'departure_time')
@@ -147,6 +154,10 @@ class order_scatter_diagram:
 
     #已调试
     def origin(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float])->list[list[float, float]]:
+        if date==[]:
+            date = list(range(184))
+        if hour==[]:
+            hour = list(range(24))
         df = d.get_data(date, hour, 'departure_time')
         lngs = df['starting_lng'].values - middle_point_coordinate[0]
         lats = df['starting_lat'].values - middle_point_coordinate[1]
@@ -155,6 +166,10 @@ class order_scatter_diagram:
 
     #已调试
     def dest(self, date:list[int], hour:list[int], middle_point_coordinate:list[float, float]):
+        if date==[]:
+            date = list(range(184))
+        if hour==[]:
+            hour = list(range(24))
         df = d.get_data(date, hour, 'arrive_time')
         lngs = df['dest_lng'].values - middle_point_coordinate[0]
         lats = df['dest_lat'].values - middle_point_coordinate[1]

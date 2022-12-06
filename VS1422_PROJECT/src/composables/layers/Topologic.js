@@ -4,6 +4,10 @@ import L from 'leaflet';
 const width = 462;
 const height = 550;
 
+const innerRadius = 120;
+const outerRadius = 140;
+
+
 const svg = d3.create('svg')
             .attr('viewBox', `0 0 ${width} ${height}`);
 
@@ -32,8 +36,6 @@ var layer = L.svgOverlay(
 );
 
 
-const innerRadius = 100;
-const outerRadius = 120;
 
 const chord = d3.chordDirected()
                 .padAngle(10 / innerRadius)
@@ -158,6 +160,15 @@ export function update_layer(data, map) {
     ));
 
     map.dragging.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.touchZoom.disable();
+    map.keyboard.disable();
+    map.zoomControl.disable();
+    
+
+    console.log("map", map);
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
@@ -210,6 +221,15 @@ export function update_layer(data, map) {
 
 export function remove_layer(map) {
     can_move_ref.value = true;
+
     map.dragging.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.touchZoom.enable();
+    map.keyboard.enable();
+    map.zoomControl.enable();
+    
+
     map.setView(last_view.center, last_view.zoom);
 }

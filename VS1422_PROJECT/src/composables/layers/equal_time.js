@@ -59,11 +59,17 @@ export function generate_layer(data, map){
 
 const tenMinColor = "red", thirtyMinColor = "#F76809", sixtyMinColor = "#32CD32";
 
+const X = [0,1,2]
+const Y = [10,20,30]
+const colors = [tenMinColor, thirtyMinColor, sixtyMinColor]
+const cell_height = 50;
+const cell_width = 50;
+
 export async function update_layer(map, selected, dates, hours, distance) {
 	g.attr('transform', `translate(${scale_lng(selected[0])-2},${scale_lat(selected[1])-23})`);
 	g.selectAll('path').attr('opacity',0);
 	console.log(selected[0],selected[1]);
-	const colors = {10:tenMinColor,30:thirtyMinColor,60:sixtyMinColor}
+	const colors = {10:tenMinColor,20:thirtyMinColor,30:sixtyMinColor}
 	var data = await k_min_isochrone([distance], [selected[0],selected[1]], dates, hours);
 	var start_rad = Math.PI / 2;
 	var delta_rad = 2 * Math.PI / data[0].length;
@@ -84,11 +90,6 @@ export async function update_layer(map, selected, dates, hours, distance) {
 			.attr('stroke-opacity',1.0)
 }
 
-const X = [0,1,2]
-const Y = [10,30,60]
-const colors = [tenMinColor, thirtyMinColor, sixtyMinColor]
-const cell_height = 50;
-const cell_width = 50;
 export function generate_selection(map,distance){
 	const svg = d3.create("svg")
 				.attr("id", "selection")

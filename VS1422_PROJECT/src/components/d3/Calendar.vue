@@ -246,7 +246,7 @@ export function Calendar(data, {
 
   // brush内容
   const brush = d3.brush()
-	  .extent([[30,10], [width-60,height-10]])
+	  .extent([[30,10], [width-20,height-10]])
 	  .on("start", OnStart)
 	  .on("brush", OnBrush)
 	  .on("end", OnEnd);

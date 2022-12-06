@@ -72,12 +72,14 @@ export const can_move = ref(true);
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	});
 	const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+	const timemap_img = L.tileLayer('../../../src/assets/timemap.png');
 	const satellite = L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 	const baseLayers = {
 		'Basemap': osm,
 		'Streets': streets,
 		'Dark': dark,
-		'Satellite': satellite
+		'Satellite': satellite,
+		'Timemap': timemap_img
 	};
 
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
@@ -87,12 +89,16 @@ export const can_move = ref(true);
 	heatmapinLayer.on("add",function(){
 		HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 	})
+	
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
 		zoom: scale.value,
 		renderer: L.svg(),
 		attributionControl:false,
-		layers: [dark]
+		layers: [dark],
+		doubleClickZoom: true,
+		dragging: true,
+		closePopupOnClick: true,
 	})
 	global_map.value = map;
 
@@ -150,13 +156,14 @@ export const can_move = ref(true);
 	});
 
 	map.on('mouseup', async(e) => {
-		//var center = e.target.getCenter();
-		//center.value = [e.target.getCenter().lng, e.target.getCenter().lat];
+		center.value = [e.target.getCenter().lng, e.target.getCenter().lat];
 	});
 
 
 	/// control
-	L.control.scale({ maxWidth: 200, metric: true, imperial: false }).addTo(map)
+	const scale_control = L.control.scale({ maxWidth: 200, metric: true, imperial: false });
+	scale_control.addTo(map)
+	
 	let mixed = {
 		'HeatMapInLayer': heatmapinLayer,
 		'HeatMapOutLayer': heatmapoutLayer,
@@ -169,25 +176,13 @@ export const can_move = ref(true);
 	watch(
 		[hours, dates, center, scale],
 		async () => {
-			if(!map.hasLayer(heatmapoutLayer)){
-			  //console.log("HeatMapOut不需要更新")
-			  return;
+			if(map.hasLayer(heatmapoutLayer)){
+				HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
 			}
-			//console.log("HeatMapOut需要更新")
-			HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
-		},
-		{ deep: true }
-	);
-
-	watch(
-		[hours, dates, center, scale],
-		async () => {
-			if(!map.hasLayer(heatmapinLayer)){
-			  //console.log("HeatMapIn不需要更新")
-			  return;
+			
+			if(map.hasLayer(heatmapinLayer)){
+				HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 			}
-			//console.log("HeatMapIn需要更新")
-			HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
 		},
 		{ deep: true }
 	);
