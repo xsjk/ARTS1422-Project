@@ -94,32 +94,32 @@ export function generate_selection(map,distance){
 	const svg = d3.create("svg")
 				.attr("id", "selection")
 				.attr("width",cell_width)
-				.attr("height",3*cell_height)
-				.style("background","white")
+				.attr("height",3*cell_height);
 	const cells = svg.append("g")
 				.selectAll("rect")
 				.data(X)
 				.join("rect")
+					.attr('class','Equal_rects')
 					.attr("x",0)
 					.attr("y",d=> d*cell_height)
 					.attr("height", cell_height)
 					.attr("width", cell_width)
-					.attr("fill", d=> colors[d])
+					.attr("fill", "white")
+					.attr("selected",false)
 				.on("mouseover",function(data,d){
 					distance.value = Y[d];
-				})
+					d3.selectAll("rect")
+					.attr("selected",false);
+					d3.select(this).attr("selected",true);
+				});
 	const texts = svg.append("g")
-					.selectAll("text")
+					.selectAll("Equal_texts")
 					.data(X)
 					.join("text")
+						.attr('class','Equal_texts')
 						.attr("x",cell_width/2)
-						.attr("y",d=> cell_height/2+d*cell_height)
-						.text(d=>Y[d])
-						.attr("text-anchor","middle")
-						.attr("font-size", "20px")
-						.attr("font-weight", "bold")
-						.attr("fill", "red")
-	console.log("打算add selection")
+						.attr("y",d=> cell_height/2+d*cell_height+5)
+						.text(d=>Y[d]);
 	selection.onAdd = function (map) {
 		this._div = L.DomUtil.get(svg.node());
 		return this._div;

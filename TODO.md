@@ -1,7 +1,5 @@
 # TODO
 
-
-
 ## Equaltime
 
 调颜色 (图例)
@@ -29,7 +27,7 @@
 
 调颜色
 
-转声音
+*转声音
 
 ## Topologic
 
@@ -46,7 +44,6 @@
 ## district distribution 
 
 与topologic交互
-
 
 ## calendar 
 

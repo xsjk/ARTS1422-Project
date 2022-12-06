@@ -1,5 +1,4 @@
 <script>
-
 import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
@@ -114,11 +113,11 @@ export const can_move = ref(true);
 		HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
 	})
 	equaltimeLayer.on("add",function(){
-		console.log("equalTime Loaded");
 		if (selected.value == undefined || selected.value.length == 0){
 			selected.value = center.value;
 		}
-		EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+		distance.value = 0;
+		//EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
 		EqualTimeMap.generate_selection(map,distance);
 	})
 	equaltimeLayer.on("remove",function(){
@@ -190,7 +189,7 @@ export const can_move = ref(true);
 	watch(
 		[hours, dates, selected, distance],
 		async () => {
-			if(!map.hasLayer(equaltimeLayer)){
+			if(!map.hasLayer(equaltimeLayer) || distance.value == 0){
 			  //console.log("EqualTimeMap不需要更新")
 			  return;
 			}
@@ -238,4 +237,26 @@ export const can_move = ref(true);
 </template>
 
 <style>
+	.Equal_rects{
+		rx:10;
+		ry:10;
+	}
+	.Equal_rects[selected=false]{
+		stroke: white;
+		stroke-width: 0.3px;
+		fill-opacity: 0.3;
+		stroke-opacity: 0.3;
+	}
+	.Equal_rects[selected=true]{
+		stroke: black;
+		stroke-width: 1px;
+		fill-opacity: 0.7;
+		stroke-opacity: 0.7;
+	}
+	.Equal_texts{
+		text-anchor: middle;
+		font-size: 20px;
+		font-weight: bold;
+		fill: black;
+	}
 </style>
