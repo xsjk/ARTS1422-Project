@@ -10,16 +10,16 @@ index = 0
 index_to_districts_names = ['海秀镇','西秀镇','海秀街道','长流镇','东山镇','永兴镇','石山镇','秀英街道','龙桥镇','金宇街道','大同街道','龙泉镇','城西镇','新坡镇','遵谭镇','海垦街道','滨海街道','金贸街道','中山街道','龙塘镇','府城街道','旧州镇','云龙镇','大坡镇','红旗镇','甲子镇','三门坡镇','滨江街道','凤翔街道','国兴街道','白沙街道','三江镇','白龙街道','博爱街道','新埠街道','海府街道','蓝天街道','人民路街道','和平南街道','灵山镇','演丰镇','大致坡镇','海甸街道']
 
 #loading data
-total_data = pd.read_pickle('../data/data.pkl')
-time_map_departure = np.load('../data/时间地图_departure.npy')
-time_map_arrive = np.load('../data/时间地图_arrive.npy')
-district_town_id_to_index = json.load(open('../data/时间地图_npy_keys_to_index.json'))
-arrive_days_to_index = [np.load(f'../data/arrive_day_to_index/arrive_{i}day_to_index.npy') for i in range(184)]
-departure_days_to_index = [np.load(f'../data/departure_day_to_index/departure_{i}day_to_index.npy') for i in range(184)]
-arrive_hours_to_index = [np.load(f'../data/arrive_hour_to_index/arrive_{i}hour_to_index.npy') for i in range(24)]
-departure_hours_to_index = [np.load(f'../data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
-topological_graph_data_by_departure_time = np.load('../data/topological_graph_by_departure_time.npy')
-topological_graph_data_by_arrive_time = np.load('../data/topological_graph_by_arrive_time.npy')
+total_data = pd.read_pickle('./data/data.pkl')
+time_map_departure = np.load('./data/时间地图_departure.npy')
+time_map_arrive = np.load('./data/时间地图_arrive.npy')
+district_town_id_to_index = json.load(open('./data/时间地图_npy_keys_to_index.json'))
+arrive_days_to_index = [np.load(f'./data/arrive_day_to_index/arrive_{i}day_to_index.npy') for i in range(184)]
+departure_days_to_index = [np.load(f'./data/departure_day_to_index/departure_{i}day_to_index.npy') for i in range(184)]
+arrive_hours_to_index = [np.load(f'./data/arrive_hour_to_index/arrive_{i}hour_to_index.npy') for i in range(24)]
+departure_hours_to_index = [np.load(f'./data/departure_hour_to_index/departure_{i}hour_to_index.npy') for i in range(24)]
+topological_graph_data_by_departure_time = np.load('./data/topological_graph_by_departure_time.npy')
+topological_graph_data_by_arrive_time = np.load('./data/topological_graph_by_arrive_time.npy')
 
 @nb.njit
 def find_index(index, indices):
