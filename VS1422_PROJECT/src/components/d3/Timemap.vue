@@ -13,7 +13,10 @@ import D3Wrapper from './D3Wrapper.vue';
 import { computed } from 'vue';
 
 
-
+var mouse_drag_start = {
+	day: null,
+	hour: null
+};
 
 const bilinearInterpolator = func => (x, y) => {
   // "func" is a function that takes 2 integer arguments and returns some value
@@ -65,6 +68,30 @@ const props = defineProps({
 
 const canvas_container = ref(null);
 const svg_container = ref(null);
+
+
+function get_cur_time_by_event (e) {
+	const rect = svg_container.value.getBoundingClientRect();
+	const x = e.clientX - rect.left;
+	const y = e.clientY - rect.top;
+	const hour = Math.floor(x / (props.width / 24) + 0.5);
+	const day = Math.floor(y / (props.height / 183) + 0.5);
+	return {hour: hour, day: day};
+}
+
+function update_cur_time(e) {
+	if (e) {
+		const {hour, day} = get_cur_time_by_event(e);
+		timemap_cur_hour.value = hour;
+		timemap_cur_day.value = day;
+	} else {
+		timemap_cur_hour.value = null;
+		timemap_cur_day.value = null;
+	}
+}
+
+
+
 
 function update() {
 	let {
@@ -164,67 +191,33 @@ function update() {
 		.tickFormat(d3.timeFormat("%d"))
 		.tickSize(-width);
 
+
 		
-	svg.on("mousemove", e => {
-		if (mousehold.value) {
-			
-			console.log("dragging");
-		} else {
-			const rect = svg_container.value.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
-			const hour = Math.floor(x / (width / 24) + 0.5);
-			const day = Math.floor(y / (height / 183) + 0.5);
-			timemap_cur_day.value = day;
-			timemap_cur_hour.value = hour;
-			// console.log(curDatetime.value);
-		}
+	svg.on('mousedown', e => {
+		mousehold.value = true;
+		mouse_drag_start = get_cur_time_by_event(e);
+		console.log("mousedown");
+	}).on("mousemove", e => {
+		update_cur_time(e);
+
+		// if (mousehold.value) {
+		// 	console.log("dragging");
+
+		// } else {
+		// 	update_cur_time(e);
+		// }
+	}).on('mouseup', e => {
+		mousehold.value = false;
+		const mouse_drag_end = get_cur_time_by_event(e);
+
+		console.log("hour range:", mouse_drag_start.hour, mouse_drag_end.hour);
+		console.log("day range:", mouse_drag_start.day, mouse_drag_end.day);
+
+	}).on('mouseout', e => {
+		update_cur_time();
 	});
-		
-
-
 
 }
-
-// const gridlayer = computed(() => {
-// 	const {
-// 		width,
-// 		height,
-// 	} = props;
-
-// 	const grid = s.append("g")
-// 		.attr("class", "grid")
-// 		.attr("transform", `translate(0, ${height})`);
-
-// 	console.log("gridlayer", grid);
-
-
-// 	const x = d3.scaleTime()
-// 		.domain([new Date(2017, 5, 1), new Date(2017, 10, 31)])
-// 		.range([0, width]);
-
-// 	const y = d3.scaleTime()
-// 		.domain([0, 24])
-// 		.range([0, height]);
-
-// 	const xAxis = d3.axisBottom(x)
-// 		.tickFormat(d3.timeFormat("%b"))
-// 		.tickSizeOuter(0);
-
-// 	const yAxis = d3.axisLeft(y)
-// 		.tickFormat(d3.timeFormat("%H"))
-// 		.tickSizeOuter(0);
-
-// 	grid.append("g")
-// 		.attr("class", "x axis")
-// 		.call(xAxis);
-
-// 	grid.append("g")
-// 		.attr("class", "y axis")
-// 		.call(yAxis);
-
-// 	return grid.node();
-// });
 
 
 watch(

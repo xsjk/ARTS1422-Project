@@ -326,8 +326,6 @@ export function Calendar(data, {
   };
   async function OnEnd({selection}){
 	mousehold.value = false;
-	// console.log(dates.value)
-	// console.log(days);
 	dates.value = days;
   };
 
@@ -512,19 +510,23 @@ export function PieChart(data, {
 watch(
 	[timemap_cur_hour, timemap_cur_day],
 	() => {
-		// highlight current time in clock
-		const hour = timemap_cur_hour.value;
-		console.log("highlight", hour);
-		d3.selectAll(".hour_arc")
-			.attr("stroke", d => d.data % 24 == hour ? "yellow" : "white")
-			.attr("stroke-width", d => d.data % 24 == hour ? 3 : 0.5)
+		if (mousehold.value) {
+			console.log("dragging")
+		} else {
+			// highlight current time in clock
+			const hour = timemap_cur_hour.value;
+			console.log("highlight", hour);
+			d3.selectAll(".hour_arc")
+				.attr("stroke", d => d.data % 24 == hour ? "yellow" : "white")
+				.attr("stroke-width", d => d.data % 24 == hour ? 3 : 0.5)
 
-		// highlight current day in calendar
-		const day = timemap_cur_day.value;
-		console.log("highlight", day);
-		d3.selectAll(".day_cell")
-			.attr("stroke", d => d == day ? "yellow" : "white")
-			.attr("stroke-width", d => d == day ? 2 : 0.1)
+			// highlight current day in calendar
+			const day = timemap_cur_day.value;
+			console.log("highlight", day);
+			d3.selectAll(".day_cell")
+				.attr("stroke", d => d == day ? "yellow" : "white")
+				.attr("stroke-width", d => d == day ? 2 : 0.1)
+		}
 
 	},
 	{ deep: true }

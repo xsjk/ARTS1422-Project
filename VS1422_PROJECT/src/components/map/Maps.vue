@@ -52,7 +52,7 @@ export const can_move = ref(true);
 		weatherData.value = weatherTest.map(d => d);
 		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
 		equaltimeData.value = [0.028758452380954324, 0.02031264526842589, 0.03360677895017247, 0.04200094409784688, 0.03459567830588102, 0.0, 0.0, 0.0, 0.0, 0.025049999999993133, 0.03703024779237924, 0.05582818807481003, 0.028591562079811773, 0.02556251189854171, 0.020557370556213986, 0.04941435904157133, 0.06827150819941265, 0.03244533622005591];
-		topologicData.value = await draw_topological_graph([],[]);
+		// topologicData.value = await draw_topological_graph([],[]);
 	};
 	await getData()
 
