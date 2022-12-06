@@ -1,7 +1,5 @@
 # TODO
 
-
-
 ## Equaltime
 
 调颜色 (图例)
@@ -46,7 +44,6 @@
 ## district distribution 
 
 与topologic交互
-
 
 ## calendar 
 
