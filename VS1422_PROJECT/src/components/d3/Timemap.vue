@@ -1,7 +1,13 @@
 <script>
 	import { ref } from 'vue';
-	export const timemap_cur_day = ref(0);
-	export const timemap_cur_hour = ref(0);
+	export const mouse_cur_time = ref({
+		day:null,
+		hour:null,
+	})
+	export const mouse_drag_start = ref({
+		day:null,
+		hour:null,
+	});
 </script>
 
 <script setup>
@@ -12,11 +18,6 @@ import { mousehold } from '../../Global.vue';
 import D3Wrapper from './D3Wrapper.vue';
 import { computed } from 'vue';
 
-
-var mouse_drag_start = {
-	day: null,
-	hour: null
-};
 
 const bilinearInterpolator = func => (x, y) => {
   // "func" is a function that takes 2 integer arguments and returns some value
@@ -82,11 +83,11 @@ function get_cur_time_by_event (e) {
 function update_cur_time(e) {
 	if (e) {
 		const {hour, day} = get_cur_time_by_event(e);
-		timemap_cur_hour.value = hour;
-		timemap_cur_day.value = day;
+		mouse_cur_time.value.hour = hour;
+		mouse_cur_time.value.day = day;
 	} else {
-		timemap_cur_hour.value = null;
-		timemap_cur_day.value = null;
+		mouse_cur_time.value.hour = null;
+		mouse_cur_time.value.day = null;
 	}
 }
 
@@ -195,23 +196,18 @@ function update() {
 		
 	svg.on('mousedown', e => {
 		mousehold.value = true;
-		mouse_drag_start = get_cur_time_by_event(e);
+		const {hour, day} = get_cur_time_by_event(e);
+		mouse_drag_start.value.hour = hour;
+		mouse_drag_start.value.day = day;
 		console.log("mousedown");
 	}).on("mousemove", e => {
 		update_cur_time(e);
-
-		// if (mousehold.value) {
-		// 	console.log("dragging");
-
-		// } else {
-		// 	update_cur_time(e);
-		// }
 	}).on('mouseup', e => {
 		mousehold.value = false;
 		const mouse_drag_end = get_cur_time_by_event(e);
 
-		console.log("hour range:", mouse_drag_start.hour, mouse_drag_end.hour);
-		console.log("day range:", mouse_drag_start.day, mouse_drag_end.day);
+		console.log("hour range:", mouse_drag_start.value.hour, mouse_drag_end.hour);
+		console.log("day range:", mouse_drag_start.value.day, mouse_drag_end.day);
 
 	}).on('mouseout', e => {
 		update_cur_time();
