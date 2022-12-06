@@ -1,11 +1,15 @@
 <script setup>
 import D3Wrapper from './D3Wrapper.vue';
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import * as d3 from 'd3';
 // import {Calendar,PieChart} from "../../composables/d3/calendar/calendar"
-import {Legend} from "../../composables/d3/calendar/test"
-import { ref } from 'vue';
+import { Legend } from "../../composables/d3/calendar/test"
 import { can_move } from '../map/Maps.vue';
+import { timemap_cur_day, timemap_cur_hour } from './Timemap.vue';
+import { watch } from 'vue';
+import { mousehold, keyhold } from '../../Global.vue';
+
+
 const props = defineProps({
   data: {
 	type: Array,
@@ -199,6 +203,7 @@ export function Calendar(data, {
 		? ([, I]) => I.filter(i => ![0, 6].includes(X[i].getUTCDay()))
 		: ([, I]) => I)
 	.join("rect")
+  		.attr("class", "day_cell")
 	  .attr("width", cellSize - 1)
 	  .attr("height", cellSize - 1)
 	  .attr("x", i => xScale(i))
@@ -272,6 +277,7 @@ export function Calendar(data, {
 
   // brush 相关函数
   function OnStart({selection}){
+	mousehold.value = true;
 	if (selection)
 	if (selection[0][0]==selection[1][0] && selection[1][1]==selection[0][1])
 	{
@@ -319,6 +325,7 @@ export function Calendar(data, {
 	svg.property("days", days).dispatch("input");
   };
   async function OnEnd({selection}){
+	mousehold.value = false;
 	// console.log(dates.value)
 	// console.log(days);
 	dates.value = days;
@@ -381,12 +388,11 @@ export function PieChart(data, {
   const arcLabel = d3.arc().innerRadius(labelRadius).outerRadius(labelRadius);
 
   const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [-width / 2, -height / 2, width, height])
-      .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
+				.attr("width", width)
+				.attr("height", height)
+				.attr("viewBox", [-width / 2, -height / 2, width, height])
+				.attr("style", "max-width: 100%; height: auto; height: intrinsic;");
 
-  var mousedown = false;
   svg.append("g")
 	  .attr('opacity', 1)
 	  .attr('stroke', 'black')
@@ -395,14 +401,15 @@ export function PieChart(data, {
     .selectAll("path")
     .data(arcs)
     .join("path")
-      .attr("fill", d => color(N[d.data]))
-      .attr("d", arc)
-	  .attr('opacity', 0.4)
-	  .attr('stroke', 'white')
-	  .attr('stroke-width', 0.5)
+  		.attr("class", "hour_arc")
+		.attr("fill", d => color(N[d.data]))
+		.attr("d", arc)
+		.attr('opacity', 0.4)
+		.attr('stroke', 'white')
+		.attr('stroke-width', 0.5)
 	.attr('noclicked',true)
 	.on('mousedown', function(I,i){
-		mousedown = true;
+		// mousehold.value = true;
 		var noclicked = this.getAttribute('noclicked') == 'true';
 		if(noclicked == true){
 			console.log('push');
@@ -423,25 +430,27 @@ export function PieChart(data, {
 		}
 	})
 	.on('mouseover', function(I,i){
-		if(!mousedown) return;
-		var noclicked = this.getAttribute('noclicked') == 'true';
-		if(noclicked == true){
-			console.log('push');
-			times.push(i.data);
-			console.log(hours.value);
-			d3.select(this)
-			.attr('opacity', 1)
-			.attr('stroke', 'black')
-			.attr('stroke-width', 1)
-			.attr('noclicked', false)
-		} else {
-			console.log('pop');
-			times = times.filter(d => d!=i.data)
-			d3.select(this)
-			.attr('opacity', 0.4)
-			.attr('stroke', 'white')
-			.attr('stroke-width', 0.5)
-			.attr('noclicked', true)
+		console.log('mousehold: ' + mousehold.value);
+		if(mousehold.value || keyhold.value) {
+			var noclicked = this.getAttribute('noclicked') == 'true';
+			if(noclicked == true){
+				console.log('push');
+				times.push(i.data);
+				console.log(hours.value);
+				d3.select(this)
+				.attr('opacity', 1)
+				.attr('stroke', 'black')
+				.attr('stroke-width', 1)
+				.attr('noclicked', false)
+			} else {
+				console.log('pop');
+				times = times.filter(d => d!=i.data)
+				d3.select(this)
+				.attr('opacity', 0.4)
+				.attr('stroke', 'white')
+				.attr('stroke-width', 0.5)
+				.attr('noclicked', true)
+			}
 		}
 	})
 	.append("title")
@@ -450,51 +459,77 @@ export function PieChart(data, {
   //////////////////
   //////////////////
   ////////屏幕检测鼠标行为
-  d3.select("body").on('keydown',function(current){
-	  if(current.key != "Shift") return;
-	  console.log("mousedown");
-	  mousedown = true;
-  })
-  .on('mouseup', function(current){
-	if (!can_move.value) return;
-		console.log("mouseup");
-		console.log("old", hours.value)
-		console.log("new", times);
-		hours.value = times;
-		mousedown = false;
+	d3.select("body").on('keydown',function(current){
+		keyhold.value = true;
+		if(current.key != "Shift") return;
 	})
-  .on('keyup', function(current){
-	    //console.log(current);
+	.on('mouseup', function(current){
+		console.log("body mouseup");
+		mousehold.value = false;
+		if (can_move.value) {
+			console.log("old", hours.value)
+			console.log("new", times);
+			hours.value = times;
+		}
+	})
+	.on('keyup', function(current){
+		keyhold.value = false;
+		//console.log(current);
 		console.log("keyup");
 		console.log("old", hours.value)
 		console.log("new", times)
 		hours.value = times;
-		mousedown = false;
-	});
+	})
+	.on("mousedown", function(current){
+		mousehold.value = true;
+	})
 
-  svg.append("g")
-      .attr("font-family", "sans-serif")
-      .attr("font-size", 10)
-      .attr("text-anchor", "middle")
-    .selectAll("text")
-    .data(arcs)
-    .join("text")
-      .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
-    .selectAll("tspan")
-    .data(d => {
-      const lines = `${title(d.data)}`.split(/\n/);
-      return (d.endAngle - d.startAngle) > 0.25 ? lines : lines.slice(0, 1);
-    })
-    .join("tspan")
-      .attr("x", 0)
-      .attr("y", (_, i) => `${i * 0.9}em`)
-      .attr("font-weight", (_, i) => i ? null : "bold")
-      .text(d => d)
-	  .attr("readOnly", "true")
-	  .attr("style", "user-select: none; pointer-events: none")
+	svg.append("g")
+		.attr("font-family", "sans-serif")
+		.attr("font-size", 10)
+		.attr("text-anchor", "middle")
+		.selectAll("text")
+		.data(arcs)
+		.join("text")
+		.attr("transform", d => `translate(${arcLabel.centroid(d)})`)
+		.selectAll("tspan")
+		.data(d => {
+		const lines = `${title(d.data)}`.split(/\n/);
+		return (d.endAngle - d.startAngle) > 0.25 ? lines : lines.slice(0, 1);
+		})
+		.join("tspan")
+		.attr("x", 0)
+		.attr("y", (_, i) => `${i * 0.9}em`)
+		.attr("font-weight", (_, i) => i ? null : "bold")
+		.text(d => d)
+		.attr("readOnly", "true")
+		.attr("style", "user-select: none; pointer-events: none")
 
   return Object.assign(svg.node(), {scales: {color}});
 }
+
+
+watch(
+	[timemap_cur_hour, timemap_cur_day],
+	() => {
+		// highlight current time in clock
+		const hour = timemap_cur_hour.value;
+		console.log("highlight", hour);
+		d3.selectAll(".hour_arc")
+			.attr("stroke", d => d.data % 24 == hour ? "yellow" : "white")
+			.attr("stroke-width", d => d.data % 24 == hour ? 3 : 0.5)
+
+		// highlight current day in calendar
+		const day = timemap_cur_day.value;
+		console.log("highlight", day);
+		d3.selectAll(".day_cell")
+			.attr("stroke", d => d == day ? "yellow" : "white")
+			.attr("stroke-width", d => d == day ? 2 : 0.1)
+
+	},
+	{ deep: true }
+
+);
 
 </script>
 
