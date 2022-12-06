@@ -80,3 +80,9 @@ def draw_topological_graph_by_departure_time(self, d:list[int], h:list[int]):
 @apiDeco("/drwa")
 def draw_topological_graph_by_arrival_time(self, d:list[int], h:list[int]):
     return topological_graph.draw_topological_graph_by_arrival_time(d, h)
+
+@app.route("/")
+def test_connection():
+    return "Connected!"
+
+app.run(host='0.0.0.0', port=5000)
