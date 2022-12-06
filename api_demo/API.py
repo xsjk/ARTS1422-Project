@@ -289,7 +289,7 @@ class time_map:
 
 class topological_graph:
     def draw_topological_graph_by_departure_time(self, days:list[int], hours:list[int])->list[list[int]]:
-        if days == []:  
+        if days == []:
             days = list(range(184))
         if hours == []:
             hours = list(range(24))
@@ -304,8 +304,8 @@ class topological_graph:
                 if result[start][end] >= total_data*0.0035:
                     ans.append({'source':index_to_districts_names[start], 'target':index_to_districts_names[end], 'value':result[start][end]})
         return ans
-    def draw_topological_graph_by_arrive_time(self, days:list[int], hours:list[int])->list[list[int]]:
-        if days == []:  
+    def draw_topological_graph_by_arrival_time(self, days:list[int], hours:list[int])->list[list[int]]:
+        if days == []:
             days = list(range(184))
         if hours == []:
             hours = list(range(24))
