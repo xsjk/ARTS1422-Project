@@ -150,7 +150,7 @@ class isochrone_graph:
                 raise(f"Don't have enough points to draw k[{i}] in isochrone_graph::k_min_isochrone")
         return result
 
-    def k_min_isochrone_by_arrive_time(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[list[float],list[float]]]:
+    def k_min_isochrone_by_arrival_time(self, k:list[int], middle_point_coordinate:list[float, float], date:list[int], hour:list[int])->list[list[list[float],list[float]]]:
         if date==[]:
             date = list(range(184))
         if hour==[]:

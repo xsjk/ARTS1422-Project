@@ -41,9 +41,13 @@ thermodynamic_diagram = API.thermodynamic_diagram()
 time_map = API.time_map()
 topological_graph = API.topological_graph()
 
-@apiDeco("/k")
-def k_min_isochrone(k:list[int], m:list[float, float], d:list[int], h:list[int]):
-    return isochrone_graph.k_min_isochrone(k, m, d, h)
+@apiDeco("/kd")
+def k_min_isochrone_by_departure_time(k:list[int], m:list[float, float], d:list[int], h:list[int]):
+    return isochrone_graph.k_min_isochrone_by_departure_time(k, m, d, h)
+
+@apiDeco("/ka")
+def k_min_isochrone_by_arrival_time(k:list[int], m:list[float, float], d:list[int], h:list[int]):
+    return isochrone_graph.k_min_isochrone_by_arrival_time(k, m, d, h)
 
 @apiDeco("/o")
 def origin(d:list[int], h:list[int], m:list[float, float]):
