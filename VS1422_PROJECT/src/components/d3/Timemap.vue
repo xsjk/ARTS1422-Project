@@ -133,13 +133,13 @@ function update() {
 		console.log("empty tiles");
 		return;
 	}
-	console.log(tiles);
+
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
 
-	console.log(shape);
-	console.log(height, width);
-	console.log(img_height, img_width);
+	// console.log(shape);
+	// console.log(height, width);
+	// console.log(img_height, img_width);
 
 
 	canvas_container.value.width = width
