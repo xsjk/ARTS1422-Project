@@ -79,33 +79,33 @@ export function generate_layer(data, map, s, c) {
 
 	function onClick(e) {
 		const district_id = district_ids[district_names.indexOf(e.target.feature.properties['name'])];
-		if (lastSelection == e.target) {
-			console.log('deselect')
+		if (selected.value.includes(district_id)) {
 			geojson.resetStyle(lastSelection);
 			lastSelection = null;
 			selected.value = selected.value.filter(d => d != district_id);
-			if (selected.value.length == 0) {
-				selected.value = district_ids;
-			}
 		} else {
-			console.log('select')
-			if (lastSelection) {
-				lastSelection.setStyle({	
-					weight: 10,
-					dashArray: '',
-					fillColor: '#663408',
-					fillOpacity: 0.7
-				});
-				geojson.resetStyle(lastSelection);
-			}
 			selected.value = [
 				district_id
 			];
+			// map.flyTo(e.target.getCenter(),10);
 			lastSelection = e.target;
+			lastSelection.setStyle({
+				weight: 10,
+				dashArray: '',
+				fillColor: '#663408',
+				fillOpacity: 0.7
+			});
 		}
+		if(lastSelection != null){
+			geojson.resetStyle(lastSelection);
+		}
+		// map.flyTo(e.target.getCenter(),10);
+		lastSelection = e.target;
 		lastSelection.setStyle({
 			weight: 2.5,
 			dashArray: '',
+			// fillColor: '#663408',
+			// fillOpacity: 0.7
 			fillOpacity: 0.4
 		});
 	}
