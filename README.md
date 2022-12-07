@@ -4,7 +4,7 @@
 
 This is the final project for *ShanghaiTech University* **Fall 2022 ARTS1422**.
 
-<!-- ## Features -->
+## Features
 
 ## Getting Started
 
@@ -21,7 +21,7 @@ npm install
 ### Quick Start
 
 ```
-python ./api_demo/main.py
+./api_demo/run_demo.ps1
 ```
 
 ```
