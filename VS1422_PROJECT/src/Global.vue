@@ -15,7 +15,6 @@
 
 	export const temp_days = ref([]);
 	export const temp_hours = ref([]);
-	
 </script>
 
 
