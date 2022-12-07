@@ -3,7 +3,6 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
-export const selected_districts = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);
 export const can_move = ref(true);
@@ -17,7 +16,7 @@ export const can_move = ref(true);
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
 	import Controls from '../controls/Controls.vue'
-	import { mousehold, selected_hours, selected_days} from '../../Global.vue';
+	import { mousehold, selected_hours, selected_days, selected_districts } from '../../Global.vue';
 	import {order} from '../d3/Timemap.vue'
 
 	import * as d3 from 'd3';
@@ -104,6 +103,7 @@ export const can_move = ref(true);
 
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
+	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
@@ -227,7 +227,7 @@ export const can_move = ref(true);
 		async () => {
 			console.log("TimeMap需要更新")
 			console.log(selected_districts.value)
-			consoWSog("order"+order.value)
+			console.log("order"+order.value)
 			if(order.value == 0) {
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
 				console.log(timemapData.value);
@@ -253,10 +253,10 @@ export const can_move = ref(true);
 </template>
 
 <style>
-	.Equal_rects{
+	/* .Equal_rects{
 		rx:10;
 		ry:10;
-	}
+	} */
 	.Equal_rects[selected=false]{
 		stroke: white;
 		stroke-width: 0.3px;
