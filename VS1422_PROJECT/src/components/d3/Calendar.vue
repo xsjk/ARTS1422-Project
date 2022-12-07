@@ -7,7 +7,7 @@ import { Legend } from "../../composables/d3/calendar/test"
 import { can_move } from '../map/Maps.vue';
 import { mouse_cur_time, mouse_drag_start } from './Timemap.vue';
 import { watch } from 'vue';
-import { mousehold, keyhold } from '../../Global.vue';
+import { mousehold, keyhold, selected_days, selected_hours, temp_days, temp_hours } from '../../Global.vue';
 
 const props = defineProps({
   data: {
@@ -103,11 +103,6 @@ const clock = computed(() => {
 
 <script>
 
-var days = [];
-var times = [];
-const dates = ref([]);
-const hours = ref([]);
-export { dates, hours };
 
 // Copyright 2021 Observable, Inc.
 // Released under the ISC license.
@@ -209,23 +204,8 @@ export function Calendar(data, {
         .attr("x", i => xScale(i))
         .attr("y", i => yScale(i))
         .attr("fill", i => color(Y[i]))
-        // .attr('opacity', 1)
-        // .attr('stroke', 'white')
-        // .attr('stroke-width', 0.1)
-        .attr('noclicked',true)
-        .attr('mouseslide', false)
-        .on('click', function(I,i){
-            var noclicked = this.getAttribute('noclicked') == 'true';
-            if(noclicked == true){
-                d3.select(this)
-                .attr('noclicked', false)
-            }
-            else{
-                //console.log(clicked)
-                d3.select(this)
-                .attr('noclicked', true)
-            }
-        })
+        .attr('selected',false)
+        .attr('mouseovered', false)
 
   const month = year.append("g")
 	.selectAll("g")
@@ -240,7 +220,6 @@ export function Calendar(data, {
 
   month.append("text")
 	  .attr("x", d => timeWeek.count(d3.utcYear(d), timeWeek.ceil(d)) * cellSize - 360)
-	  //.attr("x", d => timeWeek.count(d3.utcYear(d), d3.utcMonth(X[0[0]])) * cellSize - 5)
 	  .attr("y", -5)
 	  .text(formatMonth);
 
@@ -254,25 +233,12 @@ export function Calendar(data, {
   const selectPlace = svg.append("g")
 		.attr('class', 'brush')
 		.call(brush);
- //  const cell_2 = selectPlace.append("g")
-	// .data(years)
-	// .selectAll("rect")
-	// .data(weekday === "weekday"
-	// 	? ([, I]) => I.filter(i => ![0, 6].includes(X[i].getUTCDay()))
-	// 	: ([, I]) => I)
-	// .join("rect")
-	//   .attr("width", 0.2*cellSize)
-	//   .attr("height", 0.2*cellSize)
-	//   .attr("x", i => xScale(i))
-	//   .attr("y", i => yScale(i))
-	//   .attr('opacity', 0)
- //  if (title) cell_2.append("title")
-	//  .text(title);
 
 
   // brush 相关函数
   function OnStart({selection}){
 	mousehold.value = true;
+
 	if (selection)
 	if (selection[0][0]==selection[1][0] && selection[1][1]==selection[0][1])
 	{
@@ -281,22 +247,15 @@ export function Calendar(data, {
 		console.log(x,y);
 		let f = cell.filter(i => xScale(i) < x_ && xScale(i) + cellSize > x_ && yScale(i) < y_ && yScale(i) + cellSize > y_);
 		f._groups[0].forEach(rect => {
-			if (rect.getAttribute('noclicked') == 'true'){
-				// rect.setAttribute('opacity', 0.5);
-				// rect.setAttribute('stroke', 'black');
-				// rect.setAttribute('stroke-width', 1);
-				rect.setAttribute('noclicked', false);
-				days.push(rect.__data__);
+			if (rect.getAttribute('selected') == 'false'){
+				temp_days.value.push(rect.__data__);
+				temp_days.value = Object.assign([], temp_days.value);
 			} else {
-				// rect.setAttribute('opacity', 1);
-				// rect.setAttribute('stroke', 'white');
-				// rect.setAttribute('stroke-width', 0.1);
-				rect.setAttribute('noclicked', true);
-				days = days.filter(d => d != rect.__data__);
+				temp_days.value = temp_days.value.filter(d => d != rect.__data__);
 			}
 		});
 	}
-	dates.value = days;
+	selected_days.value = Object.assign([], temp_days.value);
   }
   function OnBrush({selection}) {
 	console.log("selection", selection)
@@ -308,21 +267,24 @@ export function Calendar(data, {
 		//   .attr('opacity', 1)
 		//   .attr('stroke', 'white')
 		//   .attr('stroke-width', 0.1)
-		  .attr('noclicked', true);
-		days = cell
+		  .attr('selected', false);
+		temp_days.value = cell
 			.filter(i => x_0 <= xScale(i)+cellSize && xScale(i) < x_1
 			 && y_0 <= yScale(i)+cellSize && yScale(i) < y_1)
 			// .attr('opacity', 0.5)
 			// .attr('stroke', 'black')
 			// .attr('stroke-width', 1)
-			.attr('noclicked',false)
+			.attr('selected',true)
 			.data();
 	}
-	svg.property("days", days).dispatch("input");
+	svg.property("temp_days.value", temp_days.value).dispatch("input");
   };
   async function OnEnd({selection}){
 	mousehold.value = false;
-	dates.value = days;
+	console.log("old", selected_hours.value)
+	console.log("new", temp_days.value)
+	console.log("copy", Object.assign([], temp_days.value))
+	selected_days.value = Object.assign([], temp_days.value);
   };
 
   return Object.assign(svg.node(), {scales: {color}});
@@ -395,56 +357,46 @@ export function PieChart(data, {
     .selectAll("path")
     .data(arcs)
     .join("path")
-  		.attr("class", "hour_arc")
-        .attr("id", d => "hour_arc_" + d.data)
-		.attr("fill", d => color(N[d.data]))
-		.attr("d", arc)
-		// .attr('opacity', 0.4)
-		// .attr('stroke', 'white')
-		// .attr('stroke-width', 0.5)
-	.attr('noclicked',true)
-    .attr('mouseslide',false)
+	.attr("class", "hour_arc")
+	.attr("id", d => "hour_arc_" + d.data)
+	.attr("fill", d => color(N[d.data]))
+	.attr("d", arc)
+	.attr('selected',false)
+    .attr('mouseovered',false)
 	.on('mousedown', function(I,i){
 		// mousehold.value = true;
-		var noclicked = this.getAttribute('noclicked') == 'true';
-		if(noclicked == true){
+		if(this.getAttribute('selected') == 'false'){
 			console.log('push');
-			times.push(i.data);
+			temp_hours.value.push(i.data);
+			temp_hours.value = Object.assign([], temp_hours.value);
 			d3.select(this)
-			.attr('noclicked', false)
+			.attr('selected', true)
 		} else {
 			console.log('pop');
-			times = times.filter(d => d!=i.data)
-			d3.select(this)
-			// .attr('opacity', 0.4)
-			// .attr('stroke', 'white')
-			// .attr('stroke-width', 0.5)
-			.attr('noclicked', true)
+			temp_hours.value = temp_hours.value.filter(d => d!=i.data)
+			d3.select(this).attr('selected', false)
 		}
 	})
 	.on('mouseover', function(I,i){
 		console.log('mousehold: ' + mousehold.value);
+		d3.select(this).attr('mouseovered', true);
 		if(mousehold.value || keyhold.value) {
-			var noclicked = this.getAttribute('noclicked') == 'true';
-			if(noclicked == true){
+			if( this.getAttribute('selected') == 'false'){
 				console.log('push');
-				times.push(i.data);
-				console.log(hours.value);
-				d3.select(this)
-				// .attr('opacity', 1)
-				// .attr('stroke', 'black')
-				// .attr('stroke-width', 1)
-				.attr('noclicked', false)
+				temp_hours.value.push(i.data);
+				temp_hours.value = Object.assign([], temp_hours.value);
+				console.log(selected_hours.value);
+				d3.select(this).attr('selected', true)
 			} else {
 				console.log('pop');
-				times = times.filter(d => d!=i.data)
-				d3.select(this)
-				// .attr('opacity', 0.4)
-				// .attr('stroke', 'white')
-				// .attr('stroke-width', 0.5)
-				.attr('noclicked', true)
+				temp_hours.value = temp_hours.value.filter(d => d!=i.data)
+				d3.select(this).attr('selected', false)
 			}
 		}
+	})
+	.on('mouseout', function(I,i){
+		console.log('mouseout');
+		d3.select(this).attr('mouseovered', false);
 	})
 	.append("title")
 	  .text(d => title(d.data));
@@ -460,18 +412,18 @@ export function PieChart(data, {
 		console.log("body mouseup");
 		mousehold.value = false;
 		if (can_move.value) {
-			console.log("old", hours.value)
-			console.log("new", times);
-			hours.value = times;
+			console.log("old", selected_hours.value)
+			console.log("new", temp_hours.value);
+			selected_hours.value = temp_hours.value;
 		}
 	})
 	.on('keyup', function(current){
 		keyhold.value = false;
 		//console.log(current);
 		console.log("keyup");
-		console.log("old", hours.value)
-		console.log("new", times)
-		hours.value = times;
+		console.log("old", selected_hours.value)
+		console.log("new", temp_hours.value)
+		selected_hours.value = temp_hours.value;
 	})
 	.on("mousedown", function(current){
 		mousehold.value = true;
@@ -502,59 +454,42 @@ export function PieChart(data, {
 }
 
 
+
+
 watch(
-	[mouse_cur_time],
+	[selected_days, selected_hours],
 	() => {
-		if (mousehold.value) {
-			console.log("dragging");
-
-            const hour_range = {
-                min: Math.min(mouse_cur_time.value.hour, mouse_drag_start.value.hour),
-                max: Math.max(mouse_cur_time.value.hour, mouse_drag_start.value.hour)
-            };
-            const day_range = {
-                min: Math.min(mouse_cur_time.value.day, mouse_drag_start.value.day),
-                max: Math.max(mouse_cur_time.value.day, mouse_drag_start.value.day)
-            };
-
-            console.log("hour_range", hour_range);
-            console.log("day_range", day_range);
-
-            d3.selectAll(".day_cell")
-                .filter(i => i>=day_range.min && i<=day_range.max)
-                .attr('noclicked', false);
-            
-            d3.selectAll(".day_cell")
-				.attr("mouseslide", d => d == mouse_cur_time.value.day )
-
-            
-            d3.selectAll(".hour_arc")
-                .filter(i => i.data>=hour_range.min && i.data<=hour_range.max)
-                .attr('noclicked', false);
-
-            d3.selectAll(".hour_arc")
-                .attr("mouseslide", d => d.data == mouse_cur_time.value.hour )
-
-		} else {
-			// highlight current time in clock
-			const hour = mouse_cur_time.value.hour;
-			console.log("highlight", hour);
-			d3.selectAll(".hour_arc")
-                .attr("mouseslide", d => d.data % 24 == hour)
-				// .attr("stroke", d => d.data % 24 == hour ? "yellow" : "white")
-				// .attr("stroke-width", d => d.data % 24 == hour ? 3 : 0.5)
-
-			// highlight current day in calendar
-			const day = mouse_cur_time.value.day;
-			console.log("highlight", day);
-			d3.selectAll(".day_cell")
-				.attr("mouseslide", d => d == day )
-		}
-
+		console.log("selected_days updated")
+		console.log("selected_hours updated")
+		
 	},
 	{ deep: true }
+)
 
-);
+watch(
+	[temp_days, temp_hours],
+	() => {
+		console.log("temp_days updated")
+		console.log("temp_hours updated", temp_hours.value)
+		for (var i = 0; i < 183; i++) {
+			if (temp_days.value.includes(i)) {
+				d3.select(`#day_cell_${i}`).attr("selected",'true')
+			} else {
+				d3.select(`#day_cell_${i}`).attr("selected",'false')
+			}
+		}
+		for (var i = 0; i < 24; i++) {
+			if (temp_hours.value.includes(i)) {
+				d3.select(`#hour_arc_${i}`).attr("selected",'true')
+			} else {
+				d3.select(`#hour_arc_${i}`).attr("selected",'false')
+			}
+		}
+	},
+	{ deep: true }
+)
+
+
 
 </script>
 
@@ -580,44 +515,44 @@ watch(
 	.legend{
 		transform: rotate(90deg) translate(-90px, 90px);
 	}
-	rect.day_cell[noclicked=false][mouseslide=false]{
+	rect.day_cell[selected=true][mouseovered=false]{
 		stroke: white;
 		stroke-width: 0.1px;
 		opacity: 0.5;
 	}
-	rect.day_cell[noclicked=true][mouseslide=false]{
+	rect.day_cell[selected=false][mouseovered=false]{
 		stroke: black;
 		stroke-width: 0.1px;
 		opacity: 1;
 	}
-	rect.day_cell[noclicked=false][mouseslide=true]{
+	rect.day_cell[selected=true][mouseovered=true]{
 		stroke: yellow;
 		fill: red;
 		stroke-width: 0.1px;
 		opacity: 0.5;
 	}
-	rect.day_cell[noclicked=true][mouseslide=true]{
+	rect.day_cell[selected=false][mouseovered=true]{
 		stroke: yellow;
 		fill: red;
 		stroke-width: 0.1px;
 		opacity: 0.5;
 	}
-    path.hour_arc[noclicked=false][mouseslide=false]{
+    path.hour_arc[selected=false][mouseovered=false]{
         opacity: 1;
 		stroke: black;
 		stroke-width: 0.5;
     }
-    path.hour_arc[noclicked=true][mouseslide=false]{
+    path.hour_arc[selected=true][mouseovered=false]{
         opacity: 0.4;
 		stroke: white;
         stroke-width: 0.5;
     }
-    path.hour_arc[noclicked=false][mouseslide=true]{
+    path.hour_arc[selected=false][mouseovered=true]{
         opacity: 1;
 		stroke: yellow;
 		stroke-width: 3;
     }
-    path.hour_arc[noclicked=true][mouseslide=true]{
+    path.hour_arc[selected=true][mouseovered=true]{
         opacity: 0.8;
 		stroke: yellow;
         stroke-width: 3;

@@ -16,8 +16,8 @@ export const can_move = ref(true);
 	import * as EqualTimeMap from '../../composables/layers/equal_time'
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
-	import { hours, dates } from '../d3/Calendar.vue';
-	import { mousehold } from '../../Global.vue';
+
+	import { mousehold, selected_hours, selected_days } from '../../Global.vue';
 
 
 	import * as d3 from 'd3';
@@ -50,8 +50,7 @@ export const can_move = ref(true);
 		const weatherTest = await d3.csv('weatherData.csv');
 		weatherData.value = weatherTest.map(d => d);
 		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
-		equaltimeData.value = [0.028758452380954324, 0.02031264526842589, 0.03360677895017247, 0.04200094409784688, 0.03459567830588102, 0.0, 0.0, 0.0, 0.0, 0.025049999999993133, 0.03703024779237924, 0.05582818807481003, 0.028591562079811773, 0.02556251189854171, 0.020557370556213986, 0.04941435904157133, 0.06827150819941265, 0.03244533622005591];
-		// topologicData.value = await draw_topological_graph([],[]);
+		equaltimeData.value = [[],[]]
 	};
 	await getData()
 
@@ -87,7 +86,7 @@ export const can_move = ref(true);
 	let heatmapoutLayer = HeatMapOut.generate_layer(testData);
 		heatmapoutLayer.cfg.radius = 0.001;
 	heatmapinLayer.on("add",function(){
-		HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
+		HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 	})
 	
 	const map = L.map('map', {
@@ -100,7 +99,7 @@ export const can_move = ref(true);
 		dragging: true,
 		closePopupOnClick: true,
 	})
-	global_map.value = map;
+	global_map.value = map;																																		
 
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move); 
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
@@ -111,14 +110,14 @@ export const can_move = ref(true);
 	// 给所有图层添加add时的自动更新
 	heatmapoutLayer.on("add",function(){
 		console.log("HeatMapOut Loaded");
-		HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
+		HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 	})
 	equaltimeLayer.on("add",function(){
 		if (selected.value == undefined || selected.value.length == 0){
 			selected.value = center.value;
 		}
 		distance.value = 0;
-		//EqualTimeMap.update_layer(dates.value, hours.value, selected.value, map);
+		//EqualTimeMap.update_layer(selected_days.value, selected_hours.value, selected.value, map);
 		EqualTimeMap.generate_selection(map,distance);
 	})
 	equaltimeLayer.on("remove",function(){
@@ -126,7 +125,7 @@ export const can_move = ref(true);
 		EqualTimeMap.remove_selection(map);
 	})
 	topologicLayer.on("add", async function(){
-		topologicData.value = await draw_topological_graph(dates.value, hours.value);
+		topologicData.value = await draw_topological_graph_by_departure_time(selected_days.value, selected_hours.value);
 		TopologicMap.update_layer(topologicData.value, map);
 	}).on("remove",function(){
 		console.log("topologic Removed");
@@ -177,41 +176,41 @@ export const can_move = ref(true);
 	districtLayer.addTo(map);
 	// watch
 	watch(
-		[hours, dates, center, scale],
+		[selected_hours.value, selected_days.value, center, scale],
 		async () => {
 			if(map.hasLayer(heatmapoutLayer)){
-				HeatMapOut.update_layer(dates.value, hours.value, center.value, scale.value);
+				HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
 			
 			if(map.hasLayer(heatmapinLayer)){
-				HeatMapIn.update_layer(dates.value, hours.value, center.value, scale.value);
+				HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
 		},
 		{ deep: true }
 	);
 
 	watch(
-		[hours, dates, selected, distance],
+		[selected_hours, selected_days, selected, distance],
 		async () => {
 			if(!map.hasLayer(equaltimeLayer) || distance.value == 0){
 			  //console.log("EqualTimeMap不需要更新")
 			  return;
 			}
 			console.log("EqualTimeMap需要更新")
-			EqualTimeMap.update_layer(map,selected.value,dates.value,hours.value,distance.value);
+			EqualTimeMap.update_layer(map,selected.value,selected_days.value,selected_hours.value,distance.value);
 		},
 		{ deep: true }
 	);
 
 	watch(
-		[hours, dates],
+		[selected_hours, selected_days],
 		async () => {
 			console.log("TopologicMap需要更新")
 
 			if (map.hasLayer(topologicLayer)) {
 				console.log("TopologicMap需要更新")
-				console.log(dates.value, hours.value)
-				topologicData.value = await draw_topological_graph(dates.value, hours.value);
+				console.log(selected_days.value, selected_hours.value)
+				topologicData.value = await draw_topological_graph_by_departure_time(selected_days.value, selected_hours.value);
 				TopologicMap.update_layer(topologicData.value, map);
 			}
 		},

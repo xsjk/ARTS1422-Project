@@ -97,18 +97,18 @@ const legend = computed(() => {
 	.attr('opacity', 0.5)
 	.attr('stroke', 'white')
 	.attr('stroke-width', 0.5)
-	.attr('noclicked',true)
+	.attr('selected',true)
 	.on('click', function(I,i){
     mousehold.value = false;
-		var noclicked = this.getAttribute('noclicked') == 'true';
-		//console.log("1"+noclicked);
-		if(noclicked == true){
-			//console.log('2'+noclicked)
+		var selected = this.getAttribute('selected') == 'true';
+		//console.log("1"+selected);
+		if(selected == true){
+			//console.log('2'+selected)
 			d3.select(this)
 			.attr('opacity', 1)
 			.attr('stroke', 'black')
 			.attr('stroke-width', 1)
-			.attr('noclicked', false)
+			.attr('selected', false)
 		}
 		else{
 			//console.log(clicked)
@@ -116,7 +116,7 @@ const legend = computed(() => {
 			.attr('opacity', 0.5)
 			.attr('stroke', 'white')
 			.attr('stroke-width', 0.5)
-			.attr('noclicked', true)
+			.attr('selected', true)
 		}
 	})
 

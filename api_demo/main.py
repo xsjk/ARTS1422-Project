@@ -74,11 +74,11 @@ def traffic_flow_out_degree_graph(t:list[int]):
     return time_map.traffic_flow_out_degree_graph(t)
 
 @apiDeco("/drwd")
-def draw_topological_graph_by_departure_time(self, d:list[int], h:list[int]):
+def draw_topological_graph_by_departure_time(d:list[int], h:list[int]):
     return topological_graph.draw_topological_graph_by_departure_time(d, h)
 
 @apiDeco("/drwa")
-def draw_topological_graph_by_arrival_time(self, d:list[int], h:list[int]):
+def draw_topological_graph_by_arrival_time(d:list[int], h:list[int]):
     return topological_graph.draw_topological_graph_by_arrival_time(d, h)
 
 @app.route("/")

@@ -129,16 +129,16 @@ class isochrone_graph:
             max_r = k[i] * 0.0075 * 0.2
             while r <= max_r:
                 #初步筛选起df点位置与时长合乎选择条件的字段
-                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= k[i])
+                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= (k[i]+5)) & (normal_times >= (k[i]-5)) 
                 if np.sum(df_index) > self.__一个等时线最少点数:
                     data = df[df_index]
-                    vectors = (data[['dest_lng','dest_lat']].values - data[['starting_lng','starting_lat']].values) / data['normal_time'].values.reshape(data.shape[0],1) * k[i]
+                    vectors = (data[['dest_lng','dest_lat']].values - data[['starting_lng','starting_lat']].values) /  data['normal_time'].values.reshape(data.shape[0],1) * k[i]
                     bases_index = (np.floor((np.arctan2(vectors[:,1],vectors[:,0]) / np.pi * 180 + 10) % 360) / 20).astype(np.int8)
                     bases_product = np.sum(bases[bases_index]*vectors,axis=1)
                     result_range = np.zeros(18)
                     result_persentage = np.zeros(18)
                     for j in range(18):
-                        result_range[j] = np.max(bases_product[np.equal(bases_index,j)])
+                        result_range[j] = np.mean(bases_product[np.equal(bases_index,j)]) if np.equal(bases_index,j).any() else 0
                         result_persentage[j] = np.sum(np.equal(bases_index,j))
                     result_range[np.isnan(result_range)] = 0
                     result_persentage /= np.sum(result_persentage)
@@ -167,7 +167,7 @@ class isochrone_graph:
             max_r = k[i] * 0.0075 * 0.2
             while r <= max_r:
                 #初步筛选起df点位置与时长合乎选择条件的字段
-                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= k[i])
+                df_index = ((delta_lng * delta_lng + delta_lat * delta_lat) < r*r) & (normal_times <= (k[i]+5)) & (normal_times >= (k[i]-5))
                 if np.sum(df_index) > self.__一个等时线最少点数:
                     data = df[df_index]
                     vectors = (data[['starting_lng','starting_lat']].values - data[['dest_lng','dest_lat']].values) / data['normal_time'].values.reshape(data.shape[0],1) * k[i]
@@ -176,11 +176,10 @@ class isochrone_graph:
                     result_range = np.zeros(18)
                     result_persentage = np.zeros(18)
                     for j in range(18):
-                        result_range[j] = np.max(bases_product[np.equal(bases_index,j)])
+                        result_range[j] = np.mean(bases_product[np.equal(bases_index,j)]) if np.equal(bases_index,j).any() else 0
                         result_persentage[j] = np.sum(np.equal(bases_index,j))
                     result_range[np.isnan(result_range)] = 0
                     result_persentage /= np.sum(result_persentage)
-                    print(result_persentage)
                     result.append([result_range.tolist(), result_persentage.tolist()])
                     break
                 else:

@@ -7,6 +7,8 @@ const height = 550;
 const innerRadius = 120;
 const outerRadius = 140;
 
+const color_interpolater = d3.interpolateBlues;
+
 
 const svg = d3.create('svg')
             .attr('viewBox', `0 0 ${width} ${height}`);
@@ -73,23 +75,12 @@ export function generate_layer(data, map, can_move) {
     ));
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
-    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateRainbow, names.length))
+    const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
     for (const {source, target, value} of data) matrix[index.get(source)][index.get(target)] += value;
 
-
-
-    // console.log("map", map);
-    // console.log("layer", layer);
-    // console.log("svg", svg);
-
-    // matrix = [
-    //     [1, 2, 3],
-    //     [4, 5, 6],
-    //     [7, 8, 9]
-    // ];
     const chords = chord(matrix);
 
 
@@ -101,7 +92,6 @@ export function generate_layer(data, map, can_move) {
 
     
     selection.append("path")
-    // selection.append("path")
         .attr("fill", d => color(names[d.index]))
         .attr("d", arc);
 
@@ -132,6 +122,8 @@ export function generate_layer(data, map, can_move) {
         .attr("d", ribbon)
         .append("title")
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
+
+
 
 
     return layer;
@@ -172,7 +164,7 @@ export function update_layer(data, map) {
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
-    const color = d3.scaleOrdinal(names, d3.quantize(d3.interpolateBlues , names.length))
+    const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));

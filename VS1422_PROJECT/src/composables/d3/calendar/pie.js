@@ -74,16 +74,16 @@ export function PieChart(data, {
     .join("path")
       .attr("fill", d => color(N[d.data]))
       .attr("d", arc)
-	.attr('noclicked',true)
+	.attr('selected',true)
 		.on('click', function(I,i){
-			var noclicked = this.getAttribute('noclicked') == 'true';
-			if(noclicked == true){
+			var selected = this.getAttribute('selected') == 'true';
+			if(selected == true){
 				hours.push(i.data+1);
 				d3.select(this)
 				.attr('opacity', 1)
 				.attr('stroke', 'black')
 				.attr('stroke-width', 1)
-				.attr('noclicked', false)
+				.attr('selected', false)
 			}
 			else{
 				hours = hours.filter(d => d!=i.data+1)
@@ -91,7 +91,7 @@ export function PieChart(data, {
 				.attr('opacity', 0.5)
 				.attr('stroke', 'white')
 				.attr('stroke-width', 0.5)
-				.attr('noclicked', true)
+				.attr('selected', true)
 			}
 		})
 	.append("title")

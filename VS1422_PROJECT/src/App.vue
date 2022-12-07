@@ -56,6 +56,7 @@
 		:data="timemapData"
 		:width="230"
 		:height="740"
+		:color='d3.interpolateRgb.gamma(0.1)("#3561A8", "#ffffff")'
 		/>
 	</div>
 	<div id="map">
