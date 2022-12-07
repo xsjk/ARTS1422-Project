@@ -322,7 +322,7 @@ export function PieChart(data, {
   // Chose a default color scheme based on cardinality.
   //if (colors === undefined) colors = d3.schemeSpectral[names.size];
   //if (colors === undefined) colors = interpolateWithSteps(names.size).map(d3.interpolateRainbow);
-  if (colors === undefined) colors = d3.quantize(t => d3.interpolate("rgb(0, 119, 179)", "rgb(0, 119, 179)")(t * 1), names.size);
+  if (colors === undefined) colors = d3.quantize(t => d3.interpolate("#4819CE", "#4819CE")(t * 1), names.size);
 
   // Construct scales.
   const color = d3.scaleOrdinal(names, colors);
@@ -461,7 +461,7 @@ watch(
 	() => {
 		console.log("selected_days updated")
 		console.log("selected_hours updated")
-
+		
 	},
 	{ deep: true }
 )
@@ -538,8 +538,7 @@ watch(
 		opacity: 0.5;
 	}
     path.hour_arc[selected=false][mouseovered=false]{
-        opacity: 1.0;
-		fill: rgba(78, 152, 250, 0.8);
+        opacity: 1;
 		stroke: black;
 		stroke-width: 0.5;
     }
