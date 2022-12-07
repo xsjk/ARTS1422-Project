@@ -64,11 +64,11 @@ export const can_move = ref(true);
 	const timemap_img = L.tileLayer('../../../src/assets/timemap.png');
 	const satellite = L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 	const baseLayers = {
-		'Basemap': osm,
-		'Streets': streets,
+		// 'Basemap': osm,
+		// 'Streets': streets,
 		'Dark': dark,
 		'Satellite': satellite,
-		'Timemap': timemap_img
+		// 'Timemap': timemap_img
 	};
 
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
