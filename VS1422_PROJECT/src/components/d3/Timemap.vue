@@ -138,9 +138,9 @@ function update() {
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
 
-	console.log(shape);
-	console.log(height, width);
-	console.log(img_height, img_width);
+	// console.log(shape);
+	// console.log(height, width);
+	// console.log(img_height, img_width);
 
 
 	canvas_container.value.width = width
@@ -359,7 +359,7 @@ watch(
 	rect.timemap_rect[selected=true] {
 		width: 9.583333333333334px;
 		height: 4.054054054054054px;
-		fill: rgb(87, 89, 121);
+		opacity: 0.3;
 		stroke-width: 0;
 	}
 	

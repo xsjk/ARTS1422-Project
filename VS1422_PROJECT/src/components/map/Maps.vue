@@ -3,7 +3,6 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
-export const selected_districts = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);
 export const can_move = ref(true);
@@ -75,11 +74,11 @@ export const can_move = ref(true);
 	const timemap_img = L.tileLayer('../../../src/assets/timemap.png');
 	const satellite = L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 	const baseLayers = {
-		'Basemap': osm,
-		'Streets': streets,
+		// 'Basemap': osm,
+		// 'Streets': streets,
 		'Dark': dark,
 		'Satellite': satellite,
-		'Timemap': timemap_img
+		// 'Timemap': timemap_img
 	};
 
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
@@ -89,7 +88,7 @@ export const can_move = ref(true);
 	heatmapinLayer.on("add",function(){
 		HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 	})
-	
+
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
 		zoom: scale.value,
@@ -100,10 +99,11 @@ export const can_move = ref(true);
 		dragging: true,
 		closePopupOnClick: true,
 	})
-	global_map.value = map;																																		
+	global_map.value = map;
 
-	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move); 
+	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
+	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
@@ -186,7 +186,7 @@ export const can_move = ref(true);
 			if(map.hasLayer(heatmapoutLayer)){
 				HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
-			
+
 			if(map.hasLayer(heatmapinLayer)){
 				HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
@@ -240,8 +240,8 @@ export const can_move = ref(true);
 		},
 		{ deep: true }
 	)
-	
-	
+
+
 
 
 
@@ -252,10 +252,10 @@ export const can_move = ref(true);
 </template>
 
 <style>
-	.Equal_rects{
+	/* .Equal_rects{
 		rx:10;
 		ry:10;
-	}
+	} */
 	.Equal_rects[selected=false]{
 		stroke: white;
 		stroke-width: 0.3px;
