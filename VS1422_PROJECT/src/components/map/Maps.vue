@@ -48,7 +48,7 @@ export const can_move = ref(true);
 	const getData = async () => {
 		const weatherTest = await d3.csv('weatherData.csv');
 		weatherData.value = weatherTest.map(d => d);
-		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
+		//timemapData.value = await traffic_flow_in_degree_graph([46010608]);
 		equaltimeData.value = [[],[]];
 		console.log("order的value是:"+order.value);
 	};
@@ -62,8 +62,6 @@ export const can_move = ref(true);
 
 
 	/// layers
-
-
 	const mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
 	const mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 	const streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
@@ -78,16 +76,12 @@ export const can_move = ref(true);
 		// 'Streets': streets,
 		'Dark': dark,
 		'Satellite': satellite,
-		// 'Timemap': timemap_img
 	};
 
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
 		heatmapinLayer.cfg.radius = 0.001;
 	let heatmapoutLayer = HeatMapOut.generate_layer(testData);
 		heatmapoutLayer.cfg.radius = 0.001;
-	heatmapinLayer.on("add",function(){
-		HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
-	})
 
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
@@ -100,7 +94,7 @@ export const can_move = ref(true);
 		closePopupOnClick: true,
 	})
 	global_map.value = map;
-
+	console.log("我是let之前",DistrictMap)
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
 	topologicData.value = await draw_topological_graph_by_departure_time([], []);
@@ -110,6 +104,9 @@ export const can_move = ref(true);
 
 	// 给所有图层添加add时的自动更新
 	// HeatMap
+	heatmapinLayer.on("add",function(){
+		HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
+	})
 	heatmapoutLayer.on("add",function(){
 		console.log("HeatMapOut Loaded");
 		HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
@@ -154,7 +151,6 @@ export const can_move = ref(true);
 		center.value = [e.latlng.lng, e.latlng.lat];
 	});
 
-
 	map.on('zoomend', async(e) => {
 		scale.value = e.target.getZoom();
 	});
@@ -165,11 +161,8 @@ export const can_move = ref(true);
 		center.value = [e.target.getCenter().lng, e.target.getCenter().lat];
 	});
 
-
-	/// controls: 左下角的比例尺
 	const scale_control = L.control.scale({ maxWidth: 200, metric: true, imperial: false });
 	scale_control.addTo(map)
-	// Controls.methods.L_control_order({ position: 'topleft' }).addTo(map);
 	
 	///////
 	let mixed = {
@@ -179,10 +172,12 @@ export const can_move = ref(true);
 		'topologicalLayer': topologicLayer,
 	}
 	const controller = L.control.layers(baseLayers, mixed).addTo(map);
-	districtLayer.addTo(map);
+	//districtLayer.addTo(map);
+	
+	
 	// watch
 	watch(
-		[selected_hours.value, selected_days.value, center, scale],
+		[selected_hours, selected_days, center, scale],
 		async () => {
 			if(map.hasLayer(heatmapoutLayer)){
 				HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
