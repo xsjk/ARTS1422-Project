@@ -3,6 +3,7 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
+export const selected_districts = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);
 export const can_move = ref(true);
@@ -15,9 +16,15 @@ export const can_move = ref(true);
 	import * as EqualTimeMap from '../../composables/layers/equal_time'
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
+<<<<<<< HEAD
 	import Controls from '../controls/Controls.vue'
 	import { mousehold, selected_hours, selected_days} from '../../Global.vue';
 	import {order} from '../d3/Timemap.vue'
+=======
+
+	import { mousehold, selected_hours, selected_days } from '../../Global.vue';
+
+>>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 
 	import * as d3 from 'd3';
 	import L from 'leaflet';
@@ -49,8 +56,12 @@ export const can_move = ref(true);
 		const weatherTest = await d3.csv('weatherData.csv');
 		weatherData.value = weatherTest.map(d => d);
 		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
+<<<<<<< HEAD
 		equaltimeData.value = [[],[]];
 		console.log("order的value是:"+order.value);
+=======
+		equaltimeData.value = [[],[]]
+>>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 	};
 	await getData()
 
@@ -103,7 +114,6 @@ export const can_move = ref(true);
 
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move); 
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
@@ -169,13 +179,9 @@ export const can_move = ref(true);
 	/// controls: 左下角的比例尺
 	const scale_control = L.control.scale({ maxWidth: 200, metric: true, imperial: false });
 	scale_control.addTo(map)
-<<<<<<< HEAD
 	// Controls.methods.L_control_order({ position: 'topleft' }).addTo(map);
 	
 	///////
-=======
-	
->>>>>>> parent of 679d9b2 (update: colors)
 	let mixed = {
 		'HeatMapInLayer': heatmapinLayer,
 		'HeatMapOutLayer': heatmapoutLayer,
@@ -231,6 +237,7 @@ export const can_move = ref(true);
 		async () => {
 			console.log("TimeMap需要更新")
 			console.log(selected_districts.value)
+<<<<<<< HEAD
 			console.log("order"+order.value)
 			if(order.value == 0) {
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
@@ -242,6 +249,9 @@ export const can_move = ref(true);
 				console.log(timemapData.value);
 				console.log("输出out order的tilemap");
 			}
+=======
+			timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);
+>>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 		},
 		{ deep: true }
 	)

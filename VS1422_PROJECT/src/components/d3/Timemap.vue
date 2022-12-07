@@ -134,13 +134,17 @@ function update() {
 		console.log("empty tiles");
 		return;
 	}
+<<<<<<< HEAD
 	//console.log(tiles);
+=======
+	console.log(tiles);
+>>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
 
-	// console.log(shape);
-	// console.log(height, width);
-	// console.log(img_height, img_width);
+	console.log(shape);
+	console.log(height, width);
+	console.log(img_height, img_width);
 
 
 	canvas_container.value.width = width
