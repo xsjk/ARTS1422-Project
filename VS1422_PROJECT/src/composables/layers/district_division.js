@@ -78,16 +78,36 @@ export function generate_layer(data, map, s, c) {
 	}
 					
 	function onClick(e) {
-		selected.value = [
-			district_ids[district_names.indexOf(e.target.feature.properties['name'])]
-		];
-		// if (!can_move.value)
-		// 	return;
-		if(lastSelection == e.target){
-			geojson.resetStyle(lastSelection);
-			lastSelection = null;
-			return;
-		}
+		// const district_id = district_ids[district_names.indexOf(e.target.feature.properties['name'])];
+		// if (lastSelection == e.target) {
+		// 	console.log('deselect')
+		// 	geojson.resetStyle(lastSelection);
+		// 	lastSelection = null;
+		// 	selected.value = selected.value.filter(d => d != district_id);
+		// 	if (selected.value.length == 0) {
+		// 		selected.value = district_ids;
+		// 	}
+		// } else {
+		// 	console.log('select')
+		// 	if (lastSelection) {
+		// 		lastSelection.setStyle({	
+		// 			weight: 10,
+		// 			dashArray: '',
+		// 			fillColor: '#663408',
+		// 			fillOpacity: 0.7
+		// 		});
+		// 		geojson.resetStyle(lastSelection);
+		// 	}
+		// 	selected.value = [
+		// 		district_id
+		// 	];
+		// 	lastSelection = e.target;
+		// }
+		// lastSelection.setStyle({
+		// 	weight: 2.5,
+		// 	dashArray: '',
+		// 	fillOpacity: 0.4
+		// });
 	}
 						
 	function onEachFeature(feature, layer) {
