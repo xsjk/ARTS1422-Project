@@ -128,6 +128,7 @@ export const can_move = ref(true);
 	map.on('click', async(e) => {
 		// mousehold.value = false;
 		if(!can_move.value) return;
+		if(!map.hasLayer(equaltimeLayer)) return;
 		//console.log(e);
 		var popup = L.popup()
 			.setContent(marker)

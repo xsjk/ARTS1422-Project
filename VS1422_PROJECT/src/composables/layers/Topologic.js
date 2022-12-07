@@ -75,7 +75,8 @@ export function generate_layer(data, map, can_move) {
     ));
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
-    const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
+    const color = d3.interpolateBlues;
+    // const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
@@ -118,7 +119,10 @@ export function generate_layer(data, map, can_move) {
         .data(chords)
         .join("path")
         .style("mix-blend-mode", "multiply")
-        .attr("fill", d => color(names[d.target.index]))
+        .attr("fill", d => {
+            console.log(d.target.index)
+            color(names[d.target.index])
+        })
         .attr("d", ribbon)
         .append("title")
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
@@ -202,11 +206,14 @@ export function update_layer(data, map) {
         .data(chords)
         .join("path")
         .style("mix-blend-mode", "multiply")
-        .attr("fill", d => color(names[d.target.index]))
+        .attr("fill", d => {
+            console.log(color(names[d.target.index]))
+            return color(names[d.target.index])
+        })
         .attr("d", ribbon)
         .append("title")
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
-
+    
 
 }
 
