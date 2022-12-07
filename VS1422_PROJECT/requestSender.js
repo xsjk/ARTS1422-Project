@@ -1,5 +1,4 @@
-// const host_ip = "10.20.101.215"
-const host_ip = "127.0.0.1"
+const host_ip = "10.20.101.215"
 
 async function k_min_isochrone_by_departure_time(k, m, d, h) {
   try {
