@@ -60,11 +60,11 @@ export function generate_layer(data, map, s, c) {
 			.attr('stroke','red')
 
 		layer.setStyle({
-			weight: 5,
-			color: '#663408',
-			opacity:0.7,
+			weight: 2.5,
+			color: 'white',
+			opacity: 0.8,
 			dashArray: '',
-			//fillOpacity: 0.7
+			fillOpacity: 0.4
 		});
 		layer.bringToFront();
 		info.update(layer.feature.properties);
@@ -94,37 +94,38 @@ export function generate_layer(data, map, s, c) {
 		// map.flyTo(e.target.getCenter(),10);
 		lastSelection = e.target;
 		lastSelection.setStyle({
-			weight: 10,
+			weight: 2.5,
 			dashArray: '',
-			fillColor: '#663408',
-			fillOpacity: 0.7
+			// fillColor: '#663408',
+			// fillOpacity: 0.7
+			fillOpacity: 0.4
 		});
 	}
 
-	function onDoubleClick(e) {
-		console.log('double click');
-		selected.value = [
-			district_ids[district_names.indexOf(e.target.feature.properties['name'])]
-		];
-		if (!can_move.value)
-			return;
-		if(lastSelection == e.target){
-			geojson.resetStyle(lastSelection);
-			lastSelection = null;
-			return;
-		}
-		if(lastSelection != null){
-			geojson.resetStyle(lastSelection);
-		}
-		map.flyTo(e.target.getCenter());
-		lastSelection = e.target;
-		lastSelection.setStyle({
-			weight: 10,
-			dashArray: '',
-			fillColor: '#663408',
-			fillOpacity: 0.7
-		});
-	}
+	// function onDoubleClick(e) {
+	// 	console.log('double click');
+	// 	selected.value = [
+	// 		district_ids[district_names.indexOf(e.target.feature.properties['name'])]
+	// 	];
+	// 	if (!can_move.value)
+	// 		return;
+	// 	if(lastSelection == e.target){
+	// 		geojson.resetStyle(lastSelection);
+	// 		lastSelection = null;
+	// 		return;
+	// 	}
+	// 	if(lastSelection != null){
+	// 		geojson.resetStyle(lastSelection);
+	// 	}
+	// 	map.flyTo(e.target.getCenter());
+	// 	lastSelection = e.target;
+	// 	lastSelection.setStyle({
+	// 		weight: 10,
+	// 		dashArray: '',
+	// 		fillColor: '#663408',
+	// 		fillOpacity: 0.7
+	// 	});
+	// }
 
 	function onEachFeature(feature, layer) {
 		layer.on({
