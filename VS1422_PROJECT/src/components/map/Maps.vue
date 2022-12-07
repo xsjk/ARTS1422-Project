@@ -16,15 +16,9 @@ export const can_move = ref(true);
 	import * as EqualTimeMap from '../../composables/layers/equal_time'
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
-<<<<<<< HEAD
 	import Controls from '../controls/Controls.vue'
 	import { mousehold, selected_hours, selected_days} from '../../Global.vue';
 	import {order} from '../d3/Timemap.vue'
-=======
-
-	import { mousehold, selected_hours, selected_days } from '../../Global.vue';
-
->>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 
 	import * as d3 from 'd3';
 	import L from 'leaflet';
@@ -56,12 +50,8 @@ export const can_move = ref(true);
 		const weatherTest = await d3.csv('weatherData.csv');
 		weatherData.value = weatherTest.map(d => d);
 		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
-<<<<<<< HEAD
 		equaltimeData.value = [[],[]];
 		console.log("order的value是:"+order.value);
-=======
-		equaltimeData.value = [[],[]]
->>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 	};
 	await getData()
 
@@ -237,8 +227,7 @@ export const can_move = ref(true);
 		async () => {
 			console.log("TimeMap需要更新")
 			console.log(selected_districts.value)
-<<<<<<< HEAD
-			console.log("order"+order.value)
+			consoWSog("order"+order.value)
 			if(order.value == 0) {
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
 				console.log(timemapData.value);
@@ -249,9 +238,6 @@ export const can_move = ref(true);
 				console.log(timemapData.value);
 				console.log("输出out order的tilemap");
 			}
-=======
-			timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);
->>>>>>> parent of ebb4ab5 (add selected_district to Global.vue)
 		},
 		{ deep: true }
 	)
