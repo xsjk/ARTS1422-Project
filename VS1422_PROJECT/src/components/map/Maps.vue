@@ -3,6 +3,7 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
+export const selected_districts = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);
 export const can_move = ref(true);
@@ -96,7 +97,6 @@ export const can_move = ref(true);
 	console.log("我是let之前",DistrictMap)
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
-	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
@@ -136,6 +136,7 @@ export const can_move = ref(true);
 	map.on('click', async(e) => {
 		// mousehold.value = false;
 		if(!can_move.value) return;
+		if(!map.hasLayer(equaltimeLayer)) return;
 		//console.log(e);
 		var popup = L.popup()
 			.setContent(marker)
@@ -220,7 +221,7 @@ export const can_move = ref(true);
 		async () => {
 			console.log("TimeMap需要更新")
 			console.log(selected_districts.value)
-			console.log("order"+order.value)
+			consoWSog("order"+order.value)
 			if(order.value == 0) {
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
 				console.log(timemapData.value);
