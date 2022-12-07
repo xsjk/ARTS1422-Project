@@ -3,7 +3,6 @@ import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
 export const scale = ref(10);
 export const selected = ref([]);
-export const selected_districts = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);
 export const can_move = ref(true);
@@ -17,7 +16,7 @@ export const can_move = ref(true);
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
 
-	import { mousehold, selected_hours, selected_days } from '../../Global.vue';
+	import { mousehold, selected_hours, selected_days, selected_districts } from '../../Global.vue';
 
 
 	import * as d3 from 'd3';
@@ -45,15 +44,6 @@ export const can_move = ref(true);
 	});
 
 
-	// 用来获取数据的组合
-	const getData = async () => {
-		const weatherTest = await d3.csv('weatherData.csv');
-		weatherData.value = weatherTest.map(d => d);
-		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
-		equaltimeData.value = [[],[]]
-	};
-	await getData()
-
 	var testData = {
 	  max: 0,
 	  data: []
@@ -74,11 +64,11 @@ export const can_move = ref(true);
 	const timemap_img = L.tileLayer('../../../src/assets/timemap.png');
 	const satellite = L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 	const baseLayers = {
-		'Basemap': osm,
-		'Streets': streets,
+		// 'Basemap': osm,
+		// 'Streets': streets,
 		'Dark': dark,
 		'Satellite': satellite,
-		'Timemap': timemap_img
+		// 'Timemap': timemap_img
 	};
 
 	let heatmapinLayer = HeatMapIn.generate_layer(testData);
@@ -103,6 +93,7 @@ export const can_move = ref(true);
 
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
+	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
 
 
@@ -222,7 +213,6 @@ export const can_move = ref(true);
 		[selected_districts],
 		async () => {
 			console.log("TimeMap需要更新")
-			console.log(selected_districts.value)
 			timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);
 		},
 		{ deep: true }

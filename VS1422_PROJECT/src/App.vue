@@ -6,15 +6,12 @@
 	import Title2 from './components/d3/Title2.vue'
 	import Maps from './components/map/Maps.vue'
 	import * as d3 from 'd3';
-	import { weatherData, timemapData, equaltimeData } from './Global.vue';
+	import { weatherData, timemapData, equaltimeData, topologicData } from './Global.vue';
 		
 	// 用来获取数据的组合
-	console.log(timemapData);
 	const getData = async () => {
-	  const weatherTest = await d3.csv('weatherData.csv');
-	  weatherData.value = weatherTest.map(d => d);
-	  timemapData.value = [[0.1,0.2],[0.3,0.4]];
-	  equaltimeData.value = [0.028758452380954324, 0.02031264526842589, 0.03360677895017247, 0.04200094409784688, 0.03459567830588102, 0.0, 0.0, 0.0, 0.0, 0.025049999999993133, 0.03703024779237924, 0.05582818807481003, 0.028591562079811773, 0.02556251189854171, 0.020557370556213986, 0.04941435904157133, 0.06827150819941265, 0.03244533622005591];
+	  weatherData.value = (await d3.csv('weatherData.csv')).map(d => d);
+	  timemapData.value = await traffic_flow_in_degree_graph(district_ids);
 	};
 	getData()
 	
