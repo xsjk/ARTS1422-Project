@@ -15,9 +15,9 @@ export const can_move = ref(true);
 	import * as EqualTimeMap from '../../composables/layers/equal_time'
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
-
-	import { mousehold, selected_hours, selected_days, selected_districts } from '../../Global.vue';
-
+	import Controls from '../controls/Controls.vue'
+	import { mousehold, selected_hours, selected_days} from '../../Global.vue';
+	import {order} from '../d3/Timemap.vue'
 
 	import * as d3 from 'd3';
 	import L from 'leaflet';
@@ -43,6 +43,16 @@ export const can_move = ref(true);
 	  }
 	});
 
+
+	// 用来获取数据的组合
+	const getData = async () => {
+		const weatherTest = await d3.csv('weatherData.csv');
+		weatherData.value = weatherTest.map(d => d);
+		timemapData.value = await traffic_flow_in_degree_graph([46010608]);
+		equaltimeData.value = [[],[]];
+		console.log("order的value是:"+order.value);
+	};
+	await getData()
 
 	var testData = {
 	  max: 0,
@@ -78,7 +88,7 @@ export const can_move = ref(true);
 	heatmapinLayer.on("add",function(){
 		HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 	})
-	
+
 	const map = L.map('map', {
 		center: [center.value[1], center.value[0]],
 		zoom: scale.value,
@@ -89,9 +99,9 @@ export const can_move = ref(true);
 		dragging: true,
 		closePopupOnClick: true,
 	})
-	global_map.value = map;																																		
+	global_map.value = map;
 
-	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move); 
+	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
 	topologicData.value = await draw_topological_graph_by_departure_time([], []);
 	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
@@ -99,22 +109,24 @@ export const can_move = ref(true);
 
 
 	// 给所有图层添加add时的自动更新
+	// HeatMap
 	heatmapoutLayer.on("add",function(){
 		console.log("HeatMapOut Loaded");
 		HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 	})
+	// 等时线图
 	equaltimeLayer.on("add",function(){
 		if (selected.value == undefined || selected.value.length == 0){
 			selected.value = center.value;
 		}
-		distance.value = 0;
-		//EqualTimeMap.update_layer(selected_days.value, selected_hours.value, selected.value, map);
+		distance.value = 10;
+		EqualTimeMap.update_layer(map,selected.value,selected_days.value,selected_hours.value,distance.value);
 		EqualTimeMap.generate_selection(map,distance);
-	})
-	equaltimeLayer.on("remove",function(){
+	}).on("remove",function(){
 		console.log("equalTime Removed");
 		EqualTimeMap.remove_selection(map);
 	})
+	// 拓扑图
 	topologicLayer.on("add", async function(){
 		topologicData.value = await draw_topological_graph_by_departure_time(selected_days.value, selected_hours.value);
 		TopologicMap.update_layer(topologicData.value, map);
@@ -154,10 +166,12 @@ export const can_move = ref(true);
 	});
 
 
-	/// control
+	/// controls: 左下角的比例尺
 	const scale_control = L.control.scale({ maxWidth: 200, metric: true, imperial: false });
 	scale_control.addTo(map)
+	// Controls.methods.L_control_order({ position: 'topleft' }).addTo(map);
 	
+	///////
 	let mixed = {
 		'HeatMapInLayer': heatmapinLayer,
 		'HeatMapOutLayer': heatmapoutLayer,
@@ -173,7 +187,7 @@ export const can_move = ref(true);
 			if(map.hasLayer(heatmapoutLayer)){
 				HeatMapOut.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
-			
+
 			if(map.hasLayer(heatmapinLayer)){
 				HeatMapIn.update_layer(selected_days.value, selected_hours.value, center.value, scale.value);
 			}
@@ -184,8 +198,8 @@ export const can_move = ref(true);
 	watch(
 		[selected_hours, selected_days, selected, distance],
 		async () => {
-			if(!map.hasLayer(equaltimeLayer) || distance.value == 0){
-			  //console.log("EqualTimeMap不需要更新")
+			if(!map.hasLayer(equaltimeLayer)){
+			  console.log("EqualTimeMap不需要更新")
 			  return;
 			}
 			console.log("EqualTimeMap需要更新")
@@ -197,8 +211,6 @@ export const can_move = ref(true);
 	watch(
 		[selected_hours, selected_days],
 		async () => {
-			console.log("TopologicMap需要更新")
-
 			if (map.hasLayer(topologicLayer)) {
 				console.log("TopologicMap需要更新")
 				console.log(selected_days.value, selected_hours.value)
@@ -211,15 +223,26 @@ export const can_move = ref(true);
 
 
 	watch(
-		[selected_districts],
+		[selected_districts,order],
 		async () => {
 			console.log("TimeMap需要更新")
-			timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);
+			console.log(selected_districts.value)
+			console.log("order"+order.value)
+			if(order.value == 0) {
+				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
+				console.log(timemapData.value);
+				console.log("输出in order的tilemap");
+			}
+			else{
+				timemapData.value = await traffic_flow_out_degree_graph(selected_districts.value);
+				console.log(timemapData.value);
+				console.log("输出out order的tilemap");
+			}
 		},
 		{ deep: true }
 	)
-	
-	
+
+
 
 
 
@@ -227,14 +250,13 @@ export const can_move = ref(true);
 
 
 <template>
-	<!-- <div id="map"></div> -->
 </template>
 
 <style>
-	.Equal_rects{
+	/* .Equal_rects{
 		rx:10;
 		ry:10;
-	}
+	} */
 	.Equal_rects[selected=false]{
 		stroke: white;
 		stroke-width: 0.3px;

@@ -8,6 +8,7 @@
 		day:null,
 		hour:null,
 	});
+	export const order = ref(0);
 </script>
 
 <script setup>
@@ -133,7 +134,7 @@ function update() {
 		console.log("empty tiles");
 		return;
 	}
-
+	//console.log(tiles);
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
 
@@ -236,6 +237,7 @@ function update() {
 watch(
 	() => props.data,
 	() => {
+		console.log("重画timemap？？？？？？？？？？？？？？？？？？")
 		update();
 	},
 );
@@ -317,6 +319,14 @@ watch(
 	<div class="timemap_axis">
 		<svg class="timemap_svg" ref="svg_container" />
 	</div>
+	<div class="selection bar">
+		<select id="Order Select" v-model="order">
+		    <option value = 0>In Order</option>
+		    <option value = 1>Out Order</option>
+		</select>
+	</div>
+	
+	
 </template>
 
 
@@ -327,12 +337,14 @@ watch(
 		height: 740px;
 		position: absolute;
 		z-index: 1;
+		transform: translate(0px,50px);
 	}
 	.timemap_axis {
 		width: 230px;
 		height: 740px;
 		position: absolute;
 		z-index: 2;
+		transform: translate(0px,50px);
 	}
 	.timemap_svg {
 		width: 230px;
