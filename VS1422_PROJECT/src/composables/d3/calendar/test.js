@@ -133,7 +133,7 @@ export function Legend({
       .attr("text-anchor", "start")
       .attr("font-weight", "bold")
       .text(title));
-  console.log(svg.node());
+  //console.log(svg.node());
   return Object.assign(svg.node());
 }
 

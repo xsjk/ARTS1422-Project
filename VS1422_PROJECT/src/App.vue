@@ -1,5 +1,4 @@
 <script setup>
-	//import Heatmap from './components/map/heatmap.vue'
 	import Calendar from './components/d3/Calendar.vue'
 	import TimeMap from './components/d3/Timemap.vue'
 	import Title from './components/d3/Title.vue'
@@ -57,9 +56,7 @@
 		/>
 	</div>
 	<div id="map">
-		<Maps
-			
-		/>
+		<Maps/>
 	</div>
 </template>
 
