@@ -263,7 +263,7 @@ export function Calendar(data, {
 		const [[x0, y0], [x1, y1]] = selection;
 		let x_0 = x0-40.5, x_1 = x1-40.5;
 		let y_0 = y0 - cellSize * 1.5, y_1 = y1 - cellSize * 1.5;
-		d3.selectAll('rect')
+		cell.selectAll('rect')
 		//   .attr('opacity', 1)
 		//   .attr('stroke', 'white')
 		//   .attr('stroke-width', 0.1)

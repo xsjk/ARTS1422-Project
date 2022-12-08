@@ -149,7 +149,7 @@ export function generate_selection(map,distance){
 					.attr("selected",d => d==0 ? true:false)
 				.on("mouseover",function(data,d){
 					distance.value = Y[d];
-					d3.selectAll("rect")
+					svg.selectAll("rect")
 					.attr("selected",false);
 					d3.select(this).attr("selected",true);
 				});

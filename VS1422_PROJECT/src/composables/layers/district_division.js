@@ -1,4 +1,4 @@
-import L from 'leaflet'
+import L from 'leaflet';
 import * as d3 from 'd3';
 //import D3Wrapper from './d3/D3Wrapper.vue';
 
@@ -18,7 +18,7 @@ export function generate_layer(data, map, s, c) {
 			d > 100  ? '#FC4E2A' :
 			d > 50   ? '#FD8D3C' :
 			d > 20   ? '#FEB24C' :
-			d > 10   ? '#FED976' : '#FFEDA0';
+			d > 10   ? '#FED976' : 'lightblue';
 	}
 
 	function style(feature) {
@@ -60,11 +60,11 @@ export function generate_layer(data, map, s, c) {
 			.attr('stroke','red')
 
 		layer.setStyle({
-			weight: 5,
-			color: '#663408',
-			opacity:0.7,
+			weight: 2.5,
+			color: 'white',
+			opacity: 0.8,
 			dashArray: '',
-			//fillOpacity: 0.7
+			fillOpacity: 0.4
 		});
 		layer.bringToFront();
 		info.update(layer.feature.properties);
@@ -78,36 +78,17 @@ export function generate_layer(data, map, s, c) {
 	}
 					
 	function onClick(e) {
-		// const district_id = district_ids[district_names.indexOf(e.target.feature.properties['name'])];
-		// if (lastSelection == e.target) {
-		// 	console.log('deselect')
-		// 	geojson.resetStyle(lastSelection);
-		// 	lastSelection = null;
-		// 	selected.value = selected.value.filter(d => d != district_id);
-		// 	if (selected.value.length == 0) {
-		// 		selected.value = district_ids;
-		// 	}
-		// } else {
-		// 	console.log('select')
-		// 	if (lastSelection) {
-		// 		lastSelection.setStyle({	
-		// 			weight: 10,
-		// 			dashArray: '',
-		// 			fillColor: '#663408',
-		// 			fillOpacity: 0.7
-		// 		});
-		// 		geojson.resetStyle(lastSelection);
-		// 	}
-		// 	selected.value = [
-		// 		district_id
-		// 	];
-		// 	lastSelection = e.target;
-		// }
-		// lastSelection.setStyle({
-		// 	weight: 2.5,
-		// 	dashArray: '',
-		// 	fillOpacity: 0.4
-		// });
+		console.log(12345);
+		selected.value = [
+			district_ids[district_names.indexOf(e.target.feature.properties['name'])]
+		];
+		// if (!can_move.value)
+		// 	return;
+		if(lastSelection == e.target){
+			geojson.resetStyle(lastSelection);
+			lastSelection = null;
+			return;
+		}
 	}
 						
 	function onEachFeature(feature, layer) {

@@ -136,7 +136,7 @@ export const can_move = ref(true);
 	map.on('click', async(e) => {
 		// mousehold.value = false;
 		if(!can_move.value) return;
-		if(!map.hasLayer(equaltimeLayer)) return;
+		//if(!map.hasLayer(equaltimeLayer)) return;
 		//console.log(e);
 		var popup = L.popup()
 			.setContent(marker)
@@ -144,7 +144,7 @@ export const can_move = ref(true);
 			.setContent(`${e.latlng.toString()}`)
 			// .openOn(map);
 		marker.setLatLng(e.latlng);
-		marker.bindPopup(popup).openPopup();
+		//marker.bindPopup(popup).openPopup();
 		//marker.bindPopup(Popup);
 		selected.value = [e.latlng.lng, e.latlng.lat];
 		center.value = [e.latlng.lng, e.latlng.lat];
@@ -171,7 +171,7 @@ export const can_move = ref(true);
 		'topologicalLayer': topologicLayer,
 	}
 	const controller = L.control.layers(baseLayers, mixed).addTo(map);
-	//districtLayer.addTo(map);
+	districtLayer.addTo(map);
 	
 	
 	// watch
@@ -221,7 +221,7 @@ export const can_move = ref(true);
 		async () => {
 			console.log("TimeMap需要更新")
 			console.log(selected_districts.value)
-			consoWSog("order"+order.value)
+			console.log("order"+order.value)
 			if(order.value == 0) {
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
 				console.log(timemapData.value);
