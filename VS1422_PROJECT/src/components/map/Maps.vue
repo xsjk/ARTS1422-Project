@@ -16,7 +16,7 @@ export const can_move = ref(true);
 	import * as TopologicMap from '../../composables/layers/topologic'
 	import { watch } from 'vue';
 	import Controls from '../controls/Controls.vue'
-	import { mousehold, selected_hours, selected_days, selected_districts } from '../../Global.vue';
+	import { mousehold, selected_hours, selected_days, selected_districts, mouseovered_district } from '../../Global.vue';
 	import {order} from '../d3/Timemap.vue'
 
 	import * as d3 from 'd3';
@@ -90,7 +90,7 @@ export const can_move = ref(true);
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
 	topologicData.value = await draw_topological_graph_by_departure_time([], []);
-	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move);
+	let topologicLayer = TopologicMap.generate_layer(topologicData.value, map, can_move, mouseovered_district);
 
 
 
@@ -230,7 +230,35 @@ export const can_move = ref(true);
 		{ deep: true }
 	)
 
+	
+	watch(
+		mouseovered_district,
+		async () => {
+			if (mouseovered_district.value == null) {
+				districtLayer.eachLayer(function (layer) {
+					console.log(layer.feature.properties.name);
+					districtLayer.resetStyle(layer);
+				});
+				return;
+			} else {
+				districtLayer.eachLayer(function (layer) {
+					if (layer.feature.properties.name == mouseovered_district.value) {
+						layer.setStyle({
+							weight: 5,
+							color: '#666',
+							dashArray: '',
+							fillOpacity: 0.7
+						});
+					} else {
+						districtLayer.resetStyle(layer);
+					}
+				});
+			}
+			// DistrictMap.highlightFeature(mouseovered_district.value);
 
+		},
+		{ deep: true }
+	)
 
 
 

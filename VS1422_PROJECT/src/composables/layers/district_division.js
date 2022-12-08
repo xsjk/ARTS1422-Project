@@ -7,6 +7,25 @@ var lastSelection;
 var selected = undefined; //a reference
 var can_move;
 
+var info;
+
+export function highlightFeature(e) {
+	const layer = e.target;
+	d3.select(`#${layer.feature.properties['name']} > path`)
+		.attr('stroke-width',4)
+		.attr('stroke','red')
+
+	layer.setStyle({
+		weight: 2.5,
+		color: 'white',
+		opacity: 0.8,
+		dashArray: '',
+		fillOpacity: 0.4
+	});
+	layer.bringToFront();
+	info.update(layer.feature.properties);
+}
+
 export function generate_layer(data, map, s, c) {
 	can_move = c
 	selected = s;
@@ -33,7 +52,7 @@ export function generate_layer(data, map, s, c) {
 	}
 
 	// control that shows state info on hover
-	const info = L.control.scale({
+	info = L.control.scale({
 		position:'bottomright',
 		maxWidth:'100',
 		imperial:true
@@ -53,22 +72,7 @@ export function generate_layer(data, map, s, c) {
 	};
 	info.addTo(map);
 
-	function highlightFeature(e) {
-		const layer = e.target;
-		d3.select(`#${layer.feature.properties['name']} > path`)
-			.attr('stroke-width',4)
-			.attr('stroke','red')
 
-		layer.setStyle({
-			weight: 2.5,
-			color: 'white',
-			opacity: 0.8,
-			dashArray: '',
-			fillOpacity: 0.4
-		});
-		layer.bringToFront();
-		info.update(layer.feature.properties);
-	}
 
 	function resetHighlight(e) {
 		if(e.target != lastSelection) geojson.resetStyle(e.target);
@@ -110,31 +114,6 @@ export function generate_layer(data, map, s, c) {
 				fillOpacity: 0.4
 			});
 	}
-
-	// function onDoubleClick(e) {
-	// 	console.log('double click');
-	// 	selected.value = [
-	// 		district_ids[district_names.indexOf(e.target.feature.properties['name'])]
-	// 	];
-	// 	if (!can_move.value)
-	// 		return;
-	// 	if(lastSelection == e.target){
-	// 		geojson.resetStyle(lastSelection);
-	// 		lastSelection = null;
-	// 		return;
-	// 	}
-	// 	if(lastSelection != null){
-	// 		geojson.resetStyle(lastSelection);
-	// 	}
-	// 	map.flyTo(e.target.getCenter());
-	// 	lastSelection = e.target;
-	// 	lastSelection.setStyle({
-	// 		weight: 10,
-	// 		dashArray: '',
-	// 		fillColor: '#663408',
-	// 		fillOpacity: 0.7
-	// 	});
-	// }
 
 	function onEachFeature(feature, layer) {
 		layer.on({

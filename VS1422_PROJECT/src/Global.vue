@@ -13,6 +13,7 @@
 	export const selected_days = ref([]);
 	export const selected_hours = ref([]);
 	export const selected_districts = ref(district_ids)
+	export const mouseovered_district = ref();
 
 	export const temp_days = ref([]);
 	export const temp_hours = ref([]);

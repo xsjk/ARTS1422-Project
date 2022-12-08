@@ -54,11 +54,13 @@ const ribbon = d3.ribbonArrow()
 
 
 var can_move_ref;
+var mouseovered_district;
 
 
-export function generate_layer(data, map, can_move) {
+export function generate_layer(data, map, can_move, md) {
 
     can_move_ref = can_move;
+    mouseovered_district = md;
 
     
     console.log("generate_layer");
@@ -162,6 +164,8 @@ export function update_layer(data, map) {
     
 
     console.log("map", map);
+    console.log('g1',g1);
+    console.log('g2',g2);
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
@@ -179,6 +183,7 @@ export function update_layer(data, map) {
         .attr("fill", d => color(names[d.index]))
         .attr("d", arc)
         .on("mouseover", function(d) {
+            mouseovered_district.value = district_names[d.path[0].__data__.index];
             g2.selectAll("path")
                 .filter( e => e.source.index==d.path[0].__data__.index )
                 .transition().duration(100)
@@ -187,8 +192,11 @@ export function update_layer(data, map) {
                 .filter( e => e.source.index!=d.path[0].__data__.index )
                 .transition().duration(100)
                 .attr("opacity", 0.2)
+            console.log(d.path[0].__data__.index)
+            
         })
         .on("mouseout", function(d) {
+            mouseovered_district.value = null;
             g2.selectAll("path")
                 .transition().duration(100)
                 .attr("opacity", 1);
@@ -211,7 +219,6 @@ export function update_layer(data, map) {
         ${d3.sum(chords, c => (c.target.index === d.index) * c.source.value)} incoming ←`);
 
 
-    console.log(g2)
     // clear g2
     g2.selectAll("path").remove();
     g2.selectAll("path")

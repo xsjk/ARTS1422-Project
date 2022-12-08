@@ -219,7 +219,7 @@ export function Calendar(data, {
 	  .attr("d", pathMonth);
 
   month.append("text")
-	  .attr("x", d => timeWeek.count(d3.utcYear(d), timeWeek.ceil(d)) * cellSize - 360)
+	  .attr("x", d => timeWeek.count(d3.utcYear(d), timeWeek.ceil(d)) * cellSize - 413)
 	  .attr("y", -5)
 	  .text(formatMonth);
 
@@ -551,14 +551,12 @@ watch(
     path.hour_arc[selected=false]{
         opacity: 0.5;
 		fill :red;
-		stroke: yellow;
-		stroke-width: 3;
+		stroke-width: 1;
     }
     path.hour_arc[selected=true][mouseovered=true]{
         opacity: 0.5;
 		fill :red;
-		stroke: yellow;
-		stroke-width: 3;
+		stroke-width: 1;
     }
 
 	text{
