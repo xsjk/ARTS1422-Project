@@ -169,6 +169,9 @@ export function update_layer(data, map) {
 
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
+    // console.log('names', names);
+    // if (names.includes("金贸街道"))
+    //     names.push("金贸街道");
     const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
@@ -180,6 +183,7 @@ export function update_layer(data, map) {
 
 
     g1.selectAll("path").data(chords.groups)
+        .join()
         .attr("fill", d => color(names[d.index]))
         .attr("d", arc)
         .on("mouseover", function(d) {
@@ -203,6 +207,7 @@ export function update_layer(data, map) {
         });
 
     g1.selectAll("text").data(chords.groups)
+        .join()
         .each(d => (d.angle = (d.startAngle + d.endAngle) / 2))
         .attr("dy", "0.35em")
         .attr("transform", d => `

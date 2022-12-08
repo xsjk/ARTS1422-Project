@@ -13,7 +13,7 @@ export function highlightFeature(e) {
 	const layer = e.target;
 	d3.select(`#${layer.feature.properties['name']} > path`)
 		.attr('stroke-width',4)
-		.attr('stroke','red')
+		.attr('stroke','white')
 
 	layer.setStyle({
 		weight: 2.5,

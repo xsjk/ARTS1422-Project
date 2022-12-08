@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue'
 export const center = ref([110.355043, 20.004658]);
-export const scale = ref(10);
+export const scale = ref(12);
 export const selected = ref([]);
 export const distance = ref(10);
 export const global_map = ref(null);

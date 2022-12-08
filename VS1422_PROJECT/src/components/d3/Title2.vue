@@ -51,19 +51,10 @@
 		position: relative;
 		text-anchor: middle;
 		fill: cyan;
-		font-size: 0.8cm;
-		font-family: 'Courier New', Courier, monospace;
+		font-size: 1cm;
+		font-family: 'Segoe UI Light';
 		stroke: antiquewhite;
-		stroke-width: 0.3;
-		font-weight: bold;
-	}
-	.interval{
-		position: relative;
-		text-anchor: middle;
-		fill: aquamarine;
-		font-size: 0.55cm;
-		font-family: 'Courier New', Courier, monospace;
-		stroke: antiquewhite;
-		stroke-width: 0.3;
+		stroke-width: 0.1;
+		/* font-weight: bold; */
 	}
 </style>
