@@ -28,7 +28,7 @@
 		"
 		:calendar_width="680"
 		:cellSize="23"
-		:clock_width="270"
+		:clock_width="250"
 		:clock_height="200"
 		:legend_width="135"
 	/>

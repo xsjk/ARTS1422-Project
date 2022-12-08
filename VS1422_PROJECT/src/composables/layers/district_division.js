@@ -103,11 +103,12 @@ export function generate_layer(data, map, s, c) {
 			];
 			lastSelection = e.target;
 		}
-		lastSelection.setStyle({
-			weight: 2.5,
-			dashArray: '',
-			fillOpacity: 0.4
-		});
+		if (lastSelection)
+			lastSelection.setStyle({
+				weight: 2.5,
+				dashArray: '',
+				fillOpacity: 0.4
+			});
 	}
 
 	// function onDoubleClick(e) {

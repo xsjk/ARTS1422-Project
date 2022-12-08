@@ -45,14 +45,7 @@ export const can_move = ref(true);
 
 
 	// 用来获取数据的组合
-	const getData = async () => {
-		const weatherTest = await d3.csv('weatherData.csv');
-		weatherData.value = weatherTest.map(d => d);
-		//timemapData.value = await traffic_flow_in_degree_graph([46010608]);
-		equaltimeData.value = [[],[]];
-		console.log("order的value是:"+order.value);
-	};
-	await getData()
+	timemapData.value = await traffic_flow_in_degree_graph(district_ids)
 
 	var testData = {
 	  max: 0,
@@ -94,7 +87,6 @@ export const can_move = ref(true);
 		closePopupOnClick: true,
 	})
 	global_map.value = map;
-	console.log("我是let之前",DistrictMap)
 	let districtLayer = DistrictMap.generate_layer(data, map, selected_districts, can_move);
 	let equaltimeLayer = EqualTimeMap.generate_layer(equaltimeData.value, map);
 	topologicData.value = await draw_topological_graph_by_departure_time([], []);
@@ -136,7 +128,7 @@ export const can_move = ref(true);
 	marker.addTo(map);
 	map.on('click', async(e) => {
 		// mousehold.value = false;
-		if(!can_move.value) return;
+		// if(!can_move.value) return;
 		if(!map.hasLayer(equaltimeLayer)) return;
 		//console.log(e);
 		var popup = L.popup()
@@ -172,7 +164,7 @@ export const can_move = ref(true);
 		'topologicalLayer': topologicLayer,
 	}
 	const controller = L.control.layers(baseLayers, mixed).addTo(map);
-	//districtLayer.addTo(map);
+	districtLayer.addTo(map);
 	
 	
 	// watch
@@ -224,14 +216,15 @@ export const can_move = ref(true);
 			console.log(selected_districts.value)
 			console.log("order"+order.value)
 			if(order.value == 0) {
+				console.log(timemapData, selected_districts)
 				timemapData.value = await traffic_flow_in_degree_graph(selected_districts.value);	
-				console.log(timemapData.value);
-				console.log("输出in order的tilemap");
+				// console.log(timemapData.value);
+				// console.log("输出in order的tilemap");
 			}
 			else{
 				timemapData.value = await traffic_flow_out_degree_graph(selected_districts.value);
-				console.log(timemapData.value);
-				console.log("输出out order的tilemap");
+				// console.log(timemapData.value);
+				// console.log("输出out order的tilemap");
 			}
 		},
 		{ deep: true }
