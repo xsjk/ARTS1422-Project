@@ -4,8 +4,8 @@ import L from 'leaflet';
 const width = 462;
 const height = 550;
 
-const innerRadius = 200;
-const outerRadius = 220;
+const innerRadius = 160;
+const outerRadius = 180;
 
 const color_interpolater = d3.interpolateBlues;
 
