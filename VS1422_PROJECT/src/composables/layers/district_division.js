@@ -1,4 +1,4 @@
-import L from 'leaflet'
+import L from 'leaflet';
 import * as d3 from 'd3';
 //import D3Wrapper from './d3/D3Wrapper.vue';
 

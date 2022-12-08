@@ -137,7 +137,7 @@ export const can_move = ref(true);
 			.setContent(`${e.latlng.toString()}`)
 			// .openOn(map);
 		marker.setLatLng(e.latlng);
-		marker.bindPopup(popup).openPopup();
+		//marker.bindPopup(popup).openPopup();
 		//marker.bindPopup(Popup);
 		selected.value = [e.latlng.lng, e.latlng.lat];
 		center.value = [e.latlng.lng, e.latlng.lat];
