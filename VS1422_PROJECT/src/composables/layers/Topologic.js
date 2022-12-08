@@ -13,12 +13,14 @@ const color_interpolater = d3.interpolateBlues;
 const svg = d3.create('svg')
             .attr('viewBox', `0 0 ${width} ${height}`);
 
+
 // const bg_rect  = svg.append("rect")
-//                     .attr("fill", "black")
-//                     .attr("width", "100%")
-//                     .attr("height", "100%")
-//                     .attr("opacity", 0.1);
-            
+//             .attr("fill", "black")
+//             .attr("width", "100%")
+//             .attr("height", "100%")
+//             .attr("opacity", 0.5);
+
+
 const g1 = svg.append("g")
             .attr("font-size", 10)
             .attr("font-family", "sans-serif")
@@ -175,7 +177,22 @@ export function update_layer(data, map) {
 
     g1.selectAll("path").data(chords.groups)
         .attr("fill", d => color(names[d.index]))
-        .attr("d", arc);
+        .attr("d", arc)
+        .on("mouseover", function(d) {
+            g2.selectAll("path")
+                .filter( e => e.source.index==d.path[0].__data__.index )
+                .transition().duration(100)
+                .attr("opacity", 1)
+            g2.selectAll("path")
+                .filter( e => e.source.index!=d.path[0].__data__.index )
+                .transition().duration(100)
+                .attr("opacity", 0.2)
+        })
+        .on("mouseout", function(d) {
+            g2.selectAll("path")
+                .transition().duration(100)
+                .attr("opacity", 1);
+        });
 
     g1.selectAll("text").data(chords.groups)
         .each(d => (d.angle = (d.startAngle + d.endAngle) / 2))
