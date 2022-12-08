@@ -46,10 +46,10 @@ export function generate_layer(data, map, s, c) {
 	};
 
 	info.update = function (props) {
-		var texts = props ? `<b>${props.name}</b><br />${props.density} 流量` : 'Hover over a state';
+		var texts = props ? `<b style="color:white" >${props.name}</b><br />` : '';		
+		// var texts = props ? `<b>${props.name}</b><br />${props.density} 流量` : 'Hover over a state';
 		const contents = texts.bold().fontsize(5);
 		this._div.innerHTML = `${contents}`;
-
 	};
 	info.addTo(map);
 

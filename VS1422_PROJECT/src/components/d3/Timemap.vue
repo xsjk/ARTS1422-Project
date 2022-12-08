@@ -222,6 +222,8 @@ function update() {
 	}).on('mouseup', e => {
 		mousehold.value = false;
 		const mouse_drag_end = get_cur_time_by_event(e);
+		selected_days.value = Object.assign([], temp_days.value);
+		selected_hours.value = Object.assign([], temp_hours.value);
 		// console.log("hour range:", mouse_drag_start.value.hour, mouse_drag_end.hour);
 		// console.log("day range:", mouse_drag_start.value.day, mouse_drag_end.day);
 
@@ -244,7 +246,6 @@ function update() {
 watch(
 	() => props.data,
 	() => {
-		console.log("重画timemap？？？？？？？？？？？？？？？？？？")
 		update();
 	},
 );

@@ -241,10 +241,10 @@ export const can_move = ref(true);
 </template>
 
 <style>
-	/* .Equal_rects{
+	.Equal_rects{
 		rx:10;
 		ry:10;
-	} */
+	}
 	.Equal_rects[selected=false]{
 		stroke: white;
 		stroke-width: 0.3px;

@@ -40,39 +40,6 @@ export function generate_layer(data, map){
 	g = svgElement.append('g')
 				  .attr('transform', `translate(${scale_lat(map.getCenter().lng)}, ${scale_lng(map.getCenter().lat)})`)
 
-	// var start_rad = Math.PI / 2;
-	// var delta_rad = 2 * Math.PI / data[0][0].length;
-	// g.selectAll('path')
-	// 		.data(data[0][0])
-	// 		.join("path")
-	// 		.attr("d", (d,i)=>{
-	// 			return d3.arc()
-	// 					.innerRadius(0)
-	// 					.outerRadius(d * k)
-	// 					.startAngle(start_rad - i * delta_rad)
-	// 					.endAngle(start_rad - (i + 1) * delta_rad)()
-	// 		})
-	// 		.attr('fill', 'green')
-	// 		.attr('opacity',0.4)
-	// 		.attr('stroke-width',1)
-	// 		.attr('stroke','black')
-	// 		.attr('stroke-opacity',1.0)
-
-
-	
-			// g.append('polygon').attr('points','-10,-10 -10,10 10,10 10,-10 -10,-10').attr('fill','red')
-	// g.selectAll('polygon')
-	// 	.data(data[0][1])
-	// 	.join('polygon')
-	// 	.attr('points',(d,i)=>{return `0,0 ${d*r*Math.cos(10*to_rad)},0 ${d*r*(Math.cos(10*to_rad))},${d*r*Math.sin(10*to_rad)} ${d*r*(Math.cos(10*to_rad)+0.05)},${d*r*Math.sin(10*to_rad)} ${d*r*(Math.cos(10*to_rad)+0.05)},${-d*r*Math.sin(10*to_rad)} ${d*r*(Math.cos(10*to_rad))},${-d*r*Math.sin(10*to_rad)} ${d*r*Math.cos(10*to_rad)},0 0,0`})
-	// 	.attr('transform',(d,i)=>{return `rotate(${-i*20})`})
-	// 	.attr('fill','red')
-	// 	.attr('stroke','black')
-	// 	.attr('stroke-width',1)
-	// 	.append('title')
-	// 	.text((d)=>{
-	// 		return `${d*100}%`
-	// 	})
 	return layer;
 }
 
@@ -91,7 +58,8 @@ export async function update_layer(map, selected, dates, hours, distance) {
 	const colors = {10:tenMinColor,20:thirtyMinColor,30:sixtyMinColor}
 	var data = await k_min_isochrone_by_departure_time([distance], [selected[0],selected[1]], dates, hours);
 	if (!data) {
-		alert('No data available for the selected time range');
+		// alert('No data available for the selected time range');
+		return;
 	}
 	var delta_rad = 2 * Math.PI / data[0][0].length;
 	var start_rad = Math.PI / 2 + delta_rad / 2;
@@ -152,7 +120,8 @@ export function generate_selection(map,distance){
 					svg.selectAll("rect")
 					.attr("selected",false);
 					d3.select(this).attr("selected",true);
-				});
+					})
+				.on("click", (e)=>{});
 	const texts = svg.append("g")
 					.selectAll("Equal_texts")
 					.data(X)

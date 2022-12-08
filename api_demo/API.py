@@ -259,7 +259,7 @@ class thermodynamic_diagram:
         result = []
         df = d.get_data(date, hour, 'arrive_time')
         l = 0.31 / enlarge_factor
-        array = df[['starting_lng','starting_lat']].values
+        array = df[['dest_lng','dest_lat']].values
         array_index = (array[:,0] <= middle_point_coordinate[0] + l) & (array[:,0] > middle_point_coordinate[0] - l) & (array[:,1] <= middle_point_coordinate[1] + l) & (array[:,1] > middle_point_coordinate[1] - l)
         thermodynamic_diagram.subdivided(middle_point_coordinate, l, self.__边细分次数, array[array_index],result)
         return result

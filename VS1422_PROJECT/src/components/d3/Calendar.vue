@@ -548,15 +548,17 @@ watch(
 		stroke: white;
         stroke-width: 0.5;
     }
-    path.hour_arc[selected=false][mouseovered=true]{
-        opacity: 1;
+    path.hour_arc[selected=false]{
+        opacity: 0.5;
+		fill :red;
 		stroke: yellow;
 		stroke-width: 3;
     }
     path.hour_arc[selected=true][mouseovered=true]{
-        opacity: 0.8;
+        opacity: 0.5;
+		fill :red;
 		stroke: yellow;
-        stroke-width: 3;
+		stroke-width: 3;
     }
 
 	text{
