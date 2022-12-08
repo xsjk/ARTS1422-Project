@@ -4,8 +4,8 @@ import L from 'leaflet';
 const width = 462;
 const height = 550;
 
-const innerRadius = 120;
-const outerRadius = 140;
+const innerRadius = 200;
+const outerRadius = 220;
 
 const color_interpolater = d3.interpolateBlues;
 
@@ -13,11 +13,11 @@ const color_interpolater = d3.interpolateBlues;
 const svg = d3.create('svg')
             .attr('viewBox', `0 0 ${width} ${height}`);
 
-const bg_rect  = svg.append("rect")
-                    .attr("fill", "black")
-                    .attr("width", "100%")
-                    .attr("height", "100%")
-                    .attr("opacity", 0.8);
+// const bg_rect  = svg.append("rect")
+//                     .attr("fill", "black")
+//                     .attr("width", "100%")
+//                     .attr("height", "100%")
+//                     .attr("opacity", 0.1);
             
 const g1 = svg.append("g")
             .attr("font-size", 10)
@@ -25,8 +25,6 @@ const g1 = svg.append("g")
             .attr("transform", `translate(${width / 2},${height / 2})`);
 const g2 = svg.append("g").attr("fill-opacity", 0.75)
             .attr("transform", `translate(${width / 2},${height / 2})`);
-
-
 
 
 var svgElementBounds = [ [20.1, 110.100], [19.5, 110.700] ];
@@ -75,7 +73,8 @@ export function generate_layer(data, map, can_move) {
     ));
 
     const names = Array.from(new Set(data.flatMap(d => [d.source, d.target]))).sort(d3.ascending)
-    const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
+    const color = d3.interpolateBlues;
+    // const color = d3.scaleOrdinal(names, d3.quantize(color_interpolater, names.length))
 
     const index = new Map(names.map((name, i) => [name, i]));
     const matrix = Array.from(index, () => new Array(names.length).fill(0));
@@ -203,10 +202,11 @@ export function update_layer(data, map) {
         .join("path")
         .style("mix-blend-mode", "multiply")
         .attr("fill", d => color(names[d.target.index]))
+        .attr("opacity", 1)
         .attr("d", ribbon)
         .append("title")
         .text(d => `${names[d.source.index]} → ${names[d.target.index]} ${d.source.value}`);
-
+    
 
 }
 

@@ -31,28 +31,28 @@ export function generate_layer(data, map, s, c) {
 			fillColor: getColor(feature.properties.density)
 		};
 	}
-	
+
 	// control that shows state info on hover
 	const info = L.control.scale({
 		position:'bottomright',
 		maxWidth:'100',
 		imperial:true
 	});
-	
+
 	info.onAdd = function (map) {
 		this._div = L.DomUtil.create('div', 'info');
 		this.update();
 		return this._div;
 	};
-	
+
 	info.update = function (props) {
 		var texts = props ? `<b>${props.name}</b><br />${props.density} 流量` : 'Hover over a state';
 		const contents = texts.bold().fontsize(5);
 		this._div.innerHTML = `${contents}`;
-		
+
 	};
 	info.addTo(map);
-	
+
 	function highlightFeature(e) {
 		const layer = e.target;
 		d3.select(`#${layer.feature.properties['name']} > path`)
@@ -69,28 +69,73 @@ export function generate_layer(data, map, s, c) {
 		layer.bringToFront();
 		info.update(layer.feature.properties);
 	}
-	
+
 	function resetHighlight(e) {
 		if(e.target != lastSelection) geojson.resetStyle(e.target);
 		d3.select(`#${e.target.feature.properties['name']} > path`)
 			.attr('stroke-width',0)
 		info.update();
 	}
-					
+
 	function onClick(e) {
-		console.log(12345);
-		selected.value = [
-			district_ids[district_names.indexOf(e.target.feature.properties['name'])]
-		];
-		// if (!can_move.value)
-		// 	return;
-		if(lastSelection == e.target){
+		const district_id = district_ids[district_names.indexOf(e.target.feature.properties['name'])];
+		if (lastSelection == e.target) {
+			console.log('deselect')
 			geojson.resetStyle(lastSelection);
 			lastSelection = null;
-			return;
+			selected.value = selected.value.filter(d => d != district_id);
+			if (selected.value.length == 0) {
+				selected.value = district_ids;
+			}
+		} else {
+			console.log('select')
+			if (lastSelection) {
+				lastSelection.setStyle({	
+					weight: 10,
+					dashArray: '',
+					fillColor: '#663408',
+					fillOpacity: 0.7
+				});
+				geojson.resetStyle(lastSelection);
+			}
+			selected.value = [
+				district_id
+			];
+			lastSelection = e.target;
 		}
+		if (lastSelection)
+			lastSelection.setStyle({
+				weight: 2.5,
+				dashArray: '',
+				fillOpacity: 0.4
+			});
 	}
-						
+
+	// function onDoubleClick(e) {
+	// 	console.log('double click');
+	// 	selected.value = [
+	// 		district_ids[district_names.indexOf(e.target.feature.properties['name'])]
+	// 	];
+	// 	if (!can_move.value)
+	// 		return;
+	// 	if(lastSelection == e.target){
+	// 		geojson.resetStyle(lastSelection);
+	// 		lastSelection = null;
+	// 		return;
+	// 	}
+	// 	if(lastSelection != null){
+	// 		geojson.resetStyle(lastSelection);
+	// 	}
+	// 	map.flyTo(e.target.getCenter());
+	// 	lastSelection = e.target;
+	// 	lastSelection.setStyle({
+	// 		weight: 10,
+	// 		dashArray: '',
+	// 		fillColor: '#663408',
+	// 		fillOpacity: 0.7
+	// 	});
+	// }
+
 	function onEachFeature(feature, layer) {
 		layer.on({
 			mouseover: highlightFeature,
@@ -107,6 +152,6 @@ export function generate_layer(data, map, s, c) {
 	});
 
 	console.log('geojson',geojson);
-	
+
 	return geojson;
 }

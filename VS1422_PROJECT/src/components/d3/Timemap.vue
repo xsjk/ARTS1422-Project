@@ -138,9 +138,9 @@ function update() {
 	// draw the canvas
 	const shape = {x: tiles[0].length, y: tiles.length};
 
-	console.log(shape);
-	console.log(height, width);
-	console.log(img_height, img_width);
+	// console.log(shape);
+	// console.log(height, width);
+	// console.log(img_height, img_width);
 
 
 	canvas_container.value.width = width
@@ -204,7 +204,14 @@ function update() {
 		.attr("x", d => (d % 24) * (width / 24))
 		.attr("y", d => (Math.floor(d / 24)+0.5) * (height / 183))
 		.attr("selected", "false")
-		.merge(rects);
+		.append("title")
+		.text(d => {
+			const hour = d % 24;
+			const day = Math.floor(d / 24);
+			return `${hour}:00 - ${hour+1}:00, ${(new Date(2017, 4, day+1)).toLocaleDateString()}`;
+		});
+		
+	// .merge(rects);
 
 
 
@@ -237,7 +244,7 @@ function update() {
 watch(
 	() => props.data,
 	() => {
-		//console.log("重画timemap？？？？？？？？？？？？？？？？？？")
+		console.log("重画timemap？？？？？？？？？？？？？？？？？？")
 		update();
 	},
 );
@@ -337,14 +344,14 @@ watch(
 		height: 740px;
 		position: absolute;
 		z-index: 1;
-		transform: translate(0px,50px);
+		transform: translate(0px,20px);
 	}
 	.timemap_axis {
 		width: 230px;
 		height: 740px;
 		position: absolute;
 		z-index: 2;
-		transform: translate(0px,50px);
+		transform: translate(0px,20px);
 	}
 	.timemap_svg {
 		width: 230px;
